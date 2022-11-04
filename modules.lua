@@ -33,18 +33,18 @@ return {
     -- "dashboard", -- A pretty dashboard upon opening
     "trouble",         -- A pretty diagnostic viewer
     "statusline", -- A pretty status line at the bottom of the buffer
-    "minimap",         -- Shows current position in document
-    "terminal",        -- Integrated terminal in neovim
-    "symbols",         -- Navigate between code symbols using telescope
+    -- "minimap",         -- Shows current position in document
+    -- "terminal",        -- Integrated terminal in neovim
+    -- "symbols",         -- Navigate between code symbols using telescope
     "ranger",          -- File explorer in neovim (TODO: Test)
-    "restclient",      -- Test HTTP requests from neovim (TODO: Test)
-    "show_registers",  -- Show and navigate between registers
+    -- "restclient",      -- Test HTTP requests from neovim (TODO: Test)
+    -- "show_registers",  -- Show and navigate between registers
 
     -- Tools
     "dap",             -- Debug code through neovim
     "repl", -- Interactive REPL in neovim
     "explorer", -- An enhanced filetree explorer
-    -- "firenvim",        -- Embed neovim in your browser
+    "firenvim",        -- Embed neovim in your browser
     -- "lazygit",         -- Lazy git integration
     "neogit",          -- A git client for neovim
     "neorg", -- Organise your life
@@ -61,15 +61,14 @@ return {
     "bash",
     -- "fish",
     -- "gdscript",
-    -- "gdscript",
     -- "php",
     -- "ruby",
 
     -- Web
-    -- "javascript",
-    -- "typescript",
-    -- "css",
-    -- "vue",
+    "javascript",
+    "typescript",
+    "css",
+    "vue",
     -- "tailwindcss",
     -- "svelte",
 
