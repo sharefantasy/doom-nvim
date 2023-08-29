@@ -4,7 +4,7 @@ indentlines.settings = {
   char = "│",
   use_treesitter = true,
   show_first_indent_level = false,
-  filetype_exclude = { "help", "dashboard", "packer", "norg", "DoomInfo" },
+  filetype_exclude = { "help", "dashboard", "packer", "norg", "DoomInfo", "lazy"},
   buftype_exclude = { "terminal" },
 }
 

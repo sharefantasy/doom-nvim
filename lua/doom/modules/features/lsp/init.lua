@@ -188,6 +188,10 @@ lsp.configs["nvim-lspconfig"] = function()
       show_header = false,
       border = "rounded",
     },
+    globals = {
+      'vim',
+      'require'
+    },
   })
   -- Border for lsp_popups
   vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {

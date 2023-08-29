@@ -35,7 +35,7 @@ return {
     "trouble",         -- A pretty diagnostic viewer
     "statusline", -- A pretty status line at the bottom of the buffer
     "minimap",         -- Shows current position in document
-    -- "terminal",        -- Integrated terminal in neovim
+    "terminal",        -- Integrated terminal in neovim
     "symbols",         -- Navigate between code symbols using telescope
     "ranger",          -- File explorer in neovim (TODO: Test)
     "restclient",      -- Test HTTP requests from neovim (TODO: Test)
