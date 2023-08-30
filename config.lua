@@ -42,6 +42,30 @@ doom.use_package({
   end
 })
 
+doom.use_package({
+  "sindrets/diffview.nvim",
+  config = function ()
+    require("diffview").setup({
+      view = {
+        default = {
+          layout = "diff2_horizontal",
+          winbar_info = false,
+        },
+        merge_tool = {
+          layout = "diff3_horizontal",
+          disable_diagnostics = true,   -- Temporarily disable diagnostics for conflict buffers while in the view.
+          winbar_info = true,           -- See ':h diffview-config-view.x.winbar_info'
+        },
+        file_history = {
+          -- Config for changed files in file history views.
+          layout = "diff2_horizontal",
+          winbar_info = false,          -- See ':h diffview-config-view.x.winbar_info'
+        },
+      },
+    })
+  end
+} )
+
 doom.use_package("anuvyklack/hydra.nvim")
 doom.use_package( {
   "folke/noice.nvim",
