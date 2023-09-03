@@ -1,3 +1,5 @@
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 
 --
 -- This file contains the user-defined configurations for Doom nvim.
@@ -368,7 +370,35 @@ doom.use_package( {
 
 doom.use_package("axieax/urlview.nvim")
 
+doom.use_package({
+    "kiyoon/tmuxsend.vim",
+    keys = {
+      { "-", "<Plug>(tmuxsend-smart)", mode = { "n", "x" } },
+      { "_", "<Plug>(tmuxsend-plain)", mode = { "n", "x" } },
+      { "<space>-", "<Plug>(tmuxsend-uid-smart)", mode = { "n", "x" } },
+      { "<space>_", "<Plug>(tmuxsend-uid-plain)", mode = { "n", "x" } },
+      { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x" } },
+    },
+  })
 
+doom.use_package( "kiyoon/nvim-tree-remote.nvim")
+doom.use_package({
+    "aserowy/tmux.nvim",
+    config = function()
+      -- Navigate tmux, and nvim splits.
+      -- Sync nvim buffer with tmux buffer.
+      require("tmux").setup {
+        copy_sync = {
+          enable = true,
+          sync_clipboard = false,
+          sync_registers = true,
+        },
+        resize = {
+          enable_default_keybindings = false,
+        },
+      }
+    end,
+  })
 
 
 -- ADDING A KEYBIND

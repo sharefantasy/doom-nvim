@@ -9,7 +9,7 @@ autopairs.settings = {
 autopairs.packages = {
   ["nvim-autopairs"] = {
     "windwp/nvim-autopairs",
-    commit = "a52fc6eeec116746110b703381777c46d89d9e27",
+    commit = "defad64afbf19381fe31488a7582bbac421d6e38",
     event = "InsertEnter",
   },
 }
