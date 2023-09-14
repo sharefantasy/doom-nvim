@@ -93,6 +93,7 @@ return {
     -- "terraform",       -- Terraform / hcl files support
     "dockerfile",
     -- "nix",             -- Nix declarations
+    "thrift",
   },
 }
 

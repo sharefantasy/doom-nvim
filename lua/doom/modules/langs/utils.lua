@@ -115,6 +115,7 @@ end
 module.use_mason_package = function(package_name, success_handler, error_handler)
   local mason = require("mason-registry")
   local on_err = error_handler or default_error_handler
+  print("package_name", package_name)
   if package_name == nil then
     on_err("nil", "No package_name provided.")
     return
@@ -246,7 +247,7 @@ module.use_lsp_mason = function(lsp_name, options)
           and lsp_config_server.manager.try_add_wrapper
         or lsp_config_server.manager.try_add
       for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-        buffer_handler(bufnr)
+        buffer_handler(lsp_config_server.manager, bufnr)
       end
     end
   end

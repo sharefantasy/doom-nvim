@@ -9,7 +9,8 @@ vim.g.loaded_netrwPlugin = 1
 -- ADDING A PACKAGE
 --
 doom.use_package({
-  "nvim-focus/focus.nvim", config = function()
+  "nvim-focus/focus.nvim",
+  config = function()
     require("focus").setup({
       enable = true, -- Enable module
       commands = true, -- Create Focus commands
@@ -35,18 +36,18 @@ doom.use_package({
         cursorcolumn = false, -- Display cursorcolumn in the focussed window only
         colorcolumn = {
           enable = false, -- Display colorcolumn in the foccused window only
-          list = '+1', -- Set the comma-saperated list for the colorcolumn
+          list = "+1", -- Set the comma-saperated list for the colorcolumn
         },
         signcolumn = true, -- Display signcolumn in the focussed window only
         winhighlight = true, -- Auto highlighting for focussed/unfocussed windows
-      }
+      },
     })
-  end
+  end,
 })
 
 doom.use_package({
   "sindrets/diffview.nvim",
-  config = function ()
+  config = function()
     require("diffview").setup({
       view = {
         default = {
@@ -55,21 +56,21 @@ doom.use_package({
         },
         merge_tool = {
           layout = "diff3_horizontal",
-          disable_diagnostics = true,   -- Temporarily disable diagnostics for conflict buffers while in the view.
-          winbar_info = true,           -- See ':h diffview-config-view.x.winbar_info'
+          disable_diagnostics = true, -- Temporarily disable diagnostics for conflict buffers while in the view.
+          winbar_info = true, -- See ':h diffview-config-view.x.winbar_info'
         },
         file_history = {
           -- Config for changed files in file history views.
           layout = "diff2_horizontal",
-          winbar_info = false,          -- See ':h diffview-config-view.x.winbar_info'
+          winbar_info = false, -- See ':h diffview-config-view.x.winbar_info'
         },
       },
     })
-  end
-} )
+  end,
+})
 
 doom.use_package("anuvyklack/hydra.nvim")
-doom.use_package( {
+doom.use_package({
   "folke/noice.nvim",
   event = "VeryLazy",
   opts = {
@@ -83,7 +84,7 @@ doom.use_package( {
     --   If not available, we use `mini` as the fallback
     "rcarriga/nvim-notify",
   },
-  config = function ()
+  config = function()
     require("noice").setup({
       lsp = {
         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
@@ -107,7 +108,11 @@ doom.use_package( {
             search_down = { kind = "search", pattern = "^/", icon = " ", lang = "regex" },
             search_up = { kind = "search", pattern = "^%?", icon = " ", lang = "regex" },
             filter = { pattern = "^:%s*!", icon = "$", lang = "bash" },
-            lua = { pattern = { "^:%s*lua%s+", "^:%s*lua%s*=%s*", "^:%s*=%s*" }, icon = "", lang = "lua" },
+            lua = {
+              pattern = { "^:%s*lua%s+", "^:%s*lua%s*=%s*", "^:%s*=%s*" },
+              icon = "",
+              lang = "lua",
+            },
             help = { pattern = "^:%s*he?l?p?%s+", icon = "" },
             input = {}, -- Used by input()
             -- lua = false, -- to disable a format, set to `false`
@@ -133,15 +138,16 @@ doom.use_package( {
           inc_rename = true, -- enables an input dialog for inc-rename.nvim
           lsp_doc_border = true, -- add a border to hover docs and signature help
         },
-      }})
-  end
+      },
+    })
+  end,
 })
 
-doom.use_package( {
-  'stevearc/dressing.nvim',
+doom.use_package({
+  "stevearc/dressing.nvim",
   opts = {},
   config = function()
-    require('dressing').setup({
+    require("dressing").setup({
       input = {
         -- Set to false to disable the vim.ui.input implementation
         enabled = true,
@@ -305,21 +311,20 @@ doom.use_package( {
         get_config = nil,
       },
     })
-  end
+  end,
 })
 -- doom.use_package("EdenEast/nightfox.nvim", "sainnhe/sonokai")
 doom.use_package({
   "ur4ltz/surround.nvim",
   config = function()
-    require("surround").setup({mappings_style = "sandwich"})
-  end
+    require("surround").setup({ mappings_style = "sandwich" })
+  end,
 })
-
 
 doom.use_package({
   "leoluz/nvim-dap-go",
   config = function()
-    require('dap-go').setup {
+    require("dap-go").setup({
       -- Additional dap configurations can be added.
       -- dap_configurations accepts a list of tables where each entry
       -- represents a dap configuration. For more details do:
@@ -355,51 +360,109 @@ doom.use_package({
         -- ignored by delve in dap mode.
         build_flags = "",
       },
-    }
-  end
+    })
+  end,
 })
 
-doom.use_package( {
-  'Wansmer/treesj',
-  keys = { '<space>m', '<space>j', '<space>s' },
-  dependencies = { 'nvim-treesitter/nvim-treesitter' },
+doom.use_package({
+  "Wansmer/treesj",
+  keys = { "<space>m", "<space>j", "<space>s" },
+  dependencies = { "nvim-treesitter/nvim-treesitter" },
   config = function()
-    require('treesj').setup({--[[ your config ]]})
+    require("treesj").setup({ --[[ your config ]]
+    })
   end,
 })
 
 doom.use_package("axieax/urlview.nvim")
 
 doom.use_package({
-    "kiyoon/tmuxsend.vim",
-    keys = {
-      { "-", "<Plug>(tmuxsend-smart)", mode = { "n", "x" } },
-      { "_", "<Plug>(tmuxsend-plain)", mode = { "n", "x" } },
-      { "<space>-", "<Plug>(tmuxsend-uid-smart)", mode = { "n", "x" } },
-      { "<space>_", "<Plug>(tmuxsend-uid-plain)", mode = { "n", "x" } },
-      { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x" } },
-    },
-  })
+  "kiyoon/tmuxsend.vim",
+  keys = {
+    { "-", "<Plug>(tmuxsend-smart)", mode = { "n", "x" } },
+    { "_", "<Plug>(tmuxsend-plain)", mode = { "n", "x" } },
+    { "<space>-", "<Plug>(tmuxsend-uid-smart)", mode = { "n", "x" } },
+    { "<space>_", "<Plug>(tmuxsend-uid-plain)", mode = { "n", "x" } },
+    { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x" } },
+  },
+})
 
-doom.use_package( "kiyoon/nvim-tree-remote.nvim")
+doom.use_package("kiyoon/nvim-tree-remote.nvim")
 doom.use_package({
-    "aserowy/tmux.nvim",
-    config = function()
-      -- Navigate tmux, and nvim splits.
-      -- Sync nvim buffer with tmux buffer.
-      require("tmux").setup {
-        copy_sync = {
-          enable = true,
-          sync_clipboard = false,
-          sync_registers = true,
-        },
-        resize = {
-          enable_default_keybindings = false,
-        },
-      }
-    end,
-  })
+  "aserowy/tmux.nvim",
+  config = function()
+    -- Navigate tmux, and nvim splits.
+    -- Sync nvim buffer with tmux buffer.
+    require("tmux").setup({
+      copy_sync = {
+        enable = true,
+        sync_clipboard = false,
+        sync_registers = true,
+      },
+      resize = {
+        enable_default_keybindings = false,
+      },
+    })
+  end,
+})
 
+doom.use_package({
+  "folke/flash.nvim",
+  event = "VeryLazy",
+  ---@type Flash.Config
+  opts = {},
+  -- stylua: ignore
+  keys = {
+    { "s",     mode = { "n", "o", "x" }, function() require("flash").jump() end,              desc = "Flash" },
+    { "S",     mode = { "n", "o", "x" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
+    { "r",     mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
+    { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+    { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc =
+    "Toggle Flash Search" },
+  },
+})
+
+doom.use_package({
+  "ThePrimeagen/refactoring.nvim",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    "nvim-treesitter/nvim-treesitter",
+  },
+  config = function()
+    require("refactoring").setup({
+      prompt_func_return_type = {
+        go = true,
+        python = true,
+        lua = true,
+      },
+      prompt_func_param_type = {
+        go = true,
+        python = true,
+        lua = true,
+      },
+      printf_statements = {
+        go = true,
+        python = true,
+        lua = true,
+      },
+      print_var_statements = {
+        go = true,
+        python = true,
+        lua = true,
+      },
+    })
+  end,
+})
+
+
+doom.use_package({
+  'ThePrimeagen/harpoon',
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+  }
+})
+
+doom.use_package({'solarnz/thrift.vim'})
 
 -- ADDING A KEYBIND
 --

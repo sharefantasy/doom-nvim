@@ -13,7 +13,7 @@ lua.settings = {
   disable_lsp = false,
   --- Name of the language server
   --- @type string
-  lsp_name = "sumneko_lua",
+  lsp_name = "lua_ls",
   --- Custom config to pass to nvim-lspconfig
   --- @type table|nil
   lsp_config = {
@@ -98,7 +98,6 @@ lua.settings = {
 lua.packages = {
   ["lua-dev.nvim"] = {
     "folke/neodev.nvim",
-    commit = "0e3f5e763639951f96f9acbdc9f52a9fedf91b46",
     ft = "lua",
   },
 }
@@ -116,6 +115,7 @@ lua.autocmds = {
       })
 
       if not lua.settings.disable_lsp then
+        print(lua.settings.lsp_name)
         langs_utils.use_lsp_mason(lua.settings.lsp_name, {
           config = config,
         })
