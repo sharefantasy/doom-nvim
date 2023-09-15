@@ -10,11 +10,9 @@ required.packages = {
   },
   ["plenary.nvim"] = {
     "nvim-lua/plenary.nvim",
-    commit = "0232372b906f275f76ac42029eba25eaf95e76b9",
   },
   ["nvim-web-devicons"] = {
     "kyazdani42/nvim-web-devicons",
-    commit = "a8cf88cbdb5c58e2b658e179c4b2aa997479b3da",
   },
 }
 

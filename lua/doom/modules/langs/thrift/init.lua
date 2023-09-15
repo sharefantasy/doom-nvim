@@ -54,5 +54,6 @@ thrift.autocmds = {
     once = true,
   },
 }
+doom.use_package({'solarnz/thrift.vim'})
 
 return thrift

@@ -30,7 +30,7 @@ return {
 
     -- UI Components
     "lsp_progress", -- Check status of LSP loading
-    "tabline", -- Tab bar buffer switcher
+    -- "tabline", -- Tab bar buffer switcher
     -- "dashboard", -- A pretty dashboard upon opening
     "trouble",         -- A pretty diagnostic viewer
     "statusline", -- A pretty status line at the bottom of the buffer
