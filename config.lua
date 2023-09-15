@@ -454,7 +454,6 @@ doom.use_package({
   end,
 })
 
-
 doom.use_package({
   'ThePrimeagen/harpoon',
   dependencies = {
@@ -508,6 +507,7 @@ doom.use_package({
     }
   end
 })
+
 -- ADDING A KEYBIND
 --
 -- doom.use_keybind({
