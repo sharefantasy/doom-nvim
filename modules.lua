@@ -86,6 +86,7 @@ return {
     -- "kotlin",
     -- "java",
 
+    -- config
     "json",
     "yaml",
     "toml",
