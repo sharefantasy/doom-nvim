@@ -82,6 +82,7 @@ return {
     -- JIT
     "c_sharp",
     "clojure",
+    "fennel",
     -- "kotlin",
     -- "java",
 

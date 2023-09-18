@@ -89,6 +89,7 @@ explorer.settings = {
   diagnostics = {
     enable = false,
   },
+  -- use_tmux_integration = true
 }
 
 explorer.packages = {
@@ -103,14 +104,23 @@ explorer.packages = {
       "NvimTreeToggle",
     },
   },
+  ["tmuxsend.vim"] = {
+    "kiyoon/tmuxsend.vim",
+  "kiyoon/nvim-tree-remote.nvim",
+  },
+  ["tmux.nvim"] = {
+    "aserowy/tmux.nvim",
+  }
+
 }
 
 explorer.configs = {}
 explorer.configs["nvim-tree.lua"] = function()
   local utils = require("doom.utils")
   local is_module_enabled = utils.is_module_enabled
+  local tree_cb = function(command)
 
-  local tree_cb = require("nvim-tree.config").nvim_tree_callback
+  end
 
   local override_table = {}
   if is_module_enabled("features", "lsp") then
@@ -153,6 +163,11 @@ explorer.configs["nvim-tree.lua"] = function()
           { key = "-", cb = tree_cb("dir_up") },
           { key = "q", cb = tree_cb("close") },
           { key = "g?", cb = tree_cb("toggle_help") },
+          { "-", "<Plug>(tmuxsend-smart)", mode = { "n", "x" } },
+          { "_", "<Plug>(tmuxsend-plain)", mode = { "n", "x" } },
+          { "<space>-", "<Plug>(tmuxsend-uid-smart)", mode = { "n", "x" } },
+          { "<space>_", "<Plug>(tmuxsend-uid-plain)", mode = { "n", "x" } },
+          { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x" } },
         },
       },
     },
@@ -164,6 +179,80 @@ explorer.configs["nvim-tree.lua"] = function()
     },
   }, doom.features.explorer.settings, override_table)
   require("nvim-tree").setup(config)
+end
+
+
+
+explorer.configs["tmuxsend.vim"] = function()
+      local nvim_tree = require "nvim-tree"
+
+      nvim_tree.setup {
+        on_attach = nvim_tree_on_attach,
+        update_focused_file = {
+          enable = true,
+          update_cwd = true,
+        },
+        renderer = {
+          --root_folder_modifier = ":t",
+          icons = {
+            glyphs = {
+              default = "",
+              symlink = "",
+              folder = {
+                arrow_open = "",
+                arrow_closed = "",
+                default = "",
+                open = "",
+                empty = "",
+                empty_open = "",
+                symlink = "",
+                symlink_open = "",
+              },
+              git = {
+                unstaged = "",
+                staged = "S",
+                unmerged = "",
+                renamed = "➜",
+                untracked = "U",
+                deleted = "",
+                ignored = "◌",
+              },
+            },
+          },
+        },
+        diagnostics = {
+          enable = true,
+          show_on_dirs = true,
+          icons = {
+            hint = "",
+            info = "",
+            warning = "",
+            error = "",
+          },
+        },
+        view = {
+          width = 30,
+          side = "left",
+        },
+        filters = {
+          custom = { ".git" },
+        },
+      }
+end
+
+explorer.configs["tmux.nvim"] = function()
+      -- Navigate tmux, and nvim splits.
+      -- Sync nvim buffer with tmux buffer.
+      require("tmux").setup {
+        copy_sync = {
+          enable = true,
+          sync_clipboard = false,
+          sync_registers = true,
+        },
+        resize = {
+          enable_default_keybindings = false,
+        },
+      }
 end
 
 explorer.binds = {

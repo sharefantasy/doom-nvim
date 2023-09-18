@@ -39,7 +39,7 @@ python.settings = {
   diagnostics_package = "mypy",
   --- String to access the null_ls diagnositcs provider
   --- @type string
-  diagnostics_provider = "builtins.diagnostics.mypy",
+  diagnostics_provider = "builtins.diagnostics.pyright",
   --- Function to configure null-ls diagnostics
   --- @type function|nil
   diagnostics_config = nil,

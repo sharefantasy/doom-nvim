@@ -508,6 +508,15 @@ doom.use_package({
   end
 })
 
+doom.use_package({
+  "nvim-neotest/neotest",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    "nvim-treesitter/nvim-treesitter",
+    "antoinemadec/FixCursorHold.nvim"
+  }
+})
+
 -- ADDING A KEYBIND
 --
 -- doom.use_keybind({
