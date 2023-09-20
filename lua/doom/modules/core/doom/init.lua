@@ -113,7 +113,7 @@ required.binds = function()
         "b",
         name = "+buffer",
         {
-          { "b", "<cmd>e #<CR>", name = "Jump to recent" },
+          { "b", function () require 'telescope.builtin'.buffers{} end, name = "List buffers" },
           { "d", "<cmd>bd<CR>", name = "Delete" },
         },
       },

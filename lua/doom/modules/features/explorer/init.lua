@@ -118,10 +118,6 @@ explorer.configs = {}
 explorer.configs["nvim-tree.lua"] = function()
   local utils = require("doom.utils")
   local is_module_enabled = utils.is_module_enabled
-  local tree_cb = function(command)
-
-  end
-
   local override_table = {}
   if is_module_enabled("features", "lsp") then
     override_table = {
@@ -140,29 +136,29 @@ explorer.configs["nvim-tree.lua"] = function()
     view = {
       mappings = {
         list = {
-          { key = { "o", "<2-LeftMouse>" }, cb = tree_cb("edit") },
-          { key = { "<CR>", "<2-RightMouse>", "<C-]>" }, cb = tree_cb("cd") },
-          { key = "<C-v>", cb = tree_cb("vsplit") },
-          { key = "<C-x>", cb = tree_cb("split") },
-          { key = "<C-t>", cb = tree_cb("tabnew") },
-          { key = "<BS>", cb = tree_cb("close_node") },
-          { key = "<S-CR>", cb = tree_cb("close_node") },
-          { key = "<Tab>", cb = tree_cb("preview") },
-          { key = "I", cb = tree_cb("toggle_git_ignored") },
-          { key = "H", cb = tree_cb("toggle_dotfiles") },
-          { key = "R", cb = tree_cb("refresh") },
-          { key = "a", cb = tree_cb("create") },
-          { key = "d", cb = tree_cb("remove") },
-          { key = "r", cb = tree_cb("rename") },
-          { key = "<C-r>", cb = tree_cb("full_rename") },
-          { key = "x", cb = tree_cb("cut") },
-          { key = "c", cb = tree_cb("copy") },
-          { key = "p", cb = tree_cb("paste") },
-          { key = "[c", cb = tree_cb("prev_git_item") },
-          { key = "]c", cb = tree_cb("next_git_item") },
-          { key = "-", cb = tree_cb("dir_up") },
-          { key = "q", cb = tree_cb("close") },
-          { key = "g?", cb = tree_cb("toggle_help") },
+          { key = { "o", "<2-LeftMouse>" }, cb = "edit" },
+          { key = { "<CR>", "<2-RightMouse>", "<C-]>" }, cb = "cd" },
+          { key = "<C-v>", cb = "vsplit" },
+          { key = "<C-x>", cb = "split" },
+          { key = "<C-t>", cb = "tabnew" },
+          { key = "<BS>", cb = "close_node" },
+          { key = "<S-CR>", cb = "close_node" },
+          { key = "<Tab>", cb = "preview" },
+          { key = "I", cb = "toggle_git_ignored" },
+          { key = "H", cb = "toggle_dotfiles" },
+          { key = "R", cb = "refresh" },
+          { key = "a", cb = "create" },
+          { key = "d", cb = "remove" },
+          { key = "r", cb = "rename" },
+          { key = "<C-r>", cb = "full_rename" },
+          { key = "x", cb = "cut" },
+          { key = "c", cb = "copy" },
+          { key = "p", cb = "paste" },
+          { key = "[c", cb = "prev_git_item" },
+          { key = "]c", cb = "next_git_item" },
+          { key = "-", cb = "dir_up" },
+          { key = "q", cb = "close" },
+          { key = "g?", cb = "toggle_help" },
           { "-", "<Plug>(tmuxsend-smart)", mode = { "n", "x" } },
           { "_", "<Plug>(tmuxsend-plain)", mode = { "n", "x" } },
           { "<space>-", "<Plug>(tmuxsend-uid-smart)", mode = { "n", "x" } },
@@ -299,6 +295,16 @@ explorer.binds = {
       },
     },
   },
+  { "<leader>",
+    {
+      {
+        "p",
+        {
+          { "a", "<cmd>NvimTreeFindFile<CR>", name = "Show file in explorer" },
+        },
+      },
+    },
+  }
 }
 
 explorer.autocmds = {

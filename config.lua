@@ -517,6 +517,13 @@ doom.use_package({
   }
 })
 
+doom.use_package({
+  "julienvincent/nvim-paredit",
+  config = function()
+    require("nvim-paredit").setup()
+  end
+})
+
 -- ADDING A KEYBIND
 --
 -- doom.use_keybind({
