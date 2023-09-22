@@ -524,6 +524,30 @@ doom.use_package({
   end
 })
 
+-- doom.use_package({'kevinhwang91/nvim-bqf'})
+
+-- mandatory
+doom.use_package({ "junegunn/fzf", build = ":call fzf#install()" })
+doom.use_package({
+  "linrongbin16/fzfx.nvim",
+  dependencies = { "junegunn/fzf" },
+  config = function()
+    require("fzfx").setup()
+  end
+})
+
+doom.use_package({'kevinhwang91/nvim-bqf', ft = 'qf'})
+
+-- doom.use_package( {
+--     'nvimdev/lspsaga.nvim',
+--     config = function()
+--         require('lspsaga').setup({})
+--     end,
+--   requires = { 'nvim-tree/nvim-web-devicons', opt = true },
+-- })
+
+-- doom.use_package({"nvim-telescope/telescope-symbols.nvim"})
+
 -- ADDING A KEYBIND
 --
 -- doom.use_keybind({
