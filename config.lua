@@ -73,9 +73,6 @@ doom.use_package("anuvyklack/hydra.nvim")
 doom.use_package({
   "folke/noice.nvim",
   event = "VeryLazy",
-  opts = {
-    -- add any options here
-  },
   dependencies = {
     -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
     "MunifTanjim/nui.nvim",
@@ -104,22 +101,22 @@ doom.use_package({
             -- opts: any options passed to the view
             -- icon_hl_group: optional hl_group for the icon
             -- title: set to anything or empty string to hide
-            cmdline = { pattern = "^:", icon = "", lang = "vim" },
-            search_down = { kind = "search", pattern = "^/", icon = " ", lang = "regex" },
-            search_up = { kind = "search", pattern = "^%?", icon = " ", lang = "regex" },
+            cmdline = { pattern = "^:", icon = "🧲", lang = "vim" },
+            search_down = { kind = "search", pattern = "^/", icon = "🔎⬇️", lang = "regex" },
+            search_up = { kind = "search", pattern = "^%?", icon = "🔎⬆️", lang = "regex" },
             filter = { pattern = "^:%s*!", icon = "$", lang = "bash" },
             lua = {
               pattern = { "^:%s*lua%s+", "^:%s*lua%s*=%s*", "^:%s*=%s*" },
               icon = "",
               lang = "lua",
             },
-            help = { pattern = "^:%s*he?l?p?%s+", icon = "" },
+            help = { pattern = "^:%s*he?l?p?%s+", icon = "📑" },
             input = {}, -- Used by input()
             -- lua = false, -- to disable a format, set to `false`
           },
         },
         signature = {
-          enabled = false,
+          enabled = true,
           auto_open = {
             enabled = true,
             trigger = true, -- Automatically show signature help when typing a trigger character from the LSP
@@ -471,10 +468,6 @@ doom.use_package({
         theme = 'auto',
         component_separators = { left = '', right = ''},
         section_separators = { left = '', right = ''},
-        disabled_filetypes = {
-          statusline = {},
-          winbar = {},
-        },
         ignore_focus = {},
         always_divide_middle = true,
         globalstatus = false,
