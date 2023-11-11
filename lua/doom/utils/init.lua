@@ -71,7 +71,7 @@ end
 utils.safe_require = function(path)
   local log = require("doom.utils.logging")
   log.debug(string.format("Doom: loading '%s'... ", path))
-  local ok, result = xpcall(require, debug.traceback, path)
+  local ok, result = xpcall(require, function(err) debug.traceback(err) end, path)
   if not ok and result then
     log.error(string.format("There was an error requiring '%s'. Traceback:\n%s", path, result))
     return nil

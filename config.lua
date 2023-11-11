@@ -116,9 +116,9 @@ doom.use_package({
           },
         },
         signature = {
-          enabled = true,
+          enabled = false,
           auto_open = {
-            enabled = true,
+            enabled = false,
             trigger = true, -- Automatically show signature help when typing a trigger character from the LSP
             luasnip = true, -- Will open signature help when jumping to Luasnip insert nodes
             throttle = 50, -- Debounce lsp signature help request by 50ms
@@ -560,7 +560,7 @@ doom.use_package( {
 doom.use_package({
         'lukas-reineke/headlines.nvim',
         dependencies = "nvim-treesitter/nvim-treesitter",
-        config = true, -- or `opts = {}`
+        config = {}, -- or `opts = {}`
     })
 
 -- doom.use_package( {

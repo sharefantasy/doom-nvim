@@ -1,11 +1,17 @@
 local indentlines = {}
 
 indentlines.settings = {
-  char = "│",
-  use_treesitter = true,
-  show_first_indent_level = false,
-  filetype_exclude = { "help", "dashboard", "packer", "norg", "DoomInfo", "lazy"},
-  buftype_exclude = { "terminal" },
+  indent = {
+    char = "│",
+  },
+  -- show_first_indent_level = false,
+  scope = {
+    enabled = true
+  },
+  exclude = {
+    buftypes = { "terminal" },
+    filetypes = { "help", "dashboard", "packer", "norg", "DoomInfo", "lazy"}
+  },
 }
 
 indentlines.packages = {
@@ -17,7 +23,7 @@ indentlines.packages = {
 
 indentlines.configs = {}
 indentlines.configs["indent-blankline.nvim"] = function()
-  require("indent_blankline").setup(
+  require("ibl").setup(
     vim.tbl_deep_extend("force", doom.features.indentlines.settings, {
       -- To remove indent lines, remove the module. Having the module and
       -- disabling it makes no sense.

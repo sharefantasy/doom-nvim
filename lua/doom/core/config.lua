@@ -76,7 +76,7 @@ config.load = function()
 
       local ok, result
       for _, path in ipairs(search_paths) do
-        ok, result = xpcall(require, debug.traceback, path)
+        ok, result = xpcall(require, function(err) debug.traceback() end, path)
         if ok then
           break
         end
@@ -101,7 +101,7 @@ config.load = function()
 
   profiler.start("framework|config.lua (user)")
   -- Execute user's `config.lua` so they can modify the doom global object.
-  local ok, err = xpcall(dofile, debug.traceback, config.source)
+  local ok, err = xpcall(dofile, function(err) debug.traceback(err) end, config.source)
   local log = require("doom.utils.logging")
   if not ok and err then
     log.error("Error while running `config.lua. Traceback:\n" .. err)

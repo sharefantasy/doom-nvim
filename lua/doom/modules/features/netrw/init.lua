@@ -162,7 +162,7 @@ local function draw_icons()
   if vim.bo.filetype ~= "netrw" then
     return
   end
-  local is_devicons_available, devicons = xpcall(require, debug.traceback, "nvim-web-devicons")
+  local is_devicons_available, devicons = xpcall(require, function(err) debug.traceback(err) end, "nvim-web-devicons")
   if not is_devicons_available then
     return
   end
