@@ -562,6 +562,10 @@ doom.use_package({
         dependencies = "nvim-treesitter/nvim-treesitter",
         config = {}, -- or `opts = {}`
     })
+doom.use_package({
+  'stevearc/conform.nvim',
+  opts = {},
+})
 
 -- doom.use_package( {
 --     'nvimdev/lspsaga.nvim',
@@ -606,6 +610,7 @@ doom.indent = 2
 doom.core.treesitter.settings.show_compiler_warning_message = true
 doom.core.reloader.settings.reload_on_save = true
 vim.opt.colorcolumn = "120"
+
 doom.colorscheme = "doom-gruvbox"
 doom.freeze_dependencies = false
 
