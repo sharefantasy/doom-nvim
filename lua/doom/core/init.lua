@@ -25,7 +25,6 @@ g.loaded_matchparen = 1
 g.loaded_logiPat = 1
 g.loaded_rrhelper = 1
 
-
 local profiler = require("doom.services.profiler")
 
 -- Sets the `doom` global object

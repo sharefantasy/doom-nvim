@@ -104,7 +104,7 @@ lsp.packages = {
   ["nvim-cmp"] = {
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
-    dependencies =  {
+    dependencies = {
       "L3MON4D3/LuaSnip",
     },
   },
@@ -113,35 +113,35 @@ lsp.packages = {
     -- after = "nvim-cmp",
     dependencies = {
       "hrsh7th/nvim-cmp",
-    }
+    },
   },
   ["cmp-nvim-lsp"] = {
     "hrsh7th/cmp-nvim-lsp",
     -- after = "nvim-cmp",
     dependencies = {
       "hrsh7th/nvim-cmp",
-    }
+    },
   },
   ["cmp-path"] = {
     "hrsh7th/cmp-path",
     -- after = "nvim-cmp",
     dependencies = {
       "hrsh7th/nvim-cmp",
-    }
+    },
   },
   ["cmp-buffer"] = {
     "hrsh7th/cmp-buffer",
     -- after = "nvim-cmp",
     dependencies = {
       "hrsh7th/nvim-cmp",
-    }
+    },
   },
   ["cmp_luasnip"] = {
     "saadparwaiz1/cmp_luasnip",
     -- after = "nvim-cmp",
     dependencies = {
       "hrsh7th/nvim-cmp",
-    }
+    },
   },
   ["lsp_signature.nvim"] = {
     "ray-x/lsp_signature.nvim",
@@ -182,8 +182,8 @@ lsp.configs["nvim-lspconfig"] = function()
       border = "rounded",
     },
     globals = {
-      'vim',
-      'require'
+      "vim",
+      "require",
     },
   })
   -- Border for lsp_popups

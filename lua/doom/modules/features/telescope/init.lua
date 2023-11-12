@@ -56,7 +56,7 @@ telescope.packages = {
     "nvim-telescope/telescope-file-browser.nvim",
     -- cmd = "Telescope browse_files",
     keys = "<leader>.",
-    dependencies = {"nvim-telescope/telescope.nvim"},
+    dependencies = { "nvim-telescope/telescope.nvim" },
     after = "telescope.nvim",
     lazy = false,
   },
@@ -178,10 +178,10 @@ telescope.binds = function()
   }
   if is_module_enabled("features", "lsp") then
     table.insert(binds[2], {
+      {
+        "c",
+        name = "+code",
         {
-          "c",
-          name = "+code",
-          {
           { "s", "<cmd>Telescope lsp_document_symbols<CR>", name = "Lsp symbols", remap = true },
         },
       },

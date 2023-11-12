@@ -452,22 +452,22 @@ doom.use_package({
 })
 
 doom.use_package({
-  'ThePrimeagen/harpoon',
+  "ThePrimeagen/harpoon",
   dependencies = {
     "nvim-lua/plenary.nvim",
-  }
+  },
 })
 
 doom.use_package({
-  'nvim-lualine/lualine.nvim',
-  requires = { 'nvim-tree/nvim-web-devicons', opt = true },
-  config = function ()
-    require('lualine').setup {
+  "nvim-lualine/lualine.nvim",
+  requires = { "nvim-tree/nvim-web-devicons", opt = true },
+  config = function()
+    require("lualine").setup({
       options = {
         icons_enabled = true,
-        theme = 'auto',
-        component_separators = { left = '', right = ''},
-        section_separators = { left = '', right = ''},
+        theme = "auto",
+        component_separators = { left = "", right = "" },
+        section_separators = { left = "", right = "" },
         ignore_focus = {},
         always_divide_middle = true,
         globalstatus = false,
@@ -475,49 +475,38 @@ doom.use_package({
           statusline = 1000,
           tabline = 1000,
           winbar = 1000,
-        }
+        },
       },
       sections = {
-        lualine_a = {'mode'},
-        lualine_b = {'branch', 'diff', 'diagnostics'},
-        lualine_c = {'filename'},
-        lualine_x = {'encoding', 'fileformat', 'filetype'},
-        lualine_y = {'progress'},
-        lualine_z = {'location'}
+        lualine_a = { "mode" },
+        lualine_b = { "branch", "diff", "diagnostics" },
+        lualine_c = { "filename" },
+        lualine_x = { "encoding", "fileformat", "filetype" },
+        lualine_y = { "progress" },
+        lualine_z = { "location" },
       },
       inactive_sections = {
         lualine_a = {},
         lualine_b = {},
-        lualine_c = {'filename'},
-        lualine_x = {'location'},
+        lualine_c = { "filename" },
+        lualine_x = { "location" },
         lualine_y = {},
-        lualine_z = {}
+        lualine_z = {},
       },
       tabline = {},
       winbar = {},
       inactive_winbar = {},
-      extensions = {}
-    }
-  end
-})
-
-doom.use_package({
-  "nvim-neotest/neotest",
-  dependencies = {
-    "nvim-lua/plenary.nvim",
-    "nvim-treesitter/nvim-treesitter",
-    "antoinemadec/FixCursorHold.nvim"
-  }
+      extensions = {},
+    })
+  end,
 })
 
 doom.use_package({
   "julienvincent/nvim-paredit",
   config = function()
     require("nvim-paredit").setup()
-  end
+  end,
 })
-
--- doom.use_package({'kevinhwang91/nvim-bqf'})
 
 -- mandatory
 doom.use_package({ "junegunn/fzf", build = ":call fzf#install()" })
@@ -526,44 +515,44 @@ doom.use_package({
   dependencies = { "junegunn/fzf" },
   config = function()
     require("fzfx").setup()
-  end
+  end,
 })
 
-doom.use_package({'kevinhwang91/nvim-bqf', ft = 'qf'})
+doom.use_package({ "kevinhwang91/nvim-bqf", ft = "qf" })
 
-doom.use_package( {
-  'nvim-orgmode/orgmode',
+doom.use_package({
+  "nvim-orgmode/orgmode",
   dependencies = {
-    { 'nvim-treesitter/nvim-treesitter', lazy = true },
+    { "nvim-treesitter/nvim-treesitter", lazy = true },
   },
-  event = 'VeryLazy',
+  event = "VeryLazy",
   config = function()
     -- Load treesitter grammar for org
-    require('orgmode').setup_ts_grammar()
+    require("orgmode").setup_ts_grammar()
 
     -- Setup treesitter
-    require('nvim-treesitter.configs').setup({
+    require("nvim-treesitter.configs").setup({
       highlight = {
         enable = true,
-        additional_vim_regex_highlighting = { 'org' },
+        additional_vim_regex_highlighting = { "org" },
       },
       -- ensure_installed = { 'org' },
     })
 
     -- Setup orgmode
-    require('orgmode').setup({
-      org_agenda_files = '~/orgfiles/**/*',
-      org_default_notes_file = '~/orgfiles/refile.org',
+    require("orgmode").setup({
+      org_agenda_files = "~/orgfiles/**/*",
+      org_default_notes_file = "~/orgfiles/refile.org",
     })
   end,
 })
 doom.use_package({
-        'lukas-reineke/headlines.nvim',
-        dependencies = "nvim-treesitter/nvim-treesitter",
-        config = {}, -- or `opts = {}`
-    })
+  "lukas-reineke/headlines.nvim",
+  dependencies = "nvim-treesitter/nvim-treesitter",
+  config = {}, -- or `opts = {}`
+})
 doom.use_package({
-  'stevearc/conform.nvim',
+  "stevearc/conform.nvim",
   opts = {},
 })
 

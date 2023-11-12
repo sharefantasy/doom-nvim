@@ -99,7 +99,13 @@ profiler.log = function(options)
         })
         table.insert(echo_tbl, { utils.right_pad(name_or_nil, 48 - depth * 2, " "), "Normal" })
       else
-        table.insert(echo_tbl, { string.rep("  ", depth - 1) .. (next_depth < entry.depth and " └" or " ├"), "Comment" })
+        table.insert(
+          echo_tbl,
+          {
+            string.rep("  ", depth - 1) .. (next_depth < entry.depth and " └" or " ├"),
+            "Comment",
+          }
+        )
         table.insert(echo_tbl, {
           utils.right_pad(name_or_category, 60 - depth * 2, " "),
           "Normal",

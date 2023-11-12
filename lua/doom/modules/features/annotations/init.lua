@@ -21,9 +21,9 @@ annotations.packages = {
     "danymat/neogen",
     keys = { "<leader>cg" },
     cmd = "Neogen",
-    dependencies={
-      "nvim-treesitter/nvim-treesitter"
-    }
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+    },
   },
 }
 

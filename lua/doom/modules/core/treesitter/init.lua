@@ -46,13 +46,13 @@ treesitter.settings = {
 treesitter.packages = {
   ["nvim-treesitter"] = {
     "nvim-treesitter/nvim-treesitter",
-    build =  ":TSUpdate",
+    build = ":TSUpdate",
   },
   ["nvim-ts-context-commentstring"] = {
     "JoosepAlviste/nvim-ts-context-commentstring",
     -- after = "nvim-treesitter",
     dependencies = {
-      "nvim-treesitter/nvim-treesitter"
+      "nvim-treesitter/nvim-treesitter",
     },
     event = "VeryLazy",
   },
@@ -60,7 +60,7 @@ treesitter.packages = {
     "windwp/nvim-ts-autotag",
     -- after = "nvim-treesitter",
     dependencies = {
-      "nvim-treesitter/nvim-treesitter"
+      "nvim-treesitter/nvim-treesitter",
     },
     event = "VeryLazy",
   },

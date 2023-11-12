@@ -14,7 +14,7 @@ profiler.start(profile_message)
 if not utils.is_empty(doom.colorscheme) then
   local loaded_colorscheme = xpcall(function()
     vim.api.nvim_command("colorscheme " .. doom.colorscheme)
-  end, function (err)
+  end, function(err)
     log.error(debug.traceback(err))
   end)
 

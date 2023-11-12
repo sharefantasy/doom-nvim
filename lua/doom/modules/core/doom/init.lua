@@ -113,7 +113,13 @@ required.binds = function()
         "b",
         name = "+buffer",
         {
-          { "b", function () require 'telescope.builtin'.buffers{} end, name = "List buffers" },
+          {
+            "b",
+            function()
+              require("telescope.builtin").buffers({})
+            end,
+            name = "List buffers",
+          },
           { "d", "<cmd>bd<CR>", name = "Delete" },
         },
       },
@@ -286,12 +292,16 @@ required.autocmds = function()
 end
 
 required.cmds = {
-  { "DoomProfile", function(opts)
-    local show_async = string.find(opts.args, "async") ~= nil
-    require("doom.services.profiler").log({
-      show_async = show_async,
-    })
-  end, { nargs = "*" } }
+  {
+    "DoomProfile",
+    function(opts)
+      local show_async = string.find(opts.args, "async") ~= nil
+      require("doom.services.profiler").log({
+        show_async = show_async,
+      })
+    end,
+    { nargs = "*" },
+  },
 }
 
 return required

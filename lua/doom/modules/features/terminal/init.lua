@@ -26,7 +26,7 @@ terminal.packages = {
   ["toggleterm.nvim"] = {
     "akinsho/toggleterm.nvim",
     cmd = { "ToggleTerm", "TermExec" },
-    keys = {terminal.settings.open_mapping},
+    keys = { terminal.settings.open_mapping },
     lazy = true,
   },
 }

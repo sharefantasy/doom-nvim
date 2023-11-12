@@ -13,12 +13,8 @@ utils.version = {
 --- Currently supported version of neovim for this build of doom-nvim
 utils.nvim_latest_supported = "nvim-0.8"
 
-utils.doom_version = string.format(
-  "%d.%d.%d",
-  utils.version.major,
-  utils.version.minor,
-  utils.version.patch
-)
+utils.doom_version =
+  string.format("%d.%d.%d", utils.version.major, utils.version.minor, utils.version.patch)
 
 -- Finds `filename` (where it is a doom config file).
 utils.find_config = function(filename)
@@ -34,10 +30,8 @@ utils.find_config = function(filename)
   if fs.file_exists(path) then
     return path
   end
-  local candidates = vim.api.nvim_get_runtime_file(
-    get_filepath("*" .. system.sep .. "doon-nvim"),
-    false
-  )
+  local candidates =
+    vim.api.nvim_get_runtime_file(get_filepath("*" .. system.sep .. "doon-nvim"), false)
   if not vim.tbl_isempty(candidates) then
     return candidates[1]
   end
@@ -71,7 +65,9 @@ end
 utils.safe_require = function(path)
   local log = require("doom.utils.logging")
   log.debug(string.format("Doom: loading '%s'... ", path))
-  local ok, result = xpcall(require, function(err) debug.traceback(err) end, path)
+  local ok, result = xpcall(require, function(err)
+    debug.traceback(err)
+  end, path)
   if not ok and result then
     log.error(string.format("There was an error requiring '%s'. Traceback:\n%s", path, result))
     return nil
@@ -230,6 +226,5 @@ utils.left_pad = function(str, length, char)
 
   return res, res ~= str
 end
-
 
 return utils

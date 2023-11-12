@@ -4,7 +4,6 @@
 --  config options, pre-configuring the user's modules from `modules.lua`, and
 --  running the user's `config.lua` file.
 
-
 local profiler = require("doom.services.profiler")
 local utils = require("doom.utils")
 local config = {}
@@ -76,7 +75,9 @@ config.load = function()
 
       local ok, result
       for _, path in ipairs(search_paths) do
-        ok, result = xpcall(require, function(err) debug.traceback() end, path)
+        ok, result = xpcall(require, function(err)
+          debug.traceback()
+        end, path)
         if ok then
           break
         end
@@ -101,7 +102,9 @@ config.load = function()
 
   profiler.start("framework|config.lua (user)")
   -- Execute user's `config.lua` so they can modify the doom global object.
-  local ok, err = xpcall(dofile, function(err) debug.traceback(err) end, config.source)
+  local ok, err = xpcall(dofile, function(err)
+    debug.traceback(err)
+  end, config.source)
   local log = require("doom.utils.logging")
   if not ok and err then
     log.error("Error while running `config.lua. Traceback:\n" .. err)

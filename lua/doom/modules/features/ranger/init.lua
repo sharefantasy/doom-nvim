@@ -6,7 +6,7 @@ ranger.packages = {
   ["ranger.vim"] = {
     "francoiscabrol/ranger.vim",
     dependencies = {
-      "rbgrouleff/bclose.vim"
+      "rbgrouleff/bclose.vim",
     },
     lazy = true,
     cmd = {

@@ -39,7 +39,6 @@ gitsigns.settings = {
     -- Default keymap options
     noremap = true,
     buffer = true,
-
   },
   watch_gitdir = { interval = 1000, follow_files = true },
   current_line_blame_opts = {

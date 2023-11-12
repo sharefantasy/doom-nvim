@@ -46,5 +46,4 @@ vim.defer_fn(function()
   end
 end, 1)
 
-
 profiler.stop("framework|init.lua")

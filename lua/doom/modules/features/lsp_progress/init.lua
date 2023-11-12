@@ -5,7 +5,7 @@ fidget.settings = {}
 fidget.packages = {
   ["fidget.nvim"] = {
     "j-hui/fidget.nvim",
-    dependencies = {"neovim/nvim-lspconfig"},
+    dependencies = { "neovim/nvim-lspconfig" },
     -- after = "nvim-lspconfig",
     event = "VeryLazy",
   },

@@ -64,9 +64,9 @@ module.use_null_ls = function(package_name, null_ls_path, configure_function)
       local path = vim.split(null_ls_path, "%.", nil)
       if #path ~= 3 then
         log.error(
-          (
-            "Error setting up null-ls provider `%s`.\n\n  null_ls_path should have 3 segments i.e. `builtins.formatting.stylua"
-          ):format(null_ls_path)
+          ("Error setting up null-ls provider `%s`.\n\n  null_ls_path should have 3 segments i.e. `builtins.formatting.stylua"):format(
+            null_ls_path
+          )
         )
         return
       end
@@ -234,9 +234,10 @@ module.use_lsp_mason = function(lsp_name, options)
     local final_config = vim.tbl_deep_extend("keep", user_config or {}, capabilities_config)
     if lsp[config_name].setup == nil then
       log.warn(
-        (
-          "Cannot start LSP %s with config name %s. Reason: The LSP config does not exist, please create an issue so this can be resolved."
-        ):format(lsp_name, config_name)
+        ("Cannot start LSP %s with config name %s. Reason: The LSP config does not exist, please create an issue so this can be resolved."):format(
+          lsp_name,
+          config_name
+        )
       )
       return
     end

@@ -39,7 +39,7 @@ projects.packages = {
   ["project.nvim"] = {
     "ahmedkhalf/project.nvim",
     cmd = "Telescope projects",
-    dependencies =  { "nvim-treesitter/nvim-treesitter" },
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
   },
 }
 

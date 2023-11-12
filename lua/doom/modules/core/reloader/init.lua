@@ -11,7 +11,9 @@ local log = require("doom.utils.logging")
 local system = require("doom.core.system")
 
 -- Should cause error if plenary is not installed.
-xpcall(require, function(err) debug.traceback(err) end, "plenary")
+xpcall(require, function(err)
+  debug.traceback(err)
+end, "plenary")
 
 --- Converts a Lua module path into an acceptable Lua module format
 --- @param module_path string The path to the module

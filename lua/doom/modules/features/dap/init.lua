@@ -17,23 +17,23 @@ dap.settings = {
     },
     layouts = {
       {
-      elements = {
-        "scopes",
-        "breakpoints",
-        "stacks",
-        "watches",
-      },
-      size = 40,
-      position = "left",
+        elements = {
+          "scopes",
+          "breakpoints",
+          "stacks",
+          "watches",
+        },
+        size = 40,
+        position = "left",
       },
       {
         elements = {
           "repl",
           "console",
         },
-      size = 10,
-      position = "bottom",
-      }
+        size = 10,
+        position = "bottom",
+      },
     },
   },
 }
@@ -46,8 +46,15 @@ dap.packages = {
     "rcarriga/nvim-dap-ui",
     dependencies = {
       "mfussenegger/nvim-dap",
-    }
-    -- after = { "nvim-dap" },
+    },
+    after = { "nvim-dap" },
+  },
+  ["osv"] = {
+    "jbyuki/one-small-step-for-vimkind",
+    dependencies = {
+      "mfussenegger/nvim-dap",
+    },
+    after = { "nvim-dap" },
   },
 }
 
@@ -65,6 +72,21 @@ dap.configs["nvim-dap-ui"] = function()
     dapui.close()
   end
   dapui.setup(doom.features.dap.settings.dapui)
+end
+
+dap.configs["osv"] = function()
+  local dap_package = require("dap")
+  dap_package.configurations.lua = {
+    {
+      type = "nlua",
+      request = "attach",
+      name = "Attach to running Neovim instance",
+    },
+  }
+
+  dap_package.adapters.nlua = function(callback, config)
+    callback({ type = "server", host = config.host or "127.0.0.1", port = config.port or 8086 })
+  end
 end
 
 dap.binds = {
@@ -109,6 +131,13 @@ dap.binds = {
           },
         },
         {
+          "s",
+          function()
+            require("osv").launch({ port = 8086 })
+          end,
+          name = "Start NvimDebug",
+        },
+        {
           "b",
           name = "+breakpoint",
           {
@@ -148,6 +177,20 @@ dap.binds = {
                 require("dap").toggle_breakpoint(nil, nil, msg)
               end,
               name = "Log",
+            },
+            {
+              "i",
+              function()
+                require("dap").step_into()
+              end,
+              name = "Step into",
+            },
+            {
+              "o",
+              function()
+                require("dap").step_over()
+              end,
+              name = "Step over",
             },
           },
         },

@@ -18,9 +18,8 @@ rust.settings = {
   --- @type table|nil
   lsp_config = {
     settings = {
-      ['rust-analyzer'] = {
-      }
-    }
+      ["rust-analyzer"] = {},
+    },
   },
 
   --- Disables null-ls formatting sources

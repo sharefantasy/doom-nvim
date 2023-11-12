@@ -55,37 +55,35 @@ clojure.autocmds = {
   },
 }
 
-doom.use_package(
-  {
-    "Olical/conjure",
-    ft = { "clojure", "fennel", "python" }, -- etc
-    dependencies = {
-      {
-        "PaterJason/cmp-conjure",
-        config = function()
-          local cmp = require("cmp")
-          local config = cmp.get_config()
-          table.insert(config.sources, {
-            name = "buffer",
-            option = {
-              sources = {
-                { name = "conjure" },
-              },
+doom.use_package({
+  "Olical/conjure",
+  ft = { "clojure", "fennel", "python" }, -- etc
+  dependencies = {
+    {
+      "PaterJason/cmp-conjure",
+      config = function()
+        local cmp = require("cmp")
+        local config = cmp.get_config()
+        table.insert(config.sources, {
+          name = "buffer",
+          option = {
+            sources = {
+              { name = "conjure" },
             },
-          })
-          cmp.setup(config)
-        end,
-      },
+          },
+        })
+        cmp.setup(config)
+      end,
     },
-    config = function()
-      require("conjure.main").main()
-      require("conjure.mapping")["on-filetype"]()
-    end,
-    init = function()
-	    -- Set configuration options here
-      vim.g["conjure#debug"] = true
-    end,
-  }
-)
+  },
+  config = function()
+    require("conjure.main").main()
+    require("conjure.mapping")["on-filetype"]()
+  end,
+  init = function()
+    -- Set configuration options here
+    vim.g["conjure#debug"] = true
+  end,
+})
 
 return clojure

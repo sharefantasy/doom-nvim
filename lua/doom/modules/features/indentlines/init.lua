@@ -6,11 +6,11 @@ indentlines.settings = {
   },
   -- show_first_indent_level = false,
   scope = {
-    enabled = true
+    enabled = true,
   },
   exclude = {
     buftypes = { "terminal" },
-    filetypes = { "help", "dashboard", "packer", "norg", "DoomInfo", "lazy"}
+    filetypes = { "help", "dashboard", "packer", "norg", "DoomInfo", "lazy" },
   },
 }
 
@@ -23,13 +23,11 @@ indentlines.packages = {
 
 indentlines.configs = {}
 indentlines.configs["indent-blankline.nvim"] = function()
-  require("ibl").setup(
-    vim.tbl_deep_extend("force", doom.features.indentlines.settings, {
-      -- To remove indent lines, remove the module. Having the module and
-      -- disabling it makes no sense.
-      enabled = true,
-    })
-  )
+  require("ibl").setup(vim.tbl_deep_extend("force", doom.features.indentlines.settings, {
+    -- To remove indent lines, remove the module. Having the module and
+    -- disabling it makes no sense.
+    enabled = true,
+  }))
 end
 
 return indentlines
