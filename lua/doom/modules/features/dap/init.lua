@@ -87,6 +87,26 @@ dap.configs["osv"] = function()
   dap_package.adapters.nlua = function(callback, config)
     callback({ type = "server", host = config.host or "127.0.0.1", port = config.port or 8086 })
   end
+
+  local adaptor_dir = "~/sources/local-lua-debugger-vscode/"
+  dap_package.adapters["local-lua"] = {
+    type = "executable",
+    command = "node",
+    args = {
+      adaptor_dir .. "extension/debugAdapter.js",
+    },
+    enrich_config = function(config, on_config)
+      if not config["extensionPath"] then
+        local c = vim.deepcopy(config)
+        -- 💀 If this is missing or wrong you'll see
+        -- "module 'lldebugger' not found" errors in the dap-repl when trying to launch a debug session
+        c.extensionPath = adaptor_dir
+        on_config(c)
+      else
+        on_config(config)
+      end
+    end,
+  }
 end
 
 dap.binds = {
