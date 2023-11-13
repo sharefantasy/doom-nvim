@@ -21,7 +21,7 @@ return {
     "auto_session", -- Remember sessions between loads
     "colorizer", -- Show colors in neovim
     "editorconfig", -- Support editorconfig files
-    "gitsigns", -- Show git changes in sidebar
+    -- "gitsigns", -- Show git changes in sidebar
     "illuminate", -- Highlight other copies of the word you're hovering on
     "indentlines", -- Show indent lines with special characters
     "range_highlight", -- Highlight selected range from commands
@@ -35,8 +35,8 @@ return {
     "statusline", -- A pretty status line at the bottom of the buffer
     -- "minimap",         -- Shows current position in document
     -- "terminal",        -- Integrated terminal in neovim
-    -- "symbols",         -- Navigate between code symbols using telescope
-    "ranger", -- File explorer in neovim (TODO: Test)
+    "symbols",         -- Navigate between code symbols using telescope
+    "ranger", -- File explorer in neovim
     -- "restclient",      -- Test HTTP requests from neovim (TODO: Test)
     -- "show_registers",  -- Show and navigate between registers
 
@@ -46,14 +46,18 @@ return {
     "explorer", -- An enhanced filetree explorer
     "firenvim", -- Embed neovim in your browser
     -- "lazygit",         -- Lazy git integration
-    "neogit", -- A git client for neovim
+    -- "neogit", -- A git client for neovim
     "neorg", -- Organise your life
     "projects", -- Quickly switch between projects
     -- "superman",        -- Read unix man pages in neovim
     -- "suda",            -- Save using sudo when necessary
     "telescope", -- Fuzzy searcher to find files, grep code and more
     "whichkey", -- An interactive sheet
+
+    -- user define modules
+    "git",      -- Git plugin Integration
     "test", -- unit test support
+    "sql",
   },
   langs = {
     -- Scripts
