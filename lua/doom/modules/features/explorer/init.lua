@@ -3,23 +3,25 @@ local explorer = {}
 explorer.settings = {
   disable_netrw = true,
   hijack_netrw = true,
-  open_on_setup = false,
-  ignore_ft_on_setup = {},
+  -- open_on_setup = false,
+  -- ignore_ft_on_setup = {},
   open_on_tab = true,
   hijack_cursor = true,
   update_cwd = true,
+        sync_root_with_cwd = false,
   respect_buf_cwd = true,
   update_focused_file = {
     enable = true,
     update_cwd = true,
-    ignore_list = {},
+    ignore_list = { "toggleterm" },
+
   },
   view = {
     width = 35,
     side = "left",
-    mappings = {
-      custom_only = false,
-    },
+    -- mappings = {
+    --   custom_only = false,
+    -- },
   },
   filters = {
     custom = { "^\\.git", "node_modules.editor", "^\\.cache", "__pycache__" },
@@ -131,48 +133,49 @@ explorer.configs["nvim-tree.lua"] = function()
       },
     }
   end
-  local config = vim.tbl_deep_extend("force", {
-    view = {
-      mappings = {
-        list = {
-          { key = { "o", "<2-LeftMouse>" }, cb = "edit" },
-          { key = { "<CR>", "<2-RightMouse>", "<C-]>" }, cb = "cd" },
-          { key = "<C-v>", cb = "vsplit" },
-          { key = "<C-x>", cb = "split" },
-          { key = "<C-t>", cb = "tabnew" },
-          { key = "<BS>", cb = "close_node" },
-          { key = "<S-CR>", cb = "close_node" },
-          { key = "<Tab>", cb = "preview" },
-          { key = "I", cb = "toggle_git_ignored" },
-          { key = "H", cb = "toggle_dotfiles" },
-          { key = "R", cb = "refresh" },
-          { key = "a", cb = "create" },
-          { key = "d", cb = "remove" },
-          { key = "r", cb = "rename" },
-          { key = "<C-r>", cb = "full_rename" },
-          { key = "x", cb = "cut" },
-          { key = "c", cb = "copy" },
-          { key = "p", cb = "paste" },
-          { key = "[c", cb = "prev_git_item" },
-          { key = "]c", cb = "next_git_item" },
-          { key = "-", cb = "dir_up" },
-          { key = "q", cb = "close" },
-          { key = "g?", cb = "toggle_help" },
-          { "-", "<Plug>(tmuxsend-smart)", mode = { "n", "x" } },
-          { "_", "<Plug>(tmuxsend-plain)", mode = { "n", "x" } },
-          { "<space>-", "<Plug>(tmuxsend-uid-smart)", mode = { "n", "x" } },
-          { "<space>_", "<Plug>(tmuxsend-uid-plain)", mode = { "n", "x" } },
-          { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x" } },
-        },
-      },
-    },
-    filters = {
-      dotfiles = not doom.show_hidden,
-    },
-    git = {
-      ignore = doom.hide_gitignore,
-    },
-  }, doom.features.explorer.settings, override_table)
+  -- local config = vim.tbl_deep_extend("force", {
+  --   view = {
+  --     mappings = {
+  --       list = {
+  --         { key = { "o", "<2-LeftMouse>" }, cb = "edit" },
+  --         { key = { "<CR>", "<2-RightMouse>", "<C-]>" }, cb = "cd" },
+  --         { key = "<C-v>", cb = "vsplit" },
+  --         { key = "<C-x>", cb = "split" },
+  --         { key = "<C-t>", cb = "tabnew" },
+  --         { key = "<BS>", cb = "close_node" },
+  --         { key = "<S-CR>", cb = "close_node" },
+  --         { key = "<Tab>", cb = "preview" },
+  --         { key = "I", cb = "toggle_git_ignored" },
+  --         { key = "H", cb = "toggle_dotfiles" },
+  --         { key = "R", cb = "refresh" },
+  --         { key = "a", cb = "create" },
+  --         { key = "d", cb = "remove" },
+  --         { key = "r", cb = "rename" },
+  --         { key = "<C-r>", cb = "full_rename" },
+  --         { key = "x", cb = "cut" },
+  --         { key = "c", cb = "copy" },
+  --         { key = "p", cb = "paste" },
+  --         { key = "[c", cb = "prev_git_item" },
+  --         { key = "]c", cb = "next_git_item" },
+  --         { key = "-", cb = "dir_up" },
+  --         { key = "q", cb = "close" },
+  --         { key = "g?", cb = "toggle_help" },
+  --         { "-", "<Plug>(tmuxsend-smart)", mode = { "n", "x" } },
+  --         { "_", "<Plug>(tmuxsend-plain)", mode = { "n", "x" } },
+  --         { "<space>-", "<Plug>(tmuxsend-uid-smart)", mode = { "n", "x" } },
+  --         { "<space>_", "<Plug>(tmuxsend-uid-plain)", mode = { "n", "x" } },
+  --         { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x" } },
+  --       },
+  --     },
+  --   },
+  --   filters = {
+  --     dotfiles = not doom.show_hidden,
+  --   },
+  --   git = {
+  --     ignore = doom.hide_gitignore,
+  --   },
+  -- }, doom.features.explorer.settings, override_table)
+  local config = doom.features.explorer.settings
   require("nvim-tree").setup(config)
 end
 
