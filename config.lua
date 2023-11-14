@@ -45,30 +45,6 @@ doom.use_package({
   end,
 })
 
-doom.use_package({
-  "sindrets/diffview.nvim",
-  config = function()
-    require("diffview").setup({
-      view = {
-        default = {
-          layout = "diff2_horizontal",
-          winbar_info = false,
-        },
-        merge_tool = {
-          layout = "diff3_horizontal",
-          disable_diagnostics = true, -- Temporarily disable diagnostics for conflict buffers while in the view.
-          winbar_info = true, -- See ':h diffview-config-view.x.winbar_info'
-        },
-        file_history = {
-          -- Config for changed files in file history views.
-          layout = "diff2_horizontal",
-          winbar_info = false, -- See ':h diffview-config-view.x.winbar_info'
-        },
-      },
-    })
-  end,
-})
-
 doom.use_package("anuvyklack/hydra.nvim")
 doom.use_package({
   "folke/noice.nvim",
@@ -373,16 +349,16 @@ doom.use_package({
 
 doom.use_package("axieax/urlview.nvim")
 
--- doom.use_package({
---   "kiyoon/tmuxsend.vim",
---   keys = {
---     { "-", "<Plug>(tmuxsend-smart)", mode = { "n", "x" } },
---     { "_", "<Plug>(tmuxsend-plain)", mode = { "n", "x" } },
---     { "<space>-", "<Plug>(tmuxsend-uid-smart)", mode = { "n", "x" } },
---     { "<space>_", "<Plug>(tmuxsend-uid-plain)", mode = { "n", "x" } },
---     { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x" } },
---   },
--- })
+doom.use_package({
+  "kiyoon/tmuxsend.vim",
+  keys = {
+    { "-", "<Plug>(tmuxsend-smart)", mode = { "n", "x" } },
+    { "_", "<Plug>(tmuxsend-plain)", mode = { "n", "x" } },
+    { "<space>-", "<Plug>(tmuxsend-uid-smart)", mode = { "n", "x" } },
+    { "<space>_", "<Plug>(tmuxsend-uid-plain)", mode = { "n", "x" } },
+    { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x" } },
+  },
+})
 
 doom.use_package("kiyoon/nvim-tree-remote.nvim")
 doom.use_package({
@@ -410,12 +386,17 @@ doom.use_package({
   opts = {},
   -- stylua: ignore
   keys = {
-    { "s",     mode = { "n", "o", "x" }, function() require("flash").jump() end,              desc = "Flash" },
-    { "S",     mode = { "n", "o", "x" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
-    { "r",     mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
-    { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-    { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc =
-      "Toggle Flash Search" },
+    { "s", mode = { "n", "o", "x" }, function() require("flash").jump() end,              desc = "Flash" },
+    { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
+    { "r", mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
+    { "R", mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+    {
+      "<c-s>",
+      mode = { "c" },
+      function() require("flash").toggle() end,
+      desc =
+      "Toggle Flash Search"
+    },
   },
 })
 
@@ -549,12 +530,114 @@ doom.use_package({
 doom.use_package({
   "lukas-reineke/headlines.nvim",
   dependencies = "nvim-treesitter/nvim-treesitter",
-  config = {}, -- or `opts = {}`
+  -- config = {}, -- or `opts = {}`
 })
 doom.use_package({
   "stevearc/conform.nvim",
   opts = {},
 })
+
+doom.use_package({
+  "code-biscuits/nvim-biscuits",
+  requires = {
+    "nvim-treesitter/nvim-treesitter",
+    run = ":TSUpdate",
+  },
+})
+
+doom.use_package({
+  "rgroli/other.nvim",
+  config = function()
+    require("other-nvim").setup({
+      mappings = {
+        -- builtin mappings
+        "livewire",
+        "angular",
+        "laravel",
+        "rails",
+        "golang",
+        -- custom mapping
+        {
+          pattern = "/path/to/file/src/app/(.*)/.*.ext$",
+          target = "/path/to/file/src/view/%1/",
+          transformer = "lowercase",
+        },
+      },
+      transformers = {
+        -- defining a custom transformer
+        lowercase = function(inputString)
+          return inputString:lower()
+        end,
+      },
+      style = {
+        -- How the plugin paints its window borders
+        -- Allowed values are none, single, double, rounded, solid and shadow
+        border = "solid",
+
+        -- Column seperator for the window
+        seperator = "|",
+
+        -- width of the window in percent. e.g. 0.5 is 50%, 1.0 is 100%
+        width = 0.7,
+
+        -- min height in rows.
+        -- when more columns are needed this value is extended automatically
+        minHeight = 2,
+      },
+    })
+  end,
+})
+
+doom.use_package({
+	"chrisgrieser/nvim-various-textobjs",
+	lazy = false,
+	opts = { useDefaultKeymaps = true },
+})
+
+doom.use_package({
+    'tomiis4/Hypersonic.nvim',
+    event = "CmdlineEnter",
+    cmd = "Hypersonic",
+    config = function()
+        require('hypersonic').setup({
+            -- config
+        })
+    end
+})
+doom.use_package({
+  'VidocqH/lsp-lens.nvim'
+})
+
+  doom.use_package({
+    "ThePrimeagen/refactoring.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    config = function()
+      require("refactoring").setup()
+    end,
+  })
+
+doom.use_package({
+  'p00f/godbolt.nvim',
+  config = function ()
+    require("godbolt").setup({
+    languages = {
+        cpp = { compiler = "g122", options = {} },
+        c = { compiler = "cg122", options = {} },
+        rust = { compiler = "r1650", options = {} },
+        -- any_additional_filetype = { compiler = ..., options = ... },
+    },
+    quickfix = {
+        enable = false, -- whether to populate the quickfix list in case of errors
+        auto_open = false -- whether to open the quickfix list in case of errors
+    },
+    url = "https://godbolt.org" -- can be changed to a different godbolt instance
+})
+  end
+})
+
 
 -- doom.use_package( {
 --     'nvimdev/lspsaga.nvim',

@@ -179,7 +179,7 @@ doom = {
   -- Defines the column to show a vertical marker
   -- Set to false to disable
   -- @default = 80
-  max_columns = 80,
+  max_columns = 120,
 
   -- Default indent size
   -- @default = 4

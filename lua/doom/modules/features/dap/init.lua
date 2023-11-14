@@ -158,6 +158,20 @@ dap.binds = {
           name = "Start NvimDebug",
         },
         {
+          "i",
+          function()
+            require("dap").step_into()
+          end,
+          name = "Step into",
+        },
+        {
+          "o",
+          function()
+            require("dap").step_over()
+          end,
+          name = "Step over",
+        },
+        {
           "b",
           name = "+breakpoint",
           {
@@ -198,34 +212,7 @@ dap.binds = {
               end,
               name = "Log",
             },
-            {
-              "i",
-              function()
-                require("dap").step_into()
-              end,
-              name = "Step into",
-            },
-            {
-              "o",
-              function()
-                require("dap").step_over()
-              end,
-              name = "Step over",
-            },
           },
-        },
-      },
-    },
-    {
-      "o",
-      name = "+open",
-      {
-        {
-          "d",
-          function()
-            require("dapui").toggle()
-          end,
-          name = "Debugger",
         },
       },
     },
