@@ -589,55 +589,77 @@ doom.use_package({
 })
 
 doom.use_package({
-	"chrisgrieser/nvim-various-textobjs",
-	lazy = false,
-	opts = { useDefaultKeymaps = true },
+  "chrisgrieser/nvim-various-textobjs",
+  lazy = false,
+  opts = { useDefaultKeymaps = true },
 })
 
 doom.use_package({
-    'tomiis4/Hypersonic.nvim',
-    event = "CmdlineEnter",
-    cmd = "Hypersonic",
-    config = function()
-        require('hypersonic').setup({
-            -- config
-        })
-    end
+  "tomiis4/Hypersonic.nvim",
+  event = "CmdlineEnter",
+  cmd = "Hypersonic",
+  config = function()
+    require("hypersonic").setup({
+      -- config
+    })
+  end,
 })
 doom.use_package({
-  'VidocqH/lsp-lens.nvim'
+  "VidocqH/lsp-lens.nvim",
+  config = function()
+
+    local SymbolKind = vim.lsp.protocol.SymbolKind
+    require("lsp-lens").setup({
+      enable = true,
+      include_declaration = false, -- Reference include declaration
+      sections = { -- Enable / Disable specific request, formatter example looks 'Format Requests'
+        definition = false,
+        references = true,
+        implements = true,
+        git_authors = true,
+      },
+      ignore_filetype = {
+        "prisma",
+      },
+      -- Target Symbol Kinds to show lens information
+      target_symbol_kinds = { SymbolKind.Function, SymbolKind.Method, SymbolKind.Interface },
+      -- Symbol Kinds that may have target symbol kinds as children
+      wrapper_symbol_kinds = { SymbolKind.Class, SymbolKind.Struct },
+    })
+  end,
 })
 
-  doom.use_package({
-    "ThePrimeagen/refactoring.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-    },
-    config = function()
-      require("refactoring").setup()
-    end,
-  })
+doom.use_package({
+  "ThePrimeagen/refactoring.nvim",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    "nvim-treesitter/nvim-treesitter",
+  },
+  config = function()
+    require("refactoring").setup()
+  end,
+})
 
 doom.use_package({
-  'p00f/godbolt.nvim',
-  config = function ()
+  "p00f/godbolt.nvim",
+  config = function()
     require("godbolt").setup({
-    languages = {
+      languages = {
         cpp = { compiler = "g122", options = {} },
         c = { compiler = "cg122", options = {} },
         rust = { compiler = "r1650", options = {} },
         -- any_additional_filetype = { compiler = ..., options = ... },
-    },
-    quickfix = {
+      },
+      quickfix = {
         enable = false, -- whether to populate the quickfix list in case of errors
-        auto_open = false -- whether to open the quickfix list in case of errors
-    },
-    url = "https://godbolt.org" -- can be changed to a different godbolt instance
-})
-  end
+        auto_open = false, -- whether to open the quickfix list in case of errors
+      },
+      url = "https://godbolt.org", -- can be changed to a different godbolt instance
+    })
+  end,
 })
 
+doom.use_package({ "gpanders/nvim-parinfer" })
 
 -- doom.use_package( {
 --     'nvimdev/lspsaga.nvim',
