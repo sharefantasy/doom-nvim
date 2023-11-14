@@ -1,3 +1,1 @@
-return {
-  hello = function() print("hello") end
-}
+return {hello = function() print("hello") end}

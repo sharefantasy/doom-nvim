@@ -3,11 +3,7 @@ local superman = {}
 superman.settings = {}
 
 superman.packages = {
-  ["vim-superman"] = {
-    "jez/vim-superman",
-    cmd = "SuperMan",
-    lazy = true,
-  },
+    ["vim-superman"] = {"jez/vim-superman", cmd = "SuperMan", lazy = true}
 }
 
 superman.configs = {}

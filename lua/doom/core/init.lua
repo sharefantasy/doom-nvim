@@ -3,9 +3,7 @@
 --
 --  Entrypoint for the doom-nvim framework.
 --
---]]
-
--- Disable vim builtins for faster startup time
+--]] -- Disable vim builtins for faster startup time
 local g = vim.g
 
 g.loaded_gzip = 1
@@ -42,10 +40,10 @@ local config = utils.safe_require("doom.core.config")
 config.load()
 profiler.stop("framework|doom.core.config (setup + user)")
 if not utils.is_module_enabled("features", "netrw") then
-  g.loaded_netrw = 1
-  g.loaded_netrwPlugin = 1
-  g.loaded_netrwSettings = 1
-  g.loaded_netrwFileHandlers = 1
+    g.loaded_netrw = 1
+    g.loaded_netrwPlugin = 1
+    g.loaded_netrwSettings = 1
+    g.loaded_netrwFileHandlers = 1
 end
 
 -- Set some extra commands
@@ -70,8 +68,6 @@ utils.safe_require("doom.core.ui")
 profiler.stop("framework|doom.core.ui")
 
 -- Execute autocommand for user to hook custom config into
-vim.api.nvim_exec_autocmds("User", {
-  pattern = "DoomStarted",
-})
+vim.api.nvim_exec_autocmds("User", {pattern = "DoomStarted"})
 
 -- vim: fdm=marker

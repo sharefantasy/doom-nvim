@@ -51,38 +51,36 @@ vim.g.netrw_browse_split = 4
 -- Setup file operations commands
 -- TODO: figure out how to add these feature in Windows
 if system.sep == "/" then
-  -- Enable recursive copy of directories in *nix systems
-  vim.g.netrw_localcopydircmd = "cp -r"
+    -- Enable recursive copy of directories in *nix systems
+    vim.g.netrw_localcopydircmd = "cp -r"
 
-  -- Enable recursive creation of directories in *nix systems
-  vim.g.netrw_localmkdir = "mkdir -p"
+    -- Enable recursive creation of directories in *nix systems
+    vim.g.netrw_localmkdir = "mkdir -p"
 
-  -- Enable recursive removal of directories in *nix systems
-  -- NOTE: we use 'rm' instead of 'rmdir' (default) to be able to remove non-empty directories
-  vim.g.netrw_localrmdir = "rm -r"
+    -- Enable recursive removal of directories in *nix systems
+    -- NOTE: we use 'rm' instead of 'rmdir' (default) to be able to remove non-empty directories
+    vim.g.netrw_localrmdir = "rm -r"
 end
 
 -- Highlight marked files in the same way search matches are
 vim.cmd("hi! link netrwMarkFile Search")
 
 local function netrw_maps()
-  if vim.bo.filetype ~= "netrw" then
-    return
-  end
+    if vim.bo.filetype ~= "netrw" then return end
 
-  local opts = { silent = true }
-  -- Toggle dotfiles
-  vim.api.nvim_buf_set_keymap(0, "n", ".", "gh", opts)
+    local opts = {silent = true}
+    -- Toggle dotfiles
+    vim.api.nvim_buf_set_keymap(0, "n", ".", "gh", opts)
 
-  -- Open file and close netrw
-  vim.api.nvim_buf_set_keymap(0, "n", "l", "<CR>:Lexplore<CR>", opts)
+    -- Open file and close netrw
+    vim.api.nvim_buf_set_keymap(0, "n", "l", "<CR>:Lexplore<CR>", opts)
 
-  -- Open file or directory
-  vim.api.nvim_buf_set_keymap(0, "n", "o", "<CR>", opts)
+    -- Open file or directory
+    vim.api.nvim_buf_set_keymap(0, "n", "o", "<CR>", opts)
 
-  -- Show netrw help in a floating (or maybe sidebar?) window
-  -- TODO: implement show_help function so we can implement this mapping
-  --[[ vim.api.nvim_buf_set_keymap(
+    -- Show netrw help in a floating (or maybe sidebar?) window
+    -- TODO: implement show_help function so we can implement this mapping
+    --[[ vim.api.nvim_buf_set_keymap(
     0,
     "n",
     "?",
@@ -90,188 +88,149 @@ local function netrw_maps()
     opts
   ) ]]
 
-  -- Close netrw
-  vim.api.nvim_buf_set_keymap(0, "n", "q", ":Lexplore<CR>", opts)
+    -- Close netrw
+    vim.api.nvim_buf_set_keymap(0, "n", "q", ":Lexplore<CR>", opts)
 
-  -- Create a new file and save it
-  vim.api.nvim_buf_set_keymap(0, "n", "ff", "%:w<CR>:buffer #<CR>", opts)
+    -- Create a new file and save it
+    vim.api.nvim_buf_set_keymap(0, "n", "ff", "%:w<CR>:buffer #<CR>", opts)
 
-  -- Create a new directory
-  vim.api.nvim_buf_set_keymap(0, "n", "fa", "d", opts)
+    -- Create a new directory
+    vim.api.nvim_buf_set_keymap(0, "n", "fa", "d", opts)
 
-  -- Rename file
-  vim.api.nvim_buf_set_keymap(0, "n", "fr", "R", opts)
+    -- Rename file
+    vim.api.nvim_buf_set_keymap(0, "n", "fr", "R", opts)
 
-  -- Remove file or directory
-  vim.api.nvim_buf_set_keymap(0, "n", "fd", "D", opts)
+    -- Remove file or directory
+    vim.api.nvim_buf_set_keymap(0, "n", "fd", "D", opts)
 
-  -- Copy marked file
-  vim.api.nvim_buf_set_keymap(0, "n", "fc", "mc", opts)
+    -- Copy marked file
+    vim.api.nvim_buf_set_keymap(0, "n", "fc", "mc", opts)
 
-  -- Copy marked file in one step, with this we can put the cursor in a directory
-  -- after marking the file to assign target directory and copy file
-  vim.api.nvim_buf_set_keymap(0, "n", "fC", "mtmc", opts)
+    -- Copy marked file in one step, with this we can put the cursor in a directory
+    -- after marking the file to assign target directory and copy file
+    vim.api.nvim_buf_set_keymap(0, "n", "fC", "mtmc", opts)
 
-  -- Move marked file
-  vim.api.nvim_buf_set_keymap(0, "n", "fx", "mm", opts)
+    -- Move marked file
+    vim.api.nvim_buf_set_keymap(0, "n", "fx", "mm", opts)
 
-  -- Move marked file in one step, same as fC but for moving files
-  vim.api.nvim_buf_set_keymap(0, "n", "fX", "mtmm", opts)
+    -- Move marked file in one step, same as fC but for moving files
+    vim.api.nvim_buf_set_keymap(0, "n", "fX", "mtmm", opts)
 
-  -- Execute commands in marked file or directory
-  vim.api.nvim_buf_set_keymap(0, "n", "fe", "mx", opts)
+    -- Execute commands in marked file or directory
+    vim.api.nvim_buf_set_keymap(0, "n", "fe", "mx", opts)
 
-  -- Show a list of marked files and directories
-  vim.api.nvim_buf_set_keymap(
-    0,
-    "n",
-    "fm",
-    ':echo "Marked files:\n" . join(netrw#Expose("netrwmarkfilelist"), "\n")<CR>',
-    opts
-  )
+    -- Show a list of marked files and directories
+    vim.api.nvim_buf_set_keymap(0, "n", "fm",
+                                ':echo "Marked files:\n" . join(netrw#Expose("netrwmarkfilelist"), "\n")<CR>',
+                                opts)
 
-  -- Show target directory
-  vim.api.nvim_buf_set_keymap(
-    0,
-    "n",
-    "ft",
-    ':echo "Target: " . netrw#Expose("netrwmftgt")<CR>',
-    opts
-  )
+    -- Show target directory
+    vim.api.nvim_buf_set_keymap(0, "n", "ft",
+                                ':echo "Target: " . netrw#Expose("netrwmftgt")<CR>',
+                                opts)
 
-  -- Toggle the mark on a file or directory
-  vim.api.nvim_buf_set_keymap(0, "n", "<TAB>", "mf", opts)
+    -- Toggle the mark on a file or directory
+    vim.api.nvim_buf_set_keymap(0, "n", "<TAB>", "mf", opts)
 
-  -- Unmark all the files in the current buffer
-  vim.api.nvim_buf_set_keymap(0, "n", "<S-TAB>", "mF", opts)
+    -- Unmark all the files in the current buffer
+    vim.api.nvim_buf_set_keymap(0, "n", "<S-TAB>", "mF", opts)
 
-  -- Remove all the marks on all files
-  vim.api.nvim_buf_set_keymap(0, "n", "<Leader><TAB>", "mu", opts)
+    -- Remove all the marks on all files
+    vim.api.nvim_buf_set_keymap(0, "n", "<Leader><TAB>", "mu", opts)
 
-  -- Create a bookmark
-  vim.api.nvim_buf_set_keymap(0, "n", "bc", "mb", opts)
+    -- Create a bookmark
+    vim.api.nvim_buf_set_keymap(0, "n", "bc", "mb", opts)
 
-  -- Remove the most recent bookmark
-  vim.api.nvim_buf_set_keymap(0, "n", "bd", "mB", opts)
+    -- Remove the most recent bookmark
+    vim.api.nvim_buf_set_keymap(0, "n", "bd", "mB", opts)
 
-  -- Jumo to the most recent bookmark
-  vim.api.nvim_buf_set_keymap(0, "n", "bj", "gb", opts)
+    -- Jumo to the most recent bookmark
+    vim.api.nvim_buf_set_keymap(0, "n", "bj", "gb", opts)
 end
 
 local function draw_icons()
-  if vim.bo.filetype ~= "netrw" then
-    return
-  end
-  local is_devicons_available, devicons = xpcall(require, function(err)
-    debug.traceback(err)
-  end, "nvim-web-devicons")
-  if not is_devicons_available then
-    return
-  end
-  local default_signs = {
-    netrw_dir = {
-      text = "",
-      texthl = "netrwDir",
-    },
-    netrw_file = {
-      text = "",
-      texthl = "netrwPlain",
-    },
-    netrw_exec = {
-      text = "",
-      texthl = "netrwExe",
-    },
-    netrw_link = {
-      text = "",
-      texthl = "netrwSymlink",
-    },
-  }
+    if vim.bo.filetype ~= "netrw" then return end
+    local is_devicons_available, devicons =
+        xpcall(require, function(err) debug.traceback(err) end,
+               "nvim-web-devicons")
+    if not is_devicons_available then return end
+    local default_signs = {
+        netrw_dir = {text = "", texthl = "netrwDir"},
+        netrw_file = {text = "", texthl = "netrwPlain"},
+        netrw_exec = {text = "", texthl = "netrwExe"},
+        netrw_link = {text = "", texthl = "netrwSymlink"}
+    }
 
-  local bufnr = vim.api.nvim_win_get_buf(0)
+    local bufnr = vim.api.nvim_win_get_buf(0)
 
-  -- Unplace all signs
-  vim.fn.sign_unplace("*", { buffer = bufnr })
+    -- Unplace all signs
+    vim.fn.sign_unplace("*", {buffer = bufnr})
 
-  -- Define default signs
-  for sign_name, sign_opts in pairs(default_signs) do
-    vim.fn.sign_define(sign_name, sign_opts)
-  end
-
-  local cur_line_nr = 1
-  local total_lines = vim.fn.line("$")
-  while cur_line_nr <= total_lines do
-    -- Set default sign
-    local sign_name = "netrw_file"
-
-    -- Get line contents
-    local line = vim.fn.getline(cur_line_nr)
-
-    if utils.is_empty(line) then
-      -- If current line is an empty line (newline) then increase current line count
-      -- without doing nothing more
-      cur_line_nr = cur_line_nr + 1
-    else
-      if line:find("/$") then
-        sign_name = "netrw_dir"
-      elseif line:find("@%s+-->") then
-        sign_name = "netrw_link"
-      elseif line:find("*$") then
-        sign_name:find("netrw_exec")
-      else
-        local filetype = line:match("^.*%.(.*)")
-        if not filetype and line:find("LICENSE") then
-          filetype = "md"
-        elseif line:find("rc$") then
-          filetype = "conf"
-        end
-
-        -- If filetype is still nil after manually setting extensions
-        -- for unknown filetypes then let's use 'default'
-        if not filetype then
-          filetype = "default"
-        end
-
-        local icon, icon_highlight = devicons.get_icon(line, filetype, { default = "" })
-        sign_name = "netrw_" .. filetype
-        vim.fn.sign_define(sign_name, {
-          text = icon,
-          texthl = icon_highlight,
-        })
-      end
-      vim.fn.sign_place(cur_line_nr, sign_name, sign_name, bufnr, {
-        lnum = cur_line_nr,
-      })
-      cur_line_nr = cur_line_nr + 1
+    -- Define default signs
+    for sign_name, sign_opts in pairs(default_signs) do
+        vim.fn.sign_define(sign_name, sign_opts)
     end
-  end
+
+    local cur_line_nr = 1
+    local total_lines = vim.fn.line("$")
+    while cur_line_nr <= total_lines do
+        -- Set default sign
+        local sign_name = "netrw_file"
+
+        -- Get line contents
+        local line = vim.fn.getline(cur_line_nr)
+
+        if utils.is_empty(line) then
+            -- If current line is an empty line (newline) then increase current line count
+            -- without doing nothing more
+            cur_line_nr = cur_line_nr + 1
+        else
+            if line:find("/$") then
+                sign_name = "netrw_dir"
+            elseif line:find("@%s+-->") then
+                sign_name = "netrw_link"
+            elseif line:find("*$") then
+                sign_name:find("netrw_exec")
+            else
+                local filetype = line:match("^.*%.(.*)")
+                if not filetype and line:find("LICENSE") then
+                    filetype = "md"
+                elseif line:find("rc$") then
+                    filetype = "conf"
+                end
+
+                -- If filetype is still nil after manually setting extensions
+                -- for unknown filetypes then let's use 'default'
+                if not filetype then filetype = "default" end
+
+                local icon, icon_highlight =
+                    devicons.get_icon(line, filetype, {default = ""})
+                sign_name = "netrw_" .. filetype
+                vim.fn.sign_define(sign_name,
+                                   {text = icon, texthl = icon_highlight})
+            end
+            vim.fn.sign_place(cur_line_nr, sign_name, sign_name, bufnr,
+                              {lnum = cur_line_nr})
+            cur_line_nr = cur_line_nr + 1
+        end
+    end
 end
 
 local netrw = {}
 
 netrw.autocmds = {
-  {
-    "FileType",
-    "netrw",
-    function()
-      draw_icons()
-      netrw_maps()
-    end,
-  },
-  {
-    "TextChanged",
-    "*",
-    function()
-      draw_icons()
-    end,
-  },
+    {
+        "FileType", "netrw", function()
+            draw_icons()
+            netrw_maps()
+        end
+    }, {"TextChanged", "*", function() draw_icons() end}
 }
 
 netrw.binds = {
-  "<leader>o",
-  name = "+open/close",
-  {
-    { "e", ":Lexplore<CR>", name = "Explorer" },
-  },
+    "<leader>o",
+    name = "+open/close",
+    {{"e", ":Lexplore<CR>", name = "Explorer"}}
 }
 
 return netrw
