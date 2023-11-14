@@ -8,621 +8,663 @@ vim.g.loaded_netrwPlugin = 1
 
 -- ADDING A PACKAGE
 --
-doom.use_package({
-    "nvim-focus/focus.nvim",
-    config = function()
-        require("focus").setup({
-            enable = true, -- Enable module
-            commands = true, -- Create Focus commands
-            autoresize = {
-                enable = false, -- Enable or disable auto-resizing of splits
-                width = 0, -- Force width for the focused window
-                height = 0, -- Force height for the focused window
-                minwidth = 40, -- Force minimum width for the unfocused window
-                minheight = 0, -- Force minimum height for the unfocused window
-                height_quickfix = 10 -- Set the height of quickfix panel
+doom.use_package {
+  "nvim-focus/focus.nvim",
+  config = function()
+    require("focus").setup {
+      enable = true, -- Enable module
+      commands = true, -- Create Focus commands
+      autoresize = {
+        enable = false, -- Enable or disable auto-resizing of splits
+        width = 0, -- Force width for the focused window
+        height = 0, -- Force height for the focused window
+        minwidth = 40, -- Force minimum width for the unfocused window
+        minheight = 0, -- Force minimum height for the unfocused window
+        height_quickfix = 10, -- Set the height of quickfix panel
+      },
+      split = {
+        bufnew = false, -- Create blank buffer for new split windows
+        tmux = false, -- Create tmux splits instead of neovim splits
+      },
+      ui = {
+        number = false, -- Display line numbers in the focussed window only
+        relativenumber = false, -- Display relative line numbers in the focussed window only
+        hybridnumber = false, -- Display hybrid line numbers in the focussed window only
+        absolutenumber_unfocussed = false, -- Preserve absolute numbers in the unfocussed windows
+
+        cursorline = true, -- Display a cursorline in the focussed window only
+        cursorcolumn = false, -- Display cursorcolumn in the focussed window only
+        colorcolumn = {
+          enable = false, -- Display colorcolumn in the foccused window only
+          list = "+1", -- Set the comma-saperated list for the colorcolumn
+        },
+        signcolumn = true, -- Display signcolumn in the focussed window only
+        winhighlight = true, -- Auto highlighting for focussed/unfocussed windows
+      },
+    }
+  end,
+}
+
+doom.use_package "anuvyklack/hydra.nvim"
+doom.use_package {
+  "folke/noice.nvim",
+  event = "VeryLazy",
+  dependencies = {
+    -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+    "MunifTanjim/nui.nvim", -- OPTIONAL:
+    --   `nvim-notify` is only needed, if you want to use the notification view.
+    --   If not available, we use `mini` as the fallback
+    "rcarriga/nvim-notify",
+  },
+  config = function()
+    require("noice").setup {
+      lsp = {
+        -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+        override = {
+          ["vim.lsp.util.convert_input_to_markdown_lines"] = false,
+          ["vim.lsp.util.stylize_markdown"] = true,
+          ["cmp.entry.get_documentation"] = true,
+        },
+        cmdline = {
+          enabled = true, -- enables the Noice cmdline UI
+          view = "notify", -- view for rendering the cmdline. Change to `cmdline` to get a classic cmdline at the bottom
+          opts = {}, -- global options for the cmdline. See section on views
+          ---@type table<string, CmdlineFormat>
+          format = {
+            -- conceal: (default=true) This will hide the text in the cmdline that matches the pattern.
+            -- view: (default is cmdline view)
+            -- opts: any options passed to the view
+            -- icon_hl_group: optional hl_group for the icon
+            -- title: set to anything or empty string to hide
+            cmdline = { pattern = "^:", icon = "🧲", lang = "vim" },
+            search_down = {
+              kind = "search",
+              pattern = "^/",
+              icon = "🔎⬇️",
+              lang = "regex",
             },
-            split = {
-                bufnew = false, -- Create blank buffer for new split windows
-                tmux = false -- Create tmux splits instead of neovim splits
+            search_up = {
+              kind = "search",
+              pattern = "^%?",
+              icon = "🔎⬆️",
+              lang = "regex",
             },
-            ui = {
-                number = false, -- Display line numbers in the focussed window only
-                relativenumber = false, -- Display relative line numbers in the focussed window only
-                hybridnumber = false, -- Display hybrid line numbers in the focussed window only
-                absolutenumber_unfocussed = false, -- Preserve absolute numbers in the unfocussed windows
-
-                cursorline = true, -- Display a cursorline in the focussed window only
-                cursorcolumn = false, -- Display cursorcolumn in the focussed window only
-                colorcolumn = {
-                    enable = false, -- Display colorcolumn in the foccused window only
-                    list = "+1" -- Set the comma-saperated list for the colorcolumn
-                },
-                signcolumn = true, -- Display signcolumn in the focussed window only
-                winhighlight = true -- Auto highlighting for focussed/unfocussed windows
-            }
-        })
-    end
-})
-
-doom.use_package("anuvyklack/hydra.nvim")
-doom.use_package({
-    "folke/noice.nvim",
-    event = "VeryLazy",
-    dependencies = {
-        -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-        "MunifTanjim/nui.nvim", -- OPTIONAL:
-        --   `nvim-notify` is only needed, if you want to use the notification view.
-        --   If not available, we use `mini` as the fallback
-        "rcarriga/nvim-notify"
-    },
-    config = function()
-        require("noice").setup({
-            lsp = {
-                -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
-                override = {
-                    ["vim.lsp.util.convert_input_to_markdown_lines"] = false,
-                    ["vim.lsp.util.stylize_markdown"] = true,
-                    ["cmp.entry.get_documentation"] = true
-                },
-                cmdline = {
-                    enabled = true, -- enables the Noice cmdline UI
-                    view = "notify", -- view for rendering the cmdline. Change to `cmdline` to get a classic cmdline at the bottom
-                    opts = {}, -- global options for the cmdline. See section on views
-                    ---@type table<string, CmdlineFormat>
-                    format = {
-                        -- conceal: (default=true) This will hide the text in the cmdline that matches the pattern.
-                        -- view: (default is cmdline view)
-                        -- opts: any options passed to the view
-                        -- icon_hl_group: optional hl_group for the icon
-                        -- title: set to anything or empty string to hide
-                        cmdline = {pattern = "^:", icon = "🧲", lang = "vim"},
-                        search_down = {
-                            kind = "search",
-                            pattern = "^/",
-                            icon = "🔎⬇️",
-                            lang = "regex"
-                        },
-                        search_up = {
-                            kind = "search",
-                            pattern = "^%?",
-                            icon = "🔎⬆️",
-                            lang = "regex"
-                        },
-                        filter = {pattern = "^:%s*!", icon = "$", lang = "bash"},
-                        lua = {
-                            pattern = {
-                                "^:%s*lua%s+", "^:%s*lua%s*=%s*", "^:%s*=%s*"
-                            },
-                            icon = "",
-                            lang = "lua"
-                        },
-                        help = {pattern = "^:%s*he?l?p?%s+", icon = "📑"},
-                        input = {} -- Used by input()
-                        -- lua = false, -- to disable a format, set to `false`
-                    }
-                },
-                signature = {
-                    enabled = false,
-                    auto_open = {
-                        enabled = false,
-                        trigger = true, -- Automatically show signature help when typing a trigger character from the LSP
-                        luasnip = true, -- Will open signature help when jumping to Luasnip insert nodes
-                        throttle = 50 -- Debounce lsp signature help request by 50ms
-                    },
-                    view = nil, -- when nil, use defaults from documentation
-                    ---@type NoiceViewOptions
-                    opts = {} -- merged with defaults from documentation
-                },
-                -- you can enable a preset for easier configuration
-                presets = {
-                    bottom_search = true, -- use a classic bottom cmdline for search
-                    command_palette = true, -- position the cmdline and popupmenu together
-                    long_message_to_split = false, -- long messages will be sent to a split
-                    inc_rename = true, -- enables an input dialog for inc-rename.nvim
-                    lsp_doc_border = true -- add a border to hover docs and signature help
-                }
-            }
-        })
-    end
-})
-
-doom.use_package({
-    "stevearc/dressing.nvim",
-    opts = {},
-    config = function()
-        require("dressing").setup({
-            input = {
-                -- Set to false to disable the vim.ui.input implementation
-                enabled = true,
-
-                -- Default prompt string
-                default_prompt = "Input:",
-
-                -- Can be 'left', 'right', or 'center'
-                title_pos = "left",
-
-                -- When true, <Esc> will close the modal
-                insert_only = true,
-
-                -- When true, input will start in insert mode.
-                start_in_insert = true,
-
-                -- These are passed to nvim_open_win
-                border = "rounded",
-                -- 'editor' and 'win' will default to being centered
-                relative = "cursor",
-
-                -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
-                prefer_width = 40,
-                width = nil,
-                -- min_width and max_width can be a list of mixed types.
-                -- min_width = {20, 0.2} means "the greater of 20 columns or 20% of total"
-                max_width = {140, 0.9},
-                min_width = {20, 0.2},
-
-                buf_options = {},
-                win_options = {
-                    -- Window transparency (0-100)
-                    winblend = 10,
-                    -- Disable line wrapping
-                    wrap = false,
-                    -- Indicator for when text exceeds window
-                    list = true,
-                    listchars = "precedes:…,extends:…",
-                    -- Increase this for more context when text scrolls off the window
-                    sidescrolloff = 0
-                },
-
-                -- Set to `false` to disable
-                mappings = {
-                    n = {["<Esc>"] = "Close", ["<CR>"] = "Confirm"},
-                    i = {
-                        ["<C-c>"] = "Close",
-                        ["<CR>"] = "Confirm",
-                        ["<Up>"] = "HistoryPrev",
-                        ["<Down>"] = "HistoryNext"
-                    }
-                },
-
-                override = function(conf)
-                    -- This is the config that will be passed to nvim_open_win.
-                    -- Change values here to customize the layout
-                    return conf
-                end,
-
-                -- see :help dressing_get_config
-                get_config = nil
+            filter = { pattern = "^:%s*!", icon = "$", lang = "bash" },
+            lua = {
+              pattern = {
+                "^:%s*lua%s+",
+                "^:%s*lua%s*=%s*",
+                "^:%s*=%s*",
+              },
+              icon = "",
+              lang = "lua",
             },
-            select = {
-                -- Set to false to disable the vim.ui.select implementation
-                enabled = true,
+            help = { pattern = "^:%s*he?l?p?%s+", icon = "📑" },
+            input = {}, -- Used by input()
+            -- lua = false, -- to disable a format, set to `false`
+          },
+        },
+        signature = {
+          enabled = false,
+          auto_open = {
+            enabled = false,
+            trigger = true, -- Automatically show signature help when typing a trigger character from the LSP
+            luasnip = true, -- Will open signature help when jumping to Luasnip insert nodes
+            throttle = 50, -- Debounce lsp signature help request by 50ms
+          },
+          view = nil, -- when nil, use defaults from documentation
+          ---@type NoiceViewOptions
+          opts = {}, -- merged with defaults from documentation
+        },
+        -- you can enable a preset for easier configuration
+        presets = {
+          bottom_search = true, -- use a classic bottom cmdline for search
+          command_palette = true, -- position the cmdline and popupmenu together
+          long_message_to_split = false, -- long messages will be sent to a split
+          inc_rename = true, -- enables an input dialog for inc-rename.nvim
+          lsp_doc_border = true, -- add a border to hover docs and signature help
+        },
+      },
+    }
+  end,
+}
 
-                -- Priority list of preferred vim.select implementations
-                backend = {"telescope", "fzf_lua", "fzf", "builtin", "nui"},
+doom.use_package {
+  "stevearc/dressing.nvim",
+  opts = {},
+  config = function()
+    require("dressing").setup {
+      input = {
+        -- Set to false to disable the vim.ui.input implementation
+        enabled = true,
 
-                -- Trim trailing `:` from prompt
-                trim_prompt = true,
+        -- Default prompt string
+        default_prompt = "Input:",
 
-                -- Options for telescope selector
-                -- These are passed into the telescope picker directly. Can be used like:
-                -- telescope = require('telescope.themes').get_ivy({...})
-                telescope = nil,
+        -- Can be 'left', 'right', or 'center'
+        title_pos = "left",
 
-                -- Options for fzf selector
-                fzf = {window = {width = 0.5, height = 0.4}},
+        -- When true, <Esc> will close the modal
+        insert_only = true,
 
-                -- Options for fzf-lua
-                fzf_lua = {
-                    -- winopts = {
-                    --   height = 0.5,
-                    --   width = 0.5,
-                    -- },
-                },
+        -- When true, input will start in insert mode.
+        start_in_insert = true,
 
-                -- Options for nui Menu
-                nui = {
-                    position = "50%",
-                    size = nil,
-                    relative = "editor",
-                    border = {style = "rounded"},
-                    buf_options = {
-                        swapfile = false,
-                        filetype = "DressingSelect"
-                    },
-                    win_options = {winblend = 10},
-                    max_width = 80,
-                    max_height = 40,
-                    min_width = 40,
-                    min_height = 0
-                },
+        -- These are passed to nvim_open_win
+        border = "rounded",
+        -- 'editor' and 'win' will default to being centered
+        relative = "cursor",
 
-                -- Options for built-in selector
-                builtin = {
-                    -- These are passed to nvim_open_win
-                    border = "rounded",
-                    -- 'editor' and 'win' will default to being centered
-                    relative = "editor",
+        -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
+        prefer_width = 40,
+        width = nil,
+        -- min_width and max_width can be a list of mixed types.
+        -- min_width = {20, 0.2} means "the greater of 20 columns or 20% of total"
+        max_width = { 140, 0.9 },
+        min_width = { 20, 0.2 },
 
-                    buf_options = {},
-                    win_options = {
-                        -- Window transparency (0-100)
-                        winblend = 10,
-                        cursorline = true,
-                        cursorlineopt = "both"
-                    },
+        buf_options = {},
+        win_options = {
+          -- Window transparency (0-100)
+          winblend = 10,
+          -- Disable line wrapping
+          wrap = false,
+          -- Indicator for when text exceeds window
+          list = true,
+          listchars = "precedes:…,extends:…",
+          -- Increase this for more context when text scrolls off the window
+          sidescrolloff = 0,
+        },
 
-                    -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
-                    -- the min_ and max_ options can be a list of mixed types.
-                    -- max_width = {140, 0.8} means "the lesser of 140 columns or 80% of total"
-                    width = nil,
-                    max_width = {140, 0.8},
-                    min_width = {40, 0.2},
-                    height = nil,
-                    max_height = 0.9,
-                    min_height = {10, 0.2},
+        -- Set to `false` to disable
+        mappings = {
+          n = { ["<Esc>"] = "Close", ["<CR>"] = "Confirm" },
+          i = {
+            ["<C-c>"] = "Close",
+            ["<CR>"] = "Confirm",
+            ["<Up>"] = "HistoryPrev",
+            ["<Down>"] = "HistoryNext",
+          },
+        },
 
-                    -- Set to `false` to disable
-                    mappings = {
-                        ["<Esc>"] = "Close",
-                        ["<C-c>"] = "Close",
-                        ["<CR>"] = "Confirm"
-                    },
+        override = function(conf)
+          -- This is the config that will be passed to nvim_open_win.
+          -- Change values here to customize the layout
+          return conf
+        end,
 
-                    override = function(conf)
-                        -- This is the config that will be passed to nvim_open_win.
-                        -- Change values here to customize the layout
-                        return conf
-                    end
-                },
+        -- see :help dressing_get_config
+        get_config = nil,
+      },
+      select = {
+        -- Set to false to disable the vim.ui.select implementation
+        enabled = true,
 
-                -- Used to override format_item. See :help dressing-format
-                format_item_override = {},
+        -- Priority list of preferred vim.select implementations
+        backend = { "telescope", "fzf_lua", "fzf", "builtin", "nui" },
 
-                -- see :help dressing_get_config
-                get_config = nil
-            }
-        })
-    end
-})
+        -- Trim trailing `:` from prompt
+        trim_prompt = true,
+
+        -- Options for telescope selector
+        -- These are passed into the telescope picker directly. Can be used like:
+        -- telescope = require('telescope.themes').get_ivy({...})
+        telescope = nil,
+
+        -- Options for fzf selector
+        fzf = { window = { width = 0.5, height = 0.4 } },
+
+        -- Options for fzf-lua
+        fzf_lua = {
+          -- winopts = {
+          --   height = 0.5,
+          --   width = 0.5,
+          -- },
+        },
+
+        -- Options for nui Menu
+        nui = {
+          position = "50%",
+          size = nil,
+          relative = "editor",
+          border = { style = "rounded" },
+          buf_options = {
+            swapfile = false,
+            filetype = "DressingSelect",
+          },
+          win_options = { winblend = 10 },
+          max_width = 80,
+          max_height = 40,
+          min_width = 40,
+          min_height = 0,
+        },
+
+        -- Options for built-in selector
+        builtin = {
+          -- These are passed to nvim_open_win
+          border = "rounded",
+          -- 'editor' and 'win' will default to being centered
+          relative = "editor",
+
+          buf_options = {},
+          win_options = {
+            -- Window transparency (0-100)
+            winblend = 10,
+            cursorline = true,
+            cursorlineopt = "both",
+          },
+
+          -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
+          -- the min_ and max_ options can be a list of mixed types.
+          -- max_width = {140, 0.8} means "the lesser of 140 columns or 80% of total"
+          width = nil,
+          max_width = { 140, 0.8 },
+          min_width = { 40, 0.2 },
+          height = nil,
+          max_height = 0.9,
+          min_height = { 10, 0.2 },
+
+          -- Set to `false` to disable
+          mappings = {
+            ["<Esc>"] = "Close",
+            ["<C-c>"] = "Close",
+            ["<CR>"] = "Confirm",
+          },
+
+          override = function(conf)
+            -- This is the config that will be passed to nvim_open_win.
+            -- Change values here to customize the layout
+            return conf
+          end,
+        },
+
+        -- Used to override format_item. See :help dressing-format
+        format_item_override = {},
+
+        -- see :help dressing_get_config
+        get_config = nil,
+      },
+    }
+  end,
+}
 -- doom.use_package("EdenEast/nightfox.nvim", "sainnhe/sonokai")
-doom.use_package({
-    "ur4ltz/surround.nvim",
-    config = function()
-        require("surround").setup({mappings_style = "sandwich"})
-    end
-})
+doom.use_package {
+  "ur4ltz/surround.nvim",
+  config = function()
+    require("surround").setup { mappings_style = "sandwich" }
+  end,
+}
 
-doom.use_package({
-    "leoluz/nvim-dap-go",
-    config = function()
-        require("dap-go").setup({
-            -- Additional dap configurations can be added.
-            -- dap_configurations accepts a list of tables where each entry
-            -- represents a dap configuration. For more details do:
-            -- :help dap-configuration
-            dap_configurations = {
-                {
-                    -- Must be "go" or it will be ignored by the plugin
-                    type = "go",
-                    name = "Attach remote",
-                    mode = "remote",
-                    request = "attach"
-                }
-            },
-            -- delve configurations
-            delve = {
-                -- the path to the executable dlv which will be used for debugging.
-                -- by default, this is the "dlv" executable on your PATH.
-                path = "dlv",
-                -- time to wait for delve to initialize the debug session.
-                -- default to 20 seconds
-                initialize_timeout_sec = 20,
-                -- a string that defines the port to start delve debugger.
-                -- default to string "${port}" which instructs nvim-dap
-                -- to start the process in a random available port
-                port = "${port}",
-                -- additional args to pass to dlv
-                args = {},
-                -- the build flags that are passed to delve.
-                -- defaults to empty string, but can be used to provide flags
-                -- such as "-tags=unit" to make sure the test suite is
-                -- compiled during debugging, for example.
-                -- passing build flags using args is ineffective, as those are
-                -- ignored by delve in dap mode.
-                build_flags = ""
-            }
-        })
-    end
-})
-
-doom.use_package({
-    "Wansmer/treesj",
-    keys = {"<space>m", "<space>j", "<space>s"},
-    dependencies = {"nvim-treesitter/nvim-treesitter"},
-    config = function() require("treesj").setup({ --[[ your config ]] }) end
-})
-
-doom.use_package("axieax/urlview.nvim")
-
-doom.use_package({
-    "kiyoon/tmuxsend.vim",
-    keys = {
-        {"-", "<Plug>(tmuxsend-smart)", mode = {"n", "x"}},
-        {"_", "<Plug>(tmuxsend-plain)", mode = {"n", "x"}},
-        {"<space>-", "<Plug>(tmuxsend-uid-smart)", mode = {"n", "x"}},
-        {"<space>_", "<Plug>(tmuxsend-uid-plain)", mode = {"n", "x"}},
-        {"<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = {"n", "x"}}
-    }
-})
-
-doom.use_package("kiyoon/nvim-tree-remote.nvim")
-doom.use_package({
-    "aserowy/tmux.nvim",
-    config = function()
-        -- Navigate tmux, and nvim splits.
-        -- Sync nvim buffer with tmux buffer.
-        require("tmux").setup({
-            copy_sync = {
-                enable = true,
-                sync_clipboard = false,
-                sync_registers = true
-            },
-            resize = {enable_default_keybindings = false}
-        })
-    end
-})
-
-doom.use_package({
-    "folke/flash.nvim",
-    event = "VeryLazy",
-    ---@type Flash.Config
-    opts = {},
-    -- stylua: ignore
-    keys = {
+doom.use_package {
+  "leoluz/nvim-dap-go",
+  config = function()
+    require("dap-go").setup {
+      -- Additional dap configurations can be added.
+      -- dap_configurations accepts a list of tables where each entry
+      -- represents a dap configuration. For more details do:
+      -- :help dap-configuration
+      dap_configurations = {
         {
-            "s",
-            mode = {"n", "o", "x"},
-            function() require("flash").jump() end,
-            desc = "Flash"
-        }, {
-            "S",
-            mode = {"n", "o", "x"},
-            function() require("flash").treesitter() end,
-            desc = "Flash Treesitter"
-        }, {
-            "r",
-            mode = "o",
-            function() require("flash").remote() end,
-            desc = "Remote Flash"
-        }, {
-            "R",
-            mode = {"o", "x"},
-            function() require("flash").treesitter_search() end,
-            desc = "Treesitter Search"
-        }, {
-            "<c-s>",
-            mode = {"c"},
-            function() require("flash").toggle() end,
-            desc = "Toggle Flash Search"
-        }
+          -- Must be "go" or it will be ignored by the plugin
+          type = "go",
+          name = "Attach remote",
+          mode = "remote",
+          request = "attach",
+        },
+      },
+      -- delve configurations
+      delve = {
+        -- the path to the executable dlv which will be used for debugging.
+        -- by default, this is the "dlv" executable on your PATH.
+        path = "dlv",
+        -- time to wait for delve to initialize the debug session.
+        -- default to 20 seconds
+        initialize_timeout_sec = 20,
+        -- a string that defines the port to start delve debugger.
+        -- default to string "${port}" which instructs nvim-dap
+        -- to start the process in a random available port
+        port = "${port}",
+        -- additional args to pass to dlv
+        args = {},
+        -- the build flags that are passed to delve.
+        -- defaults to empty string, but can be used to provide flags
+        -- such as "-tags=unit" to make sure the test suite is
+        -- compiled during debugging, for example.
+        -- passing build flags using args is ineffective, as those are
+        -- ignored by delve in dap mode.
+        build_flags = "",
+      },
     }
-})
+  end,
+}
 
-doom.use_package({
-    "ThePrimeagen/refactoring.nvim",
-    dependencies = {"nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter"},
-    config = function()
-        require("refactoring").setup({
-            prompt_func_return_type = {go = true, python = true, lua = true},
-            prompt_func_param_type = {go = true, python = true, lua = true},
-            printf_statements = {go = true, python = true, lua = true},
-            print_var_statements = {go = true, python = true, lua = true}
-        })
-    end
-})
+doom.use_package {
+  "Wansmer/treesj",
+  keys = { "<space>m", "<space>j", "<space>s" },
+  dependencies = { "nvim-treesitter/nvim-treesitter" },
+  config = function()
+    require("treesj").setup { --[[ your config ]]
+    }
+  end,
+}
 
-doom.use_package({
-    "ThePrimeagen/harpoon",
-    dependencies = {"nvim-lua/plenary.nvim"}
-})
+doom.use_package {
+  "nvim-treesitter/nvim-treesitter-textobjects",
+  after = "nvim-treesitter",
+  requires = "nvim-treesitter/nvim-treesitter",
+}
 
-doom.use_package({
-    "nvim-lualine/lualine.nvim",
-    requires = {"nvim-tree/nvim-web-devicons", opt = true},
-    config = function()
-        require("lualine").setup({
-            options = {
-                icons_enabled = true,
-                theme = "auto",
-                component_separators = {left = "", right = ""},
-                section_separators = {left = "", right = ""},
-                ignore_focus = {},
-                always_divide_middle = true,
-                globalstatus = false,
-                refresh = {statusline = 1000, tabline = 1000, winbar = 1000}
-            },
-            sections = {
-                lualine_a = {"mode"},
-                lualine_b = {"branch", "diff", "diagnostics"},
-                lualine_c = {"filename"},
-                lualine_x = {"encoding", "fileformat", "filetype"},
-                lualine_y = {"progress"},
-                lualine_z = {"location"}
-            },
-            inactive_sections = {
-                lualine_a = {},
-                lualine_b = {},
-                lualine_c = {"filename"},
-                lualine_x = {"location"},
-                lualine_y = {},
-                lualine_z = {}
-            },
-            tabline = {},
-            winbar = {},
-            inactive_winbar = {},
-            extensions = {}
-        })
-    end
-})
+doom.use_package "axieax/urlview.nvim"
 
-doom.use_package({
-    "julienvincent/nvim-paredit",
-    config = function() require("nvim-paredit").setup() end
-})
+doom.use_package "kiyoon/nvim-tree-remote.nvim"
+doom.use_package {
+  "aserowy/tmux.nvim",
+  config = function()
+    require("tmux").setup {
+      copy_sync = {
+        enable = true,
+        sync_clipboard = false,
+        sync_registers = true,
+      },
+      resize = { enable_default_keybindings = false },
+    }
+  end,
+}
+
+doom.use_package {
+  "folke/flash.nvim",
+  event = "VeryLazy",
+  ---@type Flash.Config
+  opts = {},
+  -- stylua: ignore
+  keys = {
+    {
+      "s",
+      mode = { "n", "o", "x" },
+      function() require("flash").jump() end,
+      desc = "Flash"
+    }, {
+    "S",
+    mode = { "n", "o", "x" },
+    function() require("flash").treesitter() end,
+    desc = "Flash Treesitter"
+  }, {
+    "r",
+    mode = "o",
+    function() require("flash").remote() end,
+    desc = "Remote Flash"
+  }, {
+    "R",
+    mode = { "o", "x" },
+    function() require("flash").treesitter_search() end,
+    desc = "Treesitter Search"
+  }, {
+    "<c-s>",
+    mode = { "c" },
+    function() require("flash").toggle() end,
+    desc = "Toggle Flash Search"
+  }
+  }
+,
+}
+
+doom.use_package {
+  "ThePrimeagen/refactoring.nvim",
+  dependencies = { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" },
+  config = function()
+    require("refactoring").setup {
+      prompt_func_return_type = { go = true, python = true, lua = true },
+      prompt_func_param_type = { go = true, python = true, lua = true },
+      printf_statements = { go = true, python = true, lua = true },
+      print_var_statements = { go = true, python = true, lua = true },
+    }
+  end,
+}
+
+doom.use_package {
+  "ThePrimeagen/harpoon",
+  dependencies = { "nvim-lua/plenary.nvim" },
+}
+
+doom.use_package {
+  "nvim-lualine/lualine.nvim",
+  requires = { "nvim-tree/nvim-web-devicons", opt = true },
+  config = function()
+    require("lualine").setup {
+      options = {
+        icons_enabled = true,
+        theme = "auto",
+        component_separators = { left = "", right = "" },
+        section_separators = { left = "", right = "" },
+        ignore_focus = {},
+        always_divide_middle = true,
+        globalstatus = false,
+        refresh = { statusline = 1000, tabline = 1000, winbar = 1000 },
+      },
+      sections = {
+        lualine_a = { "mode" },
+        lualine_b = { "branch", "diff", "diagnostics" },
+        lualine_c = { "filename" },
+        lualine_x = { "encoding", "fileformat", "filetype" },
+        lualine_y = { "progress" },
+        lualine_z = { "location" },
+      },
+      inactive_sections = {
+        lualine_a = {},
+        lualine_b = {},
+        lualine_c = { "filename" },
+        lualine_x = { "location" },
+        lualine_y = {},
+        lualine_z = {},
+      },
+      tabline = {},
+      winbar = {},
+      inactive_winbar = {},
+      extensions = {},
+    }
+  end,
+}
+
+doom.use_package {
+  "julienvincent/nvim-paredit",
+  config = function()
+    require("nvim-paredit").setup()
+  end,
+}
 
 -- mandatory
-doom.use_package({"junegunn/fzf", build = ":call fzf#install()"})
-doom.use_package({
-    "linrongbin16/fzfx.nvim",
-    dependencies = {"junegunn/fzf"},
-    config = function() require("fzfx").setup() end
-})
+doom.use_package { "junegunn/fzf", build = ":call fzf#install()" }
+doom.use_package {
+  "linrongbin16/fzfx.nvim",
+  dependencies = { "junegunn/fzf" },
+  config = function()
+    require("fzfx").setup()
+  end,
+}
 
-doom.use_package({"kevinhwang91/nvim-bqf", ft = "qf"})
+doom.use_package { "kevinhwang91/nvim-bqf", ft = "qf" }
 
-doom.use_package({
-    "nvim-orgmode/orgmode",
-    dependencies = {{"nvim-treesitter/nvim-treesitter", lazy = true}},
-    event = "VeryLazy",
-    config = function()
-        -- Load treesitter grammar for org
-        require("orgmode").setup_ts_grammar()
+doom.use_package {
+  "nvim-orgmode/orgmode",
+  dependencies = { { "nvim-treesitter/nvim-treesitter", lazy = true } },
+  event = "VeryLazy",
+  config = function()
+    -- Load treesitter grammar for org
+    require("orgmode").setup_ts_grammar()
 
-        -- Setup treesitter
-        require("nvim-treesitter.configs").setup({
-            highlight = {
-                enable = true,
-                additional_vim_regex_highlighting = {"org"}
-            }
-            -- ensure_installed = { 'org' },
-        })
+    -- Setup treesitter
+    require("nvim-treesitter.configs").setup {
+      highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = { "org" },
+      },
+      -- ensure_installed = { 'org' },
+    }
 
-        -- Setup orgmode
-        require("orgmode").setup({
-            org_agenda_files = "~/orgfiles/**/*",
-            org_default_notes_file = "~/orgfiles/refile.org"
-        })
-    end
-})
-doom.use_package({
-    "lukas-reineke/headlines.nvim",
-    dependencies = "nvim-treesitter/nvim-treesitter"
-    -- config = {}, -- or `opts = {}`
-})
-doom.use_package({"stevearc/conform.nvim", opts = {}})
+    -- Setup orgmode
+    require("orgmode").setup {
+      org_agenda_files = "~/orgfiles/**/*",
+      org_default_notes_file = "~/orgfiles/refile.org",
+    }
+  end,
+}
+doom.use_package {
+  "lukas-reineke/headlines.nvim",
+  dependencies = "nvim-treesitter/nvim-treesitter",
+  -- config = {}, -- or `opts = {}`
+}
+doom.use_package { "stevearc/conform.nvim", opts = {} }
 
-doom.use_package({
-    "code-biscuits/nvim-biscuits",
-    requires = {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"}
-})
+doom.use_package {
+  "code-biscuits/nvim-biscuits",
+  requires = { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" },
+}
 
-doom.use_package({
-    "rgroli/other.nvim",
-    config = function()
-        require("other-nvim").setup({
-            mappings = {
-                -- builtin mappings
-                "livewire", "angular", "laravel", "rails", "golang",
-                -- custom mapping
-                {
-                    pattern = "/path/to/file/src/app/(.*)/.*.ext$",
-                    target = "/path/to/file/src/view/%1/",
-                    transformer = "lowercase"
-                }
-            },
-            transformers = {
-                -- defining a custom transformer
-                lowercase = function(inputString)
-                    return inputString:lower()
-                end
-            },
-            style = {
-                -- How the plugin paints its window borders
-                -- Allowed values are none, single, double, rounded, solid and shadow
-                border = "solid",
+doom.use_package {
+  "rgroli/other.nvim",
+  config = function()
+    require("other-nvim").setup {
+      mappings = {
+        -- builtin mappings
+        "livewire",
+        "angular",
+        "laravel",
+        "rails",
+        "golang",
+        -- custom mapping
+        {
+          pattern = "/path/to/file/src/app/(.*)/.*.ext$",
+          target = "/path/to/file/src/view/%1/",
+          transformer = "lowercase",
+        },
+      },
+      transformers = {
+        -- defining a custom transformer
+        lowercase = function(inputString)
+          return inputString:lower()
+        end,
+      },
+      style = {
+        -- How the plugin paints its window borders
+        -- Allowed values are none, single, double, rounded, solid and shadow
+        border = "solid",
 
-                -- Column seperator for the window
-                seperator = "|",
+        -- Column seperator for the window
+        seperator = "|",
 
-                -- width of the window in percent. e.g. 0.5 is 50%, 1.0 is 100%
-                width = 0.7,
+        -- width of the window in percent. e.g. 0.5 is 50%, 1.0 is 100%
+        width = 0.7,
 
-                -- min height in rows.
-                -- when more columns are needed this value is extended automatically
-                minHeight = 2
-            }
-        })
-    end
-})
+        -- min height in rows.
+        -- when more columns are needed this value is extended automatically
+        minHeight = 2,
+      },
+    }
+  end,
+}
 
-doom.use_package({
-    "chrisgrieser/nvim-various-textobjs",
-    lazy = false,
-    opts = {useDefaultKeymaps = true}
-})
+-- doom.use_package({
+--     "chrisgrieser/nvim-various-textobjs",
+--     lazy = false,
+--     opts = {useDefaultKeymaps = true}
+-- })
 
-doom.use_package({
-    "tomiis4/Hypersonic.nvim",
-    event = "CmdlineEnter",
-    cmd = "Hypersonic",
-    config = function()
-        require("hypersonic").setup({
-            -- config
-        })
-    end
-})
-doom.use_package({
-    "VidocqH/lsp-lens.nvim",
-    config = function()
+doom.use_package {
+  "tomiis4/Hypersonic.nvim",
+  event = "CmdlineEnter",
+  cmd = "Hypersonic",
+  config = function()
+    require("hypersonic").setup {
+      -- config
+    }
+  end,
+}
+doom.use_package {
+  "VidocqH/lsp-lens.nvim",
+  config = function()
+    local SymbolKind = vim.lsp.protocol.SymbolKind
+    require("lsp-lens").setup {
+      enable = true,
+      include_declaration = false, -- Reference include declaration
+      sections = { -- Enable / Disable specific request, formatter example looks 'Format Requests'
+        definition = false,
+        references = true,
+        implements = true,
+        git_authors = true,
+      },
+      ignore_filetype = { "prisma" },
+      -- Target Symbol Kinds to show lens information
+      target_symbol_kinds = {
+        SymbolKind.Function,
+        SymbolKind.Method,
+        SymbolKind.Interface,
+      },
+      -- Symbol Kinds that may have target symbol kinds as children
+      wrapper_symbol_kinds = { SymbolKind.Class, SymbolKind.Struct },
+    }
+  end,
+}
 
-        local SymbolKind = vim.lsp.protocol.SymbolKind
-        require("lsp-lens").setup({
-            enable = true,
-            include_declaration = false, -- Reference include declaration
-            sections = { -- Enable / Disable specific request, formatter example looks 'Format Requests'
-                definition = false,
-                references = true,
-                implements = true,
-                git_authors = true
-            },
-            ignore_filetype = {"prisma"},
-            -- Target Symbol Kinds to show lens information
-            target_symbol_kinds = {
-                SymbolKind.Function, SymbolKind.Method, SymbolKind.Interface
-            },
-            -- Symbol Kinds that may have target symbol kinds as children
-            wrapper_symbol_kinds = {SymbolKind.Class, SymbolKind.Struct}
-        })
-    end
-})
+doom.use_package {
+  "ThePrimeagen/refactoring.nvim",
+  dependencies = { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" },
+  config = function()
+    require("refactoring").setup()
+  end,
+}
 
-doom.use_package({
-    "ThePrimeagen/refactoring.nvim",
-    dependencies = {"nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter"},
-    config = function() require("refactoring").setup() end
-})
+doom.use_package {
+  "p00f/godbolt.nvim",
+  config = function()
+    require("godbolt").setup {
+      languages = {
+        cpp = { compiler = "g122", options = {} },
+        c = { compiler = "cg122", options = {} },
+        rust = { compiler = "r1650", options = {} },
+        -- any_additional_filetype = { compiler = ..., options = ... },
+      },
+      quickfix = {
+        enable = false, -- whether to populate the quickfix list in case of errors
+        auto_open = false, -- whether to open the quickfix list in case of errors
+      },
+      url = "https://godbolt.org", -- can be changed to a different godbolt instance
+    }
+  end,
+}
 
-doom.use_package({
-    "p00f/godbolt.nvim",
-    config = function()
-        require("godbolt").setup({
-            languages = {
-                cpp = {compiler = "g122", options = {}},
-                c = {compiler = "cg122", options = {}},
-                rust = {compiler = "r1650", options = {}}
-                -- any_additional_filetype = { compiler = ..., options = ... },
-            },
-            quickfix = {
-                enable = false, -- whether to populate the quickfix list in case of errors
-                auto_open = false -- whether to open the quickfix list in case of errors
-            },
-            url = "https://godbolt.org" -- can be changed to a different godbolt instance
-        })
-    end
-})
+doom.use_package { "gpanders/nvim-parinfer" }
 
-doom.use_package({"gpanders/nvim-parinfer"})
+doom.use_package {
+  "nvimdev/dashboard-nvim",
+  event = "VimEnter",
+  config = function()
+    require("dashboard").setup {
+      -- config
+    }
+  end,
+  dependencies = { { "nvim-tree/nvim-web-devicons" } },
+}
+
+doom.use_package {
+  "ray-x/web-tools.nvim",
+  dependencies = { "/ray-x/guihua.lua" },
+  config = function()
+    require("web-tools").setup {
+      keymaps = {
+        rename = nil, -- by default use same setup of lspconfig
+        repeat_rename = ".", -- . to repeat
+      },
+      hurl = { -- hurl default
+        show_headers = true, -- do not show http headers
+        floating = true, -- use floating windows (need guihua.lua)
+        formatters = { -- format the result by filetype
+          json = { "jq" },
+          html = { "prettier", "--parser", "html" },
+        },
+      },
+    }
+  end,
+}
 
 -- doom.use_package( {
 --     'nvimdev/lspsaga.nvim',
