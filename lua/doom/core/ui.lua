@@ -45,7 +45,7 @@ if doom.colorscheme == "doom-one" then
             gitgutter = false,
             gitsigns = true,
             telescope = doom.doom_one.telescope_highlights,
-            neogit = true,
+            neogit = false,
             nvim_tree = true,
             dashboard = true,
             startify = false,

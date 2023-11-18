@@ -1,8 +1,7 @@
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-
 --
--- This file contains the user-defined configurations for Doom nvim.
+-- This file conttdfafafsions for Doom nvim.
 -- Just override stuff in the `doom` global table (it's injected into scope
 -- automatically).
 
@@ -57,52 +56,17 @@ doom.use_package {
     "rcarriga/nvim-notify",
   },
   config = function()
+    require("notify").setup {
+      background_colour = "#082828",
+    }
     require("noice").setup {
       lsp = {
+        view = "cmdline_popup",
         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
         override = {
           ["vim.lsp.util.convert_input_to_markdown_lines"] = false,
           ["vim.lsp.util.stylize_markdown"] = true,
           ["cmp.entry.get_documentation"] = true,
-        },
-        cmdline = {
-          enabled = true, -- enables the Noice cmdline UI
-          view = "notify", -- view for rendering the cmdline. Change to `cmdline` to get a classic cmdline at the bottom
-          opts = {}, -- global options for the cmdline. See section on views
-          ---@type table<string, CmdlineFormat>
-          format = {
-            -- conceal: (default=true) This will hide the text in the cmdline that matches the pattern.
-            -- view: (default is cmdline view)
-            -- opts: any options passed to the view
-            -- icon_hl_group: optional hl_group for the icon
-            -- title: set to anything or empty string to hide
-            cmdline = { pattern = "^:", icon = "🧲", lang = "vim" },
-            search_down = {
-              kind = "search",
-              pattern = "^/",
-              icon = "🔎⬇️",
-              lang = "regex",
-            },
-            search_up = {
-              kind = "search",
-              pattern = "^%?",
-              icon = "🔎⬆️",
-              lang = "regex",
-            },
-            filter = { pattern = "^:%s*!", icon = "$", lang = "bash" },
-            lua = {
-              pattern = {
-                "^:%s*lua%s+",
-                "^:%s*lua%s*=%s*",
-                "^:%s*=%s*",
-              },
-              icon = "",
-              lang = "lua",
-            },
-            help = { pattern = "^:%s*he?l?p?%s+", icon = "📑" },
-            input = {}, -- Used by input()
-            -- lua = false, -- to disable a format, set to `false`
-          },
         },
         signature = {
           enabled = false,
@@ -116,242 +80,71 @@ doom.use_package {
           ---@type NoiceViewOptions
           opts = {}, -- merged with defaults from documentation
         },
-        -- you can enable a preset for easier configuration
-        presets = {
-          bottom_search = true, -- use a classic bottom cmdline for search
-          command_palette = true, -- position the cmdline and popupmenu together
-          long_message_to_split = false, -- long messages will be sent to a split
-          inc_rename = true, -- enables an input dialog for inc-rename.nvim
-          lsp_doc_border = true, -- add a border to hover docs and signature help
+      },
+      cmdline = {
+        enabled = true, -- enables the Noice cmdline UI
+        view = "cmdline_popup", -- view for rendering the cmdline. Change to `cmdline` to get a classic cmdline at the bottom
+        opts = {}, -- global options for the cmdline. See section on views
+        ---@type table<string, CmdlineFormat>
+        format = {
+          -- conceal: (default=true) This will hide the text in the cmdline that matches the pattern.
+          -- view: (default is cmdline view)
+          -- opts: any options passed to the view
+          -- icon_hl_group: optional hl_group for the icon
+          -- title: set to anything or empty string to hide
+          cmdline = { pattern = "^:", icon = "🧲", lang = "vim" },
+          search_down = {
+            kind = "search",
+            pattern = "^/",
+            icon = "🔎⬇️",
+            lang = "regex",
+          },
+          search_up = {
+            kind = "search",
+            pattern = "^%?",
+            icon = "🔎⬆️",
+            lang = "regex",
+          },
+          filter = { pattern = "^:%s*!", icon = "$", lang = "bash" },
+          lua = {
+            pattern = {
+              "^:%s*lua%s+",
+              "^:%s*lua%s*=%s*",
+              "^:%s*=%s*",
+            },
+            icon = "",
+            lang = "lua",
+          },
+          help = { pattern = "^:%s*he?l?p?%s+", icon = "📑" },
+          input = {}, -- Used by input()
+          -- lua = false, -- to disable a format, set to `false`
         },
       },
+      messages = {
+        -- NOTE: If you enable messages, then the cmdline is enabled automatically.
+        -- This is a current Neovim limitation.
+        enabled = true, -- enables the Noice messages UI
+        view = "notify", -- default view for messages
+        view_error = "notify", -- view for errors
+        view_warn = "notify", -- view for warnings
+        view_history = "split", -- view for :messages
+        view_search = "virtualtext", -- view for search count messages. Set to `false` to disable
+        throttle = 10,
+        redirect = {
+          view = "messages",
+          filter = { event = "msg_show" },
+        },
+      },
+      throttle = 100 / 3,
     }
   end,
 }
 
-doom.use_package {
-  "stevearc/dressing.nvim",
-  opts = {},
-  config = function()
-    require("dressing").setup {
-      input = {
-        -- Set to false to disable the vim.ui.input implementation
-        enabled = true,
-
-        -- Default prompt string
-        default_prompt = "Input:",
-
-        -- Can be 'left', 'right', or 'center'
-        title_pos = "left",
-
-        -- When true, <Esc> will close the modal
-        insert_only = true,
-
-        -- When true, input will start in insert mode.
-        start_in_insert = true,
-
-        -- These are passed to nvim_open_win
-        border = "rounded",
-        -- 'editor' and 'win' will default to being centered
-        relative = "cursor",
-
-        -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
-        prefer_width = 40,
-        width = nil,
-        -- min_width and max_width can be a list of mixed types.
-        -- min_width = {20, 0.2} means "the greater of 20 columns or 20% of total"
-        max_width = { 140, 0.9 },
-        min_width = { 20, 0.2 },
-
-        buf_options = {},
-        win_options = {
-          -- Window transparency (0-100)
-          winblend = 10,
-          -- Disable line wrapping
-          wrap = false,
-          -- Indicator for when text exceeds window
-          list = true,
-          listchars = "precedes:…,extends:…",
-          -- Increase this for more context when text scrolls off the window
-          sidescrolloff = 0,
-        },
-
-        -- Set to `false` to disable
-        mappings = {
-          n = { ["<Esc>"] = "Close", ["<CR>"] = "Confirm" },
-          i = {
-            ["<C-c>"] = "Close",
-            ["<CR>"] = "Confirm",
-            ["<Up>"] = "HistoryPrev",
-            ["<Down>"] = "HistoryNext",
-          },
-        },
-
-        override = function(conf)
-          -- This is the config that will be passed to nvim_open_win.
-          -- Change values here to customize the layout
-          return conf
-        end,
-
-        -- see :help dressing_get_config
-        get_config = nil,
-      },
-      select = {
-        -- Set to false to disable the vim.ui.select implementation
-        enabled = true,
-
-        -- Priority list of preferred vim.select implementations
-        backend = { "telescope", "fzf_lua", "fzf", "builtin", "nui" },
-
-        -- Trim trailing `:` from prompt
-        trim_prompt = true,
-
-        -- Options for telescope selector
-        -- These are passed into the telescope picker directly. Can be used like:
-        -- telescope = require('telescope.themes').get_ivy({...})
-        telescope = nil,
-
-        -- Options for fzf selector
-        fzf = { window = { width = 0.5, height = 0.4 } },
-
-        -- Options for fzf-lua
-        fzf_lua = {
-          -- winopts = {
-          --   height = 0.5,
-          --   width = 0.5,
-          -- },
-        },
-
-        -- Options for nui Menu
-        nui = {
-          position = "50%",
-          size = nil,
-          relative = "editor",
-          border = { style = "rounded" },
-          buf_options = {
-            swapfile = false,
-            filetype = "DressingSelect",
-          },
-          win_options = { winblend = 10 },
-          max_width = 80,
-          max_height = 40,
-          min_width = 40,
-          min_height = 0,
-        },
-
-        -- Options for built-in selector
-        builtin = {
-          -- These are passed to nvim_open_win
-          border = "rounded",
-          -- 'editor' and 'win' will default to being centered
-          relative = "editor",
-
-          buf_options = {},
-          win_options = {
-            -- Window transparency (0-100)
-            winblend = 10,
-            cursorline = true,
-            cursorlineopt = "both",
-          },
-
-          -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
-          -- the min_ and max_ options can be a list of mixed types.
-          -- max_width = {140, 0.8} means "the lesser of 140 columns or 80% of total"
-          width = nil,
-          max_width = { 140, 0.8 },
-          min_width = { 40, 0.2 },
-          height = nil,
-          max_height = 0.9,
-          min_height = { 10, 0.2 },
-
-          -- Set to `false` to disable
-          mappings = {
-            ["<Esc>"] = "Close",
-            ["<C-c>"] = "Close",
-            ["<CR>"] = "Confirm",
-          },
-
-          override = function(conf)
-            -- This is the config that will be passed to nvim_open_win.
-            -- Change values here to customize the layout
-            return conf
-          end,
-        },
-
-        -- Used to override format_item. See :help dressing-format
-        format_item_override = {},
-
-        -- see :help dressing_get_config
-        get_config = nil,
-      },
-    }
-  end,
-}
--- doom.use_package("EdenEast/nightfox.nvim", "sainnhe/sonokai")
 doom.use_package {
   "ur4ltz/surround.nvim",
   config = function()
     require("surround").setup { mappings_style = "sandwich" }
   end,
-}
-
-doom.use_package {
-  "leoluz/nvim-dap-go",
-  config = function()
-    require("dap-go").setup {
-      -- Additional dap configurations can be added.
-      -- dap_configurations accepts a list of tables where each entry
-      -- represents a dap configuration. For more details do:
-      -- :help dap-configuration
-      dap_configurations = {
-        {
-          -- Must be "go" or it will be ignored by the plugin
-          type = "go",
-          name = "Attach remote",
-          mode = "remote",
-          request = "attach",
-        },
-      },
-      -- delve configurations
-      delve = {
-        -- the path to the executable dlv which will be used for debugging.
-        -- by default, this is the "dlv" executable on your PATH.
-        path = "dlv",
-        -- time to wait for delve to initialize the debug session.
-        -- default to 20 seconds
-        initialize_timeout_sec = 20,
-        -- a string that defines the port to start delve debugger.
-        -- default to string "${port}" which instructs nvim-dap
-        -- to start the process in a random available port
-        port = "${port}",
-        -- additional args to pass to dlv
-        args = {},
-        -- the build flags that are passed to delve.
-        -- defaults to empty string, but can be used to provide flags
-        -- such as "-tags=unit" to make sure the test suite is
-        -- compiled during debugging, for example.
-        -- passing build flags using args is ineffective, as those are
-        -- ignored by delve in dap mode.
-        build_flags = "",
-      },
-    }
-  end,
-}
-
-doom.use_package {
-  "Wansmer/treesj",
-  keys = { "<space>m", "<space>j", "<space>s" },
-  dependencies = { "nvim-treesitter/nvim-treesitter" },
-  config = function()
-    require("treesj").setup { --[[ your config ]]
-    }
-  end,
-}
-
-doom.use_package {
-  "nvim-treesitter/nvim-treesitter-textobjects",
-  after = "nvim-treesitter",
-  requires = "nvim-treesitter/nvim-treesitter",
 }
 
 doom.use_package "axieax/urlview.nvim"
@@ -470,6 +263,7 @@ doom.use_package {
   config = function()
     require("nvim-paredit").setup()
   end,
+  ft = { "scm", "fnl", "elisp" },
 }
 
 -- mandatory
@@ -482,7 +276,7 @@ doom.use_package {
   end,
 }
 
-doom.use_package { "kevinhwang91/nvim-bqf", ft = "qf" }
+-- doom.use_package { "kevinhwang91/nvim-bqf", ft = "qf" }
 
 doom.use_package {
   "nvim-orgmode/orgmode",
@@ -511,9 +305,29 @@ doom.use_package {
 doom.use_package {
   "lukas-reineke/headlines.nvim",
   dependencies = "nvim-treesitter/nvim-treesitter",
-  -- config = {}, -- or `opts = {}`
 }
-doom.use_package { "stevearc/conform.nvim", opts = {} }
+doom.use_package {
+  "stevearc/conform.nvim",
+  opts = {},
+  config = function()
+    require("conform").setup {
+      formatters_by_ft = {
+        go = { "gofmt", "govet", "goimport" },
+        lua = { "stylua" },
+        -- Conform will run multiple formatters sequentially
+        python = { "isort", "black" },
+        -- Use a sub-list to run only the first available formatter
+        javascript = { { "prettierd", "prettier" } },
+      },
+    }
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      pattern = "*",
+      callback = function(args)
+        require("conform").format { bufnr = args.buf }
+      end,
+    })
+  end,
+}
 
 doom.use_package {
   "code-biscuits/nvim-biscuits",
@@ -613,26 +427,7 @@ doom.use_package {
   end,
 }
 
-doom.use_package {
-  "p00f/godbolt.nvim",
-  config = function()
-    require("godbolt").setup {
-      languages = {
-        cpp = { compiler = "g122", options = {} },
-        c = { compiler = "cg122", options = {} },
-        rust = { compiler = "r1650", options = {} },
-        -- any_additional_filetype = { compiler = ..., options = ... },
-      },
-      quickfix = {
-        enable = false, -- whether to populate the quickfix list in case of errors
-        auto_open = false, -- whether to open the quickfix list in case of errors
-      },
-      url = "https://godbolt.org", -- can be changed to a different godbolt instance
-    }
-  end,
-}
-
-doom.use_package { "gpanders/nvim-parinfer" }
+doom.use_package { "gpanders/nvim-parinfer", ft = { "scm", "elisp", "fennel" } }
 
 doom.use_package {
   "nvimdev/dashboard-nvim",
@@ -640,6 +435,13 @@ doom.use_package {
   config = function()
     require("dashboard").setup {
       -- config
+      disable_move = true,
+      shortcut_type = "number",
+      hide = {
+        statusline = false, -- hide statusline default is true
+        tabline = false, -- hide the tabline
+        winbar = false, -- hide winbar
+      },
     }
   end,
   dependencies = { { "nvim-tree/nvim-web-devicons" } },
@@ -647,6 +449,7 @@ doom.use_package {
 
 doom.use_package {
   "ray-x/web-tools.nvim",
+  cmd = "HurlRun",
   dependencies = { "/ray-x/guihua.lua" },
   config = function()
     require("web-tools").setup {
@@ -666,51 +469,76 @@ doom.use_package {
   end,
 }
 
--- doom.use_package( {
---     'nvimdev/lspsaga.nvim',
---     config = function()
---         require('lspsaga').setup({})
---     end,
---   requires = { 'nvim-tree/nvim-web-devicons', opt = true },
--- })
+doom.use_package {
+  "ray-x/navigator.lua",
+  requires = {
+    { "ray-x/guihua.lua", run = "cd lua/fzy && make" },
+    { "neovim/nvim-lspconfig" },
+  },
+}
+doom.use_package {
+  "ray-x/sad.nvim",
+  requires = { "ray-x/guihua.lua", run = "cd lua/fzy && make" },
+  config = function()
+    require("sad").setup {}
+  end,
+}
 
--- doom.use_package({"nvim-telescope/telescope-symbols.nvim"})
+doom.use_package {
+  "ellisonleao/gruvbox.nvim",
+  config = function()
+    require("gruvbox").setup {
+      terminal_colors = true, -- add neovim terminal colors
+      undercurl = true,
+      underline = true,
+      bold = true,
+      italic = {
+        strings = true,
+        emphasis = true,
+        comments = true,
+        operators = false,
+        folds = true,
+      },
+      strikethrough = true,
+      invert_selection = true,
+      invert_signs = false,
+      invert_tabline = true,
+      invert_intend_guides = true,
+      inverse = false, -- invert background for search, diffs, statuslines and errors
+      contrast = "soft", -- can be "hard", "soft" or empty string
+      palette_overrides = {},
+      overrides = {},
+      dim_inactive = true,
+      transparent_mode = true,
+    }
+  end,
+}
 
--- ADDING A KEYBIND
---
--- doom.use_keybind({
---   -- The `name` field will add the keybind to whichkey
---   {"<leader>s", name = '+search', {
---     -- Bind to a vim command
---     {"g", "Telescope grep_string<CR>", name = "Grep project"},
---     -- Or to a lua function
---     {"p", function()
---       print("Not implemented yet")
---     end, name = ""}
---   }}
--- })
-
--- ADDING A COMMAND
---
--- doom.use_cmd({
---   {"CustomCommand1", function() print("Trigger my custom command 1") end},
---   {"CustomCommand2", function() print("Trigger my custom command 2") end}
--- })
-
--- ADDING AN AUTOCOMMAND
---
--- doom.use_autocmd({
---   { "FileType", "javascript", function() print('This is a javascript file') end }
--- })
-
-vim.opt.termguicolors = true
+doom.use_package {
+  "p00f/godbolt.nvim",
+  config = function()
+    require("godbolt").setup {
+      languages = {
+        cpp = { compiler = "g122", options = {} },
+        c = { compiler = "cg122", options = {} },
+        rust = { compiler = "r1650", options = {} },
+        -- any_additional_filetype = { compiler = ..., options = ... },
+      },
+      quickfix = {
+        enable = false, -- whether to populate the quickfix list in case of errors
+        auto_open = false, -- whether to open the quickfix list in case of errors
+      },
+      url = "https://godbolt.org", -- can be changed to a different godbolt instance
+    }
+  end,
+}
 
 doom.indent = 2
-doom.core.treesitter.settings.show_compiler_warning_message = true
+doom.core.treesitter.settings.show_compiler_warning_message = false
 doom.core.reloader.settings.reload_on_save = true
 vim.opt.colorcolumn = "120"
 
-doom.colorscheme = "doom-gruvbox"
+doom.colorscheme = "gruvbox"
 doom.freeze_dependencies = false
 
 -- vim: sw=2 sts=2 ts=2 expandtab

@@ -23,7 +23,7 @@ lua.settings = {
                 completion = {callSnippet = "Replace"},
                 diagnostics = {
                     -- Get the language server to recognize the `vim` global
-                    globals = {"vim", "hs"}
+                    globals = {"vim", "hs", "require", "it"}
                 },
                 workspace = {
                     -- Make the server aware of Neovim runtime files
@@ -73,7 +73,7 @@ lua.settings = {
             -- you can also specify the list of plugins to make available as a workspace library
             -- plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
         },
-        setup_jsonls = false, -- configures jsonls to provide completion for project specific .luarc.json files
+        setup_jsonls = true, -- configures jsonls to provide completion for project specific .luarc.json files
         -- for your Neovim config directory, the config.library settings will be used as is
         -- for plugin directories (root_dirs having a /lua directory), config.library.plugins will be disabled
         -- for any other directory, config.library.enabled will be set to false

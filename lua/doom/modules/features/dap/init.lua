@@ -23,7 +23,7 @@ dap.settings = {
 }
 
 dap.packages = {
-    ["nvim-dap"] = {"mfussenegger/nvim-dap"},
+    ["nvim-dap"] = {"mfussenegger/nvim-dap", cmd="DapContinue"},
     ["nvim-dap-ui"] = {
         "rcarriga/nvim-dap-ui",
         dependencies = {"mfussenegger/nvim-dap"},

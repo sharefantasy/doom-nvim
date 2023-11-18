@@ -24,7 +24,7 @@ return {
     "indentlines", -- Show indent lines with special characters
     "range_highlight", -- Highlight selected range from commands
     "todo_comments", -- Highlight TODO: comments
-    "doom_themes", -- Extra themes for doom
+    -- "doom_themes", -- Extra themes for doom
     -- UI Components
     "lsp_progress", -- Check status of LSP loading
     -- "dashboard", -- A pretty dashboard upon opening
@@ -40,15 +40,16 @@ return {
     "dap", -- Debug code through neovim
     "repl", -- Interactive REPL in neovim
     "explorer", -- An enhanced filetree explorer
-    "firenvim", -- Embed neovim in your browser
+    -- "firenvim", -- Embed neovim in your browser
     -- "lazygit",         -- Lazy git integration
     -- "neogit", -- A git client for neovim
-    "neorg", -- Organise your life
+    -- "neorg", -- Organise your life
     "projects", -- Quickly switch between projects
     -- "superman",        -- Read unix man pages in neovim
     -- "suda",            -- Save using sudo when necessary
     "telescope", -- Fuzzy searcher to find files, grep code and more
     "whichkey", -- An interactive sheet
+
     -- user define modules
     "git", -- Git plugin Integration
     "test", -- unit test support
