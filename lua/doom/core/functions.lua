@@ -94,7 +94,7 @@ functions.create_report = function()
             user_os =
                 vim.trim( -- PRETTY_NAME="Distribution (Additional info)", e.g.
                 --   PRETTY_NAME="Fedora 34 (KDE Plasma)"
-               
+
                     vim.fn
                         .system(
                         'cat /etc/os-release | grep "^PRETTY_NAME" | sed ' ..
@@ -120,12 +120,18 @@ functions.create_report = function()
 %s
 ```
 
-### End log dump]], date, user_os, nvim_version, utils.doom_version,
-                                     system.doom_root, system.doom_configs_root,
-                                     table.concat(today_logs, "\n"))
-        fs.write_file(system.doom_report, report, "w+")
-        log.info("Report created at " .. system.doom_report)
-    end, debug.traceback)
+### End log dump]],
+      date,
+      user_os,
+      nvim_version,
+      utils.doom_version,
+      system.doom_root,
+      system.doom_configs_root,
+      table.concat(today_logs, "\n")
+    )
+    fs.write_file(system.doom_report, report, "w+")
+    log.info("Report created at " .. system.doom_report)
+  end, function(err) log.error(debug.traceback(err)) end)
 
     if not created_report then
         log.error("Error while writing report. Traceback:\n" .. err)

@@ -76,7 +76,7 @@ doom.use_package {
             luasnip = true, -- Will open signature help when jumping to Luasnip insert nodes
             throttle = 50, -- Debounce lsp signature help request by 50ms
           },
-          view = nil, -- when nil, use defaults from documentation
+          -- view = nil, -- when nil, use defaults from documentation
           ---@type NoiceViewOptions
           opts = {}, -- merged with defaults from documentation
         },
@@ -511,6 +511,7 @@ doom.use_package {
       dim_inactive = true,
       transparent_mode = true,
     }
+    vim.cmd [[colorscheme gruvbox]]
   end,
 }
 

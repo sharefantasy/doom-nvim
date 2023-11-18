@@ -60,18 +60,18 @@ reloader.reload_lua_module = function(mod_path, quiet)
     package.loaded[mod_path] = nil
     require(mod_path)
 
-    if type(mod) == "function" then
-        -- Call the loaded module function so the reloading will take effect as expected
-        local ok, _ = xpcall(package.loaded[mod_path], debug.traceback)
-        if not ok then
-            log.error(string.format("Failed to reload '%s' module", mod_path))
-        end
+  if type(mod) == "function" then
+    -- Call the loaded module function so the reloading will take effect as expected
+    local ok, _ = xpcall(package.loaded[mod_path], function(err) log.error(debug.traceback(err)) end)
+    if not ok then
+      log.error(string.format("Failed to reload '%s' module", mod_path))
     end
 
     if not quiet then
         log.info(string.format("Successfully reloaded '%s' module", mod_path))
     end
 end
+  end
 
 --- Reload all Neovim configurations
 reloader._reload_doom = function()
