@@ -430,24 +430,6 @@ doom.use_package {
 doom.use_package { "gpanders/nvim-parinfer", ft = { "scm", "elisp", "fennel" } }
 
 doom.use_package {
-  "nvimdev/dashboard-nvim",
-  event = "VimEnter",
-  config = function()
-    require("dashboard").setup {
-      -- config
-      disable_move = true,
-      shortcut_type = "number",
-      hide = {
-        statusline = false, -- hide statusline default is true
-        tabline = false, -- hide the tabline
-        winbar = false, -- hide winbar
-      },
-    }
-  end,
-  dependencies = { { "nvim-tree/nvim-web-devicons" } },
-}
-
-doom.use_package {
   "ray-x/web-tools.nvim",
   cmd = "HurlRun",
   dependencies = { "/ray-x/guihua.lua" },
