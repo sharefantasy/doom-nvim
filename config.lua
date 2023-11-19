@@ -123,7 +123,7 @@ doom.use_package {
       messages = {
         -- NOTE: If you enable messages, then the cmdline is enabled automatically.
         -- This is a current Neovim limitation.
-        enabled = true, -- enables the Noice messages UI
+        enabled = false, -- enables the Noice messages UI
         view = "notify", -- default view for messages
         view_error = "notify", -- view for errors
         view_warn = "notify", -- view for warnings
@@ -312,10 +312,10 @@ doom.use_package {
   config = function()
     require("conform").setup {
       formatters_by_ft = {
-        go = { "gofmt", "govet", "goimport" },
+        go = { "goimport", "govet", "gofmt" },
         lua = { "stylua" },
         -- Conform will run multiple formatters sequentially
-        python = { "isort", "black" },
+        python = { "ruff" },
         -- Use a sub-list to run only the first available formatter
         javascript = { { "prettierd", "prettier" } },
       },

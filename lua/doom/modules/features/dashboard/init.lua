@@ -107,6 +107,8 @@ dashboard.configs["dashboard-nvim"] = function()
   end
   db.hide_tabline = false
   db.hide_statusline = false
+  db.setup()
+
   -- Header color
   vim.cmd("hi! dashboardHeader   guifg=" .. doom.features.dashboard.settings.colors.header)
   vim.cmd("hi! dashboardCenter   guifg=" .. doom.features.dashboard.settings.colors.center)
