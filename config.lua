@@ -516,12 +516,11 @@ doom.use_package {
   end,
 }
 
+vim.opt.colorcolumn = "120"
+vim.g.skip_ts_context_commentstring_module = true
+
 doom.indent = 2
 doom.core.treesitter.settings.show_compiler_warning_message = false
 doom.core.reloader.settings.reload_on_save = true
-vim.opt.colorcolumn = "120"
-
 doom.colorscheme = "gruvbox"
 doom.freeze_dependencies = false
-
--- vim: sw=2 sts=2 ts=2 expandtab

@@ -38,6 +38,8 @@ comment.settings = {
                     require("ts_context_commentstring.utils").get_visual_start_location()
             end
 
+            require('ts_context_commentstring').setup {}
+            vim.g.skip_ts_context_commentstring_module = true
             return
                 require("ts_context_commentstring.internal").calculate_commentstring(
                     {key = type, location = location})
