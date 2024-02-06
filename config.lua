@@ -214,6 +214,10 @@ doom.use_package {
   end,
 }
 
+-- doom.use_package {
+--   'nvim-pack/nvim-spectre'
+-- }
+
 doom.use_package {
   "ThePrimeagen/harpoon",
   dependencies = { "nvim-lua/plenary.nvim" },
@@ -513,6 +517,20 @@ doom.use_package {
       },
       url = "https://godbolt.org", -- can be changed to a different godbolt instance
     }
+  end,
+}
+
+doom.use_package {
+  "AckslD/messages.nvim",
+  config = 'require("messages").setup()',
+}
+
+doom.use_package { "ellisonleao/dotenv.nvim" }
+
+doom.use_package {
+  "nvim-pack/nvim-spectre",
+  config = function()
+    require("spectre").setup()
   end,
 }
 
