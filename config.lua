@@ -433,7 +433,7 @@ doom.use_package { "gpanders/nvim-parinfer", ft = { "scm", "elisp", "fennel" } }
 doom.use_package {
   "ray-x/web-tools.nvim",
   cmd = "HurlRun",
-  dependencies = { "/ray-x/guihua.lua" },
+  dependencies = { "/guihua.lua" },
   config = function()
     require("web-tools").setup {
       keymaps = {
