@@ -44,6 +44,8 @@ doom.use_package {
   end,
 }
 
+doom.use_package "ionide/Ionide-vim"
+
 doom.use_package "anuvyklack/hydra.nvim"
 doom.use_package {
   "folke/noice.nvim",
