@@ -70,7 +70,7 @@ return {
     "vue", -- "tailwindcss",
     -- "svelte",
     -- Compiled
-    -- "rust",
+    "rust",
     -- "cc",
     -- "ocaml",
     -- "haskell",

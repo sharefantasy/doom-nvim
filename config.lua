@@ -434,7 +434,7 @@ doom.use_package { "gpanders/nvim-parinfer", ft = { "scm", "elisp", "fennel" } }
 
 doom.use_package {
   "ray-x/web-tools.nvim",
-  cmd = "HurlRun",
+  -- cmd = "HurlRun",
   dependencies = { "/guihua.lua" },
   config = function()
     require("web-tools").setup {
@@ -442,14 +442,14 @@ doom.use_package {
         rename = nil, -- by default use same setup of lspconfig
         repeat_rename = ".", -- . to repeat
       },
-      hurl = { -- hurl default
-        show_headers = true, -- do not show http headers
-        floating = true, -- use floating windows (need guihua.lua)
-        formatters = { -- format the result by filetype
-          json = { "jq" },
-          html = { "prettier", "--parser", "html" },
-        },
-      },
+      -- hurl = { -- hurl default
+      --   show_headers = true, -- do not show http headers
+      --   floating = true, -- use floating windows (need guihua.lua)
+      --   formatters = { -- format the result by filetype
+      --     json = { "jq" },
+      --     html = { "prettier", "--parser", "html" },
+      --   },
+      -- },
     }
   end,
 }
@@ -540,12 +540,12 @@ doom.use_package {
     "nvim-lua/plenary.nvim",
     "nvim-treesitter/nvim-treesitter",
   },
-  ft = "hurl",
+  ft = { "hurl", "http" },
   opts = {
     -- Show debugging info
     debug = false,
     -- Show notification on run
-    show_notification = false,
+    show_notification = true,
     -- Show response in popup or split
     mode = "split",
     -- Default formatter
