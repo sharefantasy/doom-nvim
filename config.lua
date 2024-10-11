@@ -380,11 +380,11 @@ doom.use_package {
   end,
 }
 
--- doom.use_package({
---     "chrisgrieser/nvim-various-textobjs",
---     lazy = false,
---     opts = {useDefaultKeymaps = true}
--- })
+doom.use_package {
+  "chrisgrieser/nvim-various-textobjs",
+  lazy = false,
+  opts = { useDefaultKeymaps = true },
+}
 
 doom.use_package {
   "tomiis4/Hypersonic.nvim",
@@ -581,6 +581,14 @@ doom.use_package {
     { "<leader>th", ":HurlRunner<CR>", desc = "Hurl Runner", mode = "v" },
   },
 }
+
+-- doom.use_package {
+--   "hrsh7th/nvim-cmp",
+--   dependencies = { "alexander-born/cmp-bazel" },
+--   opts = function(_, opts)
+--     opts.sources = require("cmp").config.sources(vim.list_extend(opts.sources, { { name = "bazel" } }))
+--   end,
+-- }
 
 vim.opt.colorcolumn = "120"
 vim.g.skip_ts_context_commentstring_module = true

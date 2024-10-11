@@ -4,7 +4,7 @@ git.settings = {}
 
 git.packages = {
   ["neogit"] = { "TimUntersberger/neogit", cmd = "Neogit", lazy = true },
-  ["blame"] = { "FabijanZulj/blame.nvim", cmd = "ToggleBlame", lazy = true },
+  ["blame"] = { "FabijanZulj/blame.nvim", cmd = "BlameToggle", lazy = true },
   ["diffview"] = { "sindrets/diffview.nvim", cmd = "DiffviewOpen", lazy = true },
   ["fzf-lua"] = {
     "ibhagwan/fzf-lua",
@@ -39,6 +39,24 @@ git.configs["fzf-lua"] = function()
   require("fzf-lua").setup {}
 end
 
+git.configs["blame"] = function()
+  require("blame").setup {
+    date_format = "%d.%m.%Y",
+    virtual_style = "right_align",
+    focus_blame = true,
+    merge_consecutive = false,
+    max_summary_width = 30,
+    commit_detail_view = "vsplit",
+    mappings = {
+      commit_info = "i",
+      stack_push = "<TAB>",
+      stack_pop = "<BS>",
+      show_commit = "<CR>",
+      close = { "<esc>", "q" },
+    },
+  }
+end
+
 git.configs["diffview"] = function()
   require("diffview").setup {
     view = {
@@ -66,7 +84,7 @@ git.binds = {
       name = "+git",
       {
         { "s", "<cmd>Neogit<CR>", name = "Open neogit" },
-        { "b", "<cmd>ToggleBlame window<CR>", name = "Open GitBlame" },
+        { "b", "<cmd>BlameToggle window<CR>", name = "Open GitBlame" },
         {
           "d",
           {
