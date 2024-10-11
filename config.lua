@@ -166,6 +166,13 @@ doom.use_package {
   end,
 }
 
+-- doom.use_package {
+--   "ggandor/leap.nvim",
+--   config = function()
+--     require("leap").create_default_mappings()
+--   end,
+-- }
+
 doom.use_package {
   "folke/flash.nvim",
   event = "VeryLazy",
@@ -202,6 +209,8 @@ doom.use_package {
   }
 ,
 }
+
+doom.use_package "tpope/vim-repeat"
 
 doom.use_package {
   "ThePrimeagen/refactoring.nvim",
@@ -580,6 +589,29 @@ doom.use_package {
     -- Run Hurl request in visual mode
     { "<leader>th", ":HurlRunner<CR>", desc = "Hurl Runner", mode = "v" },
   },
+}
+
+doom.use_package {
+  "utilyre/barbecue.nvim",
+  name = "barbecue",
+  version = "*",
+  dependencies = {
+    "SmiteshP/nvim-navic",
+    "nvim-tree/nvim-web-devicons", -- optional dependency
+  },
+  opts = {
+    -- configurations go here
+  },
+}
+
+doom.use_package {
+  "stevearc/oil.nvim",
+  ---@module 'oil'
+  ---@type oil.SetupOpts
+  opts = {},
+  -- Optional dependencies
+  dependencies = { { "echasnovski/mini.icons", opts = {} } },
+  -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
 }
 
 -- doom.use_package {
