@@ -396,6 +396,10 @@ doom.use_package {
 }
 
 doom.use_package {
+  "ionide/Ionide-vim",
+}
+
+doom.use_package {
   "tomiis4/Hypersonic.nvim",
   event = "CmdlineEnter",
   cmd = "Hypersonic",
@@ -581,8 +585,6 @@ doom.use_package {
   },
   keys = {
     -- Run API request
-    { "<leader>tA", "<cmd>HurlRunner<CR>", desc = "Run All requests" },
-    { "<leader>ta", "<cmd>HurlRunnerAt<CR>", desc = "Run Api request" },
     { "<leader>te", "<cmd>HurlRunnerToEntry<CR>", desc = "Run Api request to entry" },
     { "<leader>tm", "<cmd>HurlToggleMode<CR>", desc = "Hurl Toggle Mode" },
     { "<leader>tv", "<cmd>HurlVerbose<CR>", desc = "Run Api in verbose mode" },
@@ -736,6 +738,8 @@ doom.use_package {
 --     opts.sources = require("cmp").config.sources(vim.list_extend(opts.sources, { { name = "bazel" } }))
 --   end,
 -- }
+
+doom.use_package "tpope/vim-dadbod"
 
 vim.opt.colorcolumn = "120"
 vim.g.skip_ts_context_commentstring_module = true
