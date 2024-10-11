@@ -610,8 +610,58 @@ doom.use_package {
   ---@type oil.SetupOpts
   opts = {},
   -- Optional dependencies
-  dependencies = { { "echasnovski/mini.icons", opts = {} } },
-  -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
+  -- dependencies = { { "echasnovski/mini.icons", opts = {} } },
+  dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
+}
+
+doom.use_package {
+  "stevearc/aerial.nvim",
+  opts = {},
+  -- Optional dependencies
+  dependencies = {
+    "nvim-treesitter/nvim-treesitter",
+    "nvim-tree/nvim-web-devicons",
+  },
+}
+
+doom.use_package {
+  "hrsh7th/nvim-cmp",
+  dependencies = {
+    {
+      "MattiasMTS/cmp-dbee",
+      dependencies = {
+        { "kndndrj/nvim-dbee" },
+      },
+      ft = "sql", -- optional but good to have
+      opts = {}, -- needed
+    },
+  },
+  opts = {
+    sources = {
+      { "cmp-dbee" },
+    },
+  },
+}
+
+doom.use_package {
+  "kndndrj/nvim-projector",
+  dependencies = {
+    -- required:
+    "MunifTanjim/nui.nvim",
+    -- optional extensions:
+    "kndndrj/projector-neotest",
+    -- dependencies of extensions:
+    "nvim-neotest/neotest",
+    "kndndrj/projector-dbee",
+  },
+  config = function()
+    require("projector").setup {
+      outputs = {
+        require("projector_dbee").OutputBuilder:new(),
+        -- ... your other outputs
+      },
+    }
+  end,
 }
 
 -- doom.use_package {
