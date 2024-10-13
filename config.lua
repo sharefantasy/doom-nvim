@@ -709,6 +709,26 @@ doom.use_package {
   end,
 }
 
+doom.use_package {
+  "gelguy/wilder.nvim",
+  config = function()
+    require("wilder").setup { modes = { ":", "/", "?" } }
+  end,
+}
+
+doom.use_package {
+  "m4xshen/hardtime.nvim",
+  dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
+  opts = {},
+}
+
+-- doom.use_package {
+--   "Freed-Wu/rime.nvim",
+--   config = function()
+--     require("rime").setup()
+--   end,
+-- }
+
 -- doom.use_package {
 --   "hrsh7th/nvim-cmp",
 --   dependencies = { "alexander-born/cmp-bazel" },
