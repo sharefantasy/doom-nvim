@@ -726,9 +726,6 @@ doom.use_package {
 
 -- doom.use_package {
 --   "Freed-Wu/rime.nvim",
---   config = function()
---     require("rime").setup()
---   end,
 -- }
 
 -- doom.use_package {
