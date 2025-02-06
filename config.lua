@@ -711,12 +711,12 @@ doom.use_package {
   end,
 }
 
-doom.use_package {
-  "gelguy/wilder.nvim",
-  config = function()
-    require("wilder").setup { modes = { ":", "/", "?" } }
-  end,
-}
+-- doom.use_package {
+--   "gelguy/wilder.nvim",
+--   config = function()
+--     require("wilder").setup { modes = { ":", "/", "?" } }
+--   end,
+-- }
 
 doom.use_package {
   "m4xshen/hardtime.nvim",
