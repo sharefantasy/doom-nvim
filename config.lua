@@ -392,7 +392,11 @@ doom.use_package {
 doom.use_package {
   "chrisgrieser/nvim-various-textobjs",
   lazy = false,
-  opts = { useDefaultKeymaps = true },
+  opts = {
+    keymaps = {
+      useDefaults = true,
+    },
+  },
 }
 
 doom.use_package {
