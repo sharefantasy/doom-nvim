@@ -38,7 +38,12 @@ json.settings = {
     formatting_config = nil
 }
 
-json.packages = {["SchemaStore.nvim"] = {"b0o/SchemaStore.nvim", ft = "json"}}
+json.packages = {
+  ["SchemaStore.nvim"] = {
+    "b0o/SchemaStore.nvim",
+    ft = "json",
+  },
+}
 
 local langs_utils = require("doom.modules.langs.utils")
 json.autocmds = {

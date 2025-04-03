@@ -32,7 +32,12 @@ repl.settings = {
     highlight = {italic = true}
 }
 
-repl.packages = {["iron.nvim"] = {"hkupty/iron.nvim", cmd = "IronRepl"}}
+repl.packages = {
+  ["iron.nvim"] = {
+    "hkupty/iron.nvim",
+    cmd = "IronRepl",
+  },
+}
 
 repl.configs = {
     ["iron.nvim"] = function()

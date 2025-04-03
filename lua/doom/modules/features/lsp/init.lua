@@ -97,16 +97,22 @@ lsp.settings = {
 }
 
 lsp.packages = {
-  ["nvim-lspconfig"] = { "neovim/nvim-lspconfig" },
+  ["nvim-lspconfig"] = {
+    "neovim/nvim-lspconfig",
+  },
   ["nvim-cmp"] = {
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
-    dependencies = { "L3MON4D3/LuaSnip" },
+    dependencies = {
+      "L3MON4D3/LuaSnip",
+    },
   },
   ["cmp-nvim-lua"] = {
     "hrsh7th/cmp-nvim-lua",
-    after = "nvim-cmp",
-    dependencies = { "hrsh7th/nvim-cmp" },
+    -- after = "nvim-cmp",
+    dependencies = {
+      "hrsh7th/nvim-cmp",
+    },
   },
   ["cmp-nvim-lsp"] = {
     "hrsh7th/cmp-nvim-lsp",
@@ -120,18 +126,24 @@ lsp.packages = {
   },
   ["cmp-buffer"] = {
     "hrsh7th/cmp-buffer",
-    after = "nvim-cmp",
-    dependencies = { "hrsh7th/nvim-cmp" },
+    -- after = "nvim-cmp",
+    dependencies = {
+      "hrsh7th/nvim-cmp",
+    },
   },
   ["cmp_luasnip"] = {
     "saadparwaiz1/cmp_luasnip",
-    after = "nvim-cmp",
-    dependencies = { "hrsh7th/nvim-cmp" },
+    -- after = "nvim-cmp",
+    dependencies = {
+      "hrsh7th/nvim-cmp",
+    },
   },
   ["lsp_signature.nvim"] = {
     "ray-x/lsp_signature.nvim",
-    after = "nvim-lspconfig",
-    dependencies = { "neovim/nvim-lspconfig" },
+    -- after = "nvim-lspconfig",
+    dependencies = {
+      "neovim/nvim-lspconfig",
+    },
     event = "VeryLazy",
   },
 }
@@ -139,19 +151,19 @@ lsp.packages = {
 lsp.configs = {}
 lsp.configs["nvim-lspconfig"] = function()
   -- Lsp Symbols
-  local signs = {
-    Error = doom.features.lsp.settings.icons.error,
-    Warn = doom.features.lsp.settings.icons.warn,
-    Info = doom.features.lsp.settings.icons.info,
-    Hint = doom.features.lsp.settings.icons.hint,
+  local icons = {
+    [vim.diagnostic.severity.ERROR] = doom.features.lsp.settings.icons.error,
+    [vim.diagnostic.severity.WARN] = doom.features.lsp.settings.icons.warn,
+    [vim.diagnostic.severity.INFO] = doom.features.lsp.settings.icons.info,
+    [vim.diagnostic.severity.HINT] = doom.features.lsp.settings.icons.hint,
   }
-  local hl = "DiagnosticSign"
 
-  for severity, icon in pairs(signs) do
-    local highlight = hl .. severity
-
-    vim.fn.sign_define(highlight, { text = icon, texthl = highlight, numhl = highlight })
-  end
+  vim.diagnostic.config {
+    signs = {
+      text = icons,
+      numhl = icons,
+    },
+  }
 
   vim.diagnostic.config {
     virtual_text = doom.features.lsp.settings.virtual_text,

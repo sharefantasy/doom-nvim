@@ -65,15 +65,19 @@ symbols.settings = {
 }
 
 symbols.packages = {
-    ["symbols-outline.nvim"] = {
-        "simrat39/symbols-outline.nvim",
-        cmd = {"SymbolsOutline", "SymbolsOutlineOpen", "SymbolsOutlineClose"}
-    }
+  ["symbols-outline.nvim"] = {
+    "simrat39/symbols-outline.nvim",
+    cmd = {
+      "SymbolsOutline",
+      "SymbolsOutlineOpen",
+      "SymbolsOutlineClose",
+    },
+  },
 }
 
 symbols.configs = {}
 symbols.configs["symbols-outline.nvim"] = function()
-    require("symbols-outline").setup(doom.features.symbols.settings)
+  require("symbols-outline").setup(doom.features.symbols.settings)
 end
 
 symbols.binds = {

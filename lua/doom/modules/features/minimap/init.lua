@@ -3,14 +3,17 @@ local minimap = {}
 minimap.settings = {}
 
 minimap.packages = {
-    ["minimap.vim"] = {
-        "wfxr/minimap.vim",
-        lazy = true,
-        cmd = {
-            "Minimap", "MinimapClose", "MinimapToggle", "MinimapRefresh",
-            "MinimapUpdateHighlight"
-        }
-    }
+  ["minimap.vim"] = {
+    "wfxr/minimap.vim",
+    lazy = true,
+    cmd = {
+      "Minimap",
+      "MinimapClose",
+      "MinimapToggle",
+      "MinimapRefresh",
+      "MinimapUpdateHighlight",
+    },
+  },
 }
 
 minimap.configs = {}

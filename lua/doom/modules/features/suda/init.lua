@@ -3,11 +3,11 @@ local suda = {}
 suda.settings = {}
 
 suda.packages = {
-    ["suda.vim"] = {
-        "lambdalisue/suda.vim",
-        lazy = true,
-        cmd = {"SudaRead", "SudaWrite"}
-    }
+  ["suda.vim"] = {
+    "lambdalisue/suda.vim",
+    lazy = true,
+    cmd = { "SudaRead", "SudaWrite" },
+  },
 }
 
 suda.configs = {}

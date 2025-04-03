@@ -20,7 +20,11 @@
 --- @field minor number
 --- @field patch number
 
-updater.packages = {["plenary.nvim"] = {"nvim-lua/plenary.nvim"}}
+updater.packages = {
+  ["plenary.nvim"] = {
+    "nvim-lua/plenary.nvim",
+  },
+}
 
 updater.settings = {unstable = false}
 

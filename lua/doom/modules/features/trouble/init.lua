@@ -3,11 +3,11 @@ local trouble = {}
 trouble.settings = {}
 
 trouble.packages = {
-    ["trouble.nvim"] = {
-        "folke/trouble.nvim",
-        cmd = {"Trouble", "TroubleClose", "TroubleRefresh", "TroubleToggle"},
-        lazy = false
-    }
+  ["trouble.nvim"] = {
+    "folke/trouble.nvim",
+    cmd = { "Trouble", "TroubleClose", "TroubleRefresh", "TroubleToggle" },
+    lazy = true,
+  },
 }
 
 trouble.configs = {}

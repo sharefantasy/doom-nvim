@@ -47,7 +47,11 @@ comment.settings = {
     end
 }
 
-comment.packages = {["Comment.nvim"] = {"numToStr/Comment.nvim"}}
+comment.packages = {
+  ["Comment.nvim"] = {
+    "numToStr/Comment.nvim",
+  },
+}
 
 comment.configs = {}
 comment.configs["Comment.nvim"] = function()

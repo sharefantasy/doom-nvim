@@ -8,33 +8,32 @@ lua.settings = {
     --- @type string|string[]
     treesitter_grammars = "lua",
 
-    --- Disables default LSP config
-    --- @type boolean
-    disable_lsp = false,
-    --- Name of the language server
-    --- @type string
-    lsp_name = "lua_ls",
-    --- Custom config to pass to nvim-lspconfig
-    --- @type table|nil
-    lsp_config = {
-        formatter = {enabled = true},
-        settings = {
-            Lua = {
-                completion = {callSnippet = "Replace"},
-                diagnostics = {
-                    -- Get the language server to recognize the `vim` global
-                    globals = {"vim", "hs", "require", "it"}
-                },
-                workspace = {
-                    -- Make the server aware of Neovim runtime files
-                    library = vim.api.nvim_get_runtime_file("", true),
-                    checkThirdParty = false
-                },
-                -- Do not send telemetry data containing a randomized but unique identifier
-                telemetry = {enable = false}
-            }
-        }
+  --- Disables default LSP config
+  --- @type boolean
+  disable_lsp = false,
+  --- Name of the language server
+  --- @type string
+  lsp_name = "lua_ls",
+  --- Custom config to pass to nvim-lspconfig
+  --- @type table|nil
+  lsp_config = {
+    settings = {
+      Lua = {
+        format = {
+          enable = true,
+        },
+        completion = {
+          callSnippet = "Replace",
+        },
+        workspace = {
+          checkThirdParty = false,
+        },
+        telemetry = {
+          enable = false,
+        },
+      },
     },
+  },
 
     --- Disables null-ls formatting sources
     --- @type boolean
@@ -89,7 +88,12 @@ lua.settings = {
     }
 }
 
-lua.packages = {["lua-dev.nvim"] = {"folke/neodev.nvim", ft = "lua"}}
+lua.packages = {
+  ["lua-dev.nvim"] = {
+    "folke/neodev.nvim",
+    ft = "lua",
+  },
+}
 
 local langs_utils = require("doom.modules.langs.utils")
 lua.autocmds = {

@@ -3,15 +3,19 @@ local ranger = {}
 ranger.settings = {}
 
 ranger.packages = {
-    ["ranger.vim"] = {
-        "francoiscabrol/ranger.vim",
-        dependencies = {"rbgrouleff/bclose.vim"},
-        lazy = true,
-        cmd = {
-            "Ranger", "RangerNewTab", "RangerWorkingDirectory",
-            "RangerWorkingDirectoryNewTab"
-        }
-    }
+  ["ranger.vim"] = {
+    "francoiscabrol/ranger.vim",
+    dependencies = {
+      "rbgrouleff/bclose.vim"
+    },
+    lazy = true,
+    cmd = {
+      "Ranger",
+      "RangerNewTab",
+      "RangerWorkingDirectory",
+      "RangerWorkingDirectoryNewTab",
+    },
+  },
 }
 
 ranger.configs = {}

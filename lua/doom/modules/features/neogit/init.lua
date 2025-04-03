@@ -3,7 +3,11 @@ local neogit = {}
 neogit.settings = {}
 
 neogit.packages = {
-    ["neogit"] = {"TimUntersberger/neogit", cmd = "Neogit", lazy = true}
+  ["neogit"] = {
+    "NeogitOrg/neogit",
+    cmd = "Neogit",
+    lazy = true,
+  },
 }
 
 neogit.configs = {}

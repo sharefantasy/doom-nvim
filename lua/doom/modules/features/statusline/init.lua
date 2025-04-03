@@ -145,7 +145,11 @@ statusline._generate_colorscheme = function()
     return unpack(vim.tbl_map(function(color) return color.hex end, colors))
 end
 
-statusline.packages = {["heirline.nvim"] = {"rebelot/heirline.nvim"}}
+statusline.packages = {
+  ["heirline.nvim"] = {
+    "rebelot/heirline.nvim",
+  },
+}
 
 statusline.configs = {}
 statusline.configs["heirline.nvim"] = function()

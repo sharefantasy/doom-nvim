@@ -40,11 +40,11 @@ zen.settings = {
 }
 
 zen.packages = {
-    ["TrueZen.nvim"] = {
-        "Pocco81/TrueZen.nvim",
-        module = "true-zen",
-        event = "BufWinEnter"
-    }
+  ["TrueZen.nvim"] = {
+    "Pocco81/TrueZen.nvim",
+    module = "true-zen",
+    event = "BufWinEnter",
+  },
 }
 
 zen.configs = {}

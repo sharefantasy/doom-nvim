@@ -31,19 +31,19 @@ telescope.settings = {
 }
 
 telescope.packages = {
-    ["telescope.nvim"] = {
-        "nvim-telescope/telescope.nvim",
-        cmd = "Telescope",
-        lazy = false
-    },
-    ["telescope-file-browser.nvim"] = {
-        "nvim-telescope/telescope-file-browser.nvim",
-        -- cmd = "Telescope browse_files",
-        keys = "<leader>.",
-        dependencies = {"nvim-telescope/telescope.nvim"},
-        after = "telescope.nvim",
-        lazy = false
-    }
+  ["telescope.nvim"] = {
+    "nvim-telescope/telescope.nvim",
+    cmd = "Telescope",
+    lazy = true,
+  },
+  ["telescope-file-browser.nvim"] = {
+    "nvim-telescope/telescope-file-browser.nvim",
+    cmd = "Telescope browse_files",
+    keys = "<leader>.",
+    dependencies = {"nvim-telescope/telescope.nvim"},
+    -- after = "telescope.nvim",
+    lazy = true,
+  },
 }
 
 telescope.configs = {}

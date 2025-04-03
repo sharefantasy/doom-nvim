@@ -13,8 +13,12 @@ auto_install.settings = {
 }
 
 auto_install.packages = {
-    ["mason.nvim"] = {"williamboman/mason.nvim"},
-    ["mason-lspconfig"] = {"williamboman/mason-lspconfig"}
+  ["mason.nvim"] = {
+    "williamboman/mason.nvim",
+  },
+  ["mason-lspconfig"] = {
+    "williamboman/mason-lspconfig",
+  },
 }
 
 auto_install.configs = {}

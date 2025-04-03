@@ -7,7 +7,10 @@ autopairs.settings = {
 }
 
 autopairs.packages = {
-    ["nvim-autopairs"] = {"windwp/nvim-autopairs", event = "InsertEnter"}
+  ["nvim-autopairs"] = {
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+  },
 }
 
 autopairs.configs = {}

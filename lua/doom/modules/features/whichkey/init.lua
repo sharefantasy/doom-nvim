@@ -38,7 +38,10 @@ whichkey.settings = {
 }
 
 whichkey.packages = {
-    ["which-key.nvim"] = {"folke/which-key.nvim", keys = {"<leader>"}}
+  ["which-key.nvim"] = {
+    "folke/which-key.nvim",
+    keys = { "<leader>" },
+  },
 }
 
 -- TODO: Not happy with how messy the integrations are.  Refactor!

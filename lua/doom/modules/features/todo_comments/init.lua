@@ -3,7 +3,10 @@ local todo_comments = {}
 todo_comments.settings = {}
 
 todo_comments.packages = {
-    ["todo-comments.nvim"] = {"folke/todo-comments.nvim", event = "VeryLazy"}
+  ["todo-comments.nvim"] = {
+    "folke/todo-comments.nvim",
+    event = "VeryLazy",
+  },
 }
 
 todo_comments.configs = {}

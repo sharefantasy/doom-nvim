@@ -3,7 +3,10 @@ local colorizer = {}
 colorizer.settings = {"*", css = {rgb_fn = true}, html = {names = false}}
 
 colorizer.packages = {
-    ["nvim-colorizer.lua"] = {"norcalli/nvim-colorizer.lua", event = "VeryLazy"}
+  ["nvim-colorizer.lua"] = {
+    "norcalli/nvim-colorizer.lua",
+    event = "VeryLazy",
+  },
 }
 
 colorizer.configs = {}

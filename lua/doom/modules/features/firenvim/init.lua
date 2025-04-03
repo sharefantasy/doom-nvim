@@ -16,11 +16,13 @@ firenvim.settings = {
 }
 
 firenvim.packages = {
-    ["firenvim"] = {
-        "glacambre/firenvim",
-        build = function() vim.fn["firenvim#install"](0) end,
-        lazy = true
-    }
+  ["firenvim"] = {
+    "glacambre/firenvim",
+    build =  function()
+      vim.fn["firenvim#install"](0)
+    end,
+    lazy = true,
+  },
 }
 
 firenvim.configs = {}

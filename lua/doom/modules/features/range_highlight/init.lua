@@ -3,11 +3,13 @@ local range_highlight = {}
 range_highlight.settings = {}
 
 range_highlight.packages = {
-    ["range-highlight.nvim"] = {
-        "winston0410/range-highlight.nvim",
-        dependencies = {{"winston0410/cmd-parser.nvim"}},
-        event = "VeryLazy"
-    }
+  ["range-highlight.nvim"] = {
+    "winston0410/range-highlight.nvim",
+    dependencies = {
+      { "winston0410/cmd-parser.nvim" },
+    },
+    event = "VeryLazy",
+  },
 }
 
 range_highlight.configs = {}

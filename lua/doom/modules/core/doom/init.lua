@@ -3,9 +3,15 @@ local required = {}
 required.settings = { mapper = {} }
 
 required.packages = {
-  ["lazy.nvim"] = { "folke/lazy.nvim" },
-  ["plenary.nvim"] = { "nvim-lua/plenary.nvim" },
-  ["nvim-web-devicons"] = { "kyazdani42/nvim-web-devicons" },
+  ["lazy.nvim"] = {
+    "folke/lazy.nvim",
+  },
+  ["plenary.nvim"] = {
+    "nvim-lua/plenary.nvim",
+  },
+  ["nvim-web-devicons"] = {
+    "kyazdani42/nvim-web-devicons",
+  },
 }
 
 required.configs = {}
@@ -335,7 +341,7 @@ required.autocmds = function()
       "TextYankPost",
       "*",
       function()
-        require("vim.highlight").on_yank { higroup = "Search", timeout = 200 }
+        require("vim.hl").on_yank { higroup = "Search", timeout = 200 }
       end,
     })
   end

@@ -2,7 +2,11 @@ local auto_session = {}
 
 auto_session.settings = { dir = vim.fn.stdpath "data" .. "/sessions/" }
 
-auto_session.packages = { ["persistence.nvim"] = { "folke/persistence.nvim" } }
+auto_session.packages = {
+  ["persistence.nvim"] = {
+    "folke/persistence.nvim",
+  },
+}
 
 auto_session.configs = {}
 auto_session.configs["persistence.nvim"] = function()

@@ -9,7 +9,10 @@ illuminate.settings = {
 }
 
 illuminate.packages = {
-    ["mini.cursorword"] = {"echasnovski/mini.cursorword", event = "VeryLazy"}
+  ["mini.cursorword"] = {
+    "echasnovski/mini.cursorword",
+    event = "VeryLazy",
+  },
 }
 
 illuminate.configs = {}
