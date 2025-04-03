@@ -68,7 +68,7 @@ go.packages = {
 go.configs = {}
 go.configs["go"] = function()
   require("go").setup()
-  vim.g.go_addtags_transform = "camelcase"
+  -- vim.g.go_addtags_transform = "camelcase"
 end
 
 go.configs["go-dap"] = function()

@@ -743,7 +743,7 @@ doom.use_package {
 doom.use_package "tpope/vim-dadbod"
 
 vim.opt.colorcolumn = "120"
--- vim.g.skip_ts_context_commentstring_module = true
+vim.g.skip_ts_context_commentstring_module = true
 
 doom.indent = 2
 doom.core.treesitter.settings.show_compiler_warning_message = false
