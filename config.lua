@@ -739,6 +739,12 @@ doom.use_package {
 --     opts.sources = require("cmp").config.sources(vim.list_extend(opts.sources, { { name = "bazel" } }))
 --   end,
 -- }
+--
+
+doom.use_package {
+  "Exafunction/codeium.vim",
+  event = "BufEnter",
+}
 
 doom.use_package "tpope/vim-dadbod"
 
