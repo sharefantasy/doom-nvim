@@ -6,7 +6,11 @@ treesitter.settings = {
   show_compiler_warning_message = true,
 
   treesitter = {
-    highlight = { enable = true },
+    highlight = { 
+      enable = true,
+      -- 为 Go 文件禁用 Treesitter 高亮器以避免错误
+      disable = { "go" },
+    },
     incremental_selection = {
       enable = true,
       keymaps = {

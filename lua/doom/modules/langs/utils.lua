@@ -151,7 +151,8 @@ module.use_mason_package = function(package_name, success_handler, error_handler
       end)
     else
       profiler.stop("mason|using package " .. package_name)
-      success_handler(package, package.get_handle(package))
+      -- Mason API 变更，get_handle 方法不存在，直接使用 package
+      success_handler(package, package)
     end
   end, debug.traceback)
   if not ok then
@@ -184,24 +185,14 @@ module.use_lsp_mason = function(lsp_name, options)
   if not utils.is_module_enabled("features", "lsp") then
     return
   end
-  local lsp = require "lspconfig"
-  local lsp_configs = require "lspconfig.configs"
 
   local opts = options or {}
   local config_name = opts.name and opts.name or lsp_name
-  --- If the LSP is not extending / using a pre-existing lspconfig
-  local is_unsupported_config = opts.name ~= nil or lsp[config_name] == nil
 
   -- Resolve the user config from `opts.config` if it's a function
   local user_config = nil
   if opts.config then
     user_config = type(opts.config) == "function" and opts.config() or opts.config
-  end
-
-  -- If the LSP is unsupported we need to add the entry to lspconfig
-  if user_config ~= nil and is_unsupported_config then
-    print(("%s is unsupported, creating it now"):format(config_name))
-    lsp_configs[config_name] = user_config
   end
 
   -- Combine default on_attach with provided on_attach
@@ -222,7 +213,42 @@ module.use_lsp_mason = function(lsp_name, options)
   -- Start server and bind to buffers
   local start_lsp = function()
     local final_config = vim.tbl_deep_extend("keep", user_config or {}, capabilities_config)
-    if lsp[config_name].setup == nil then
+    
+    -- 临时抑制弃用警告
+    local original_deprecate = vim.deprecate
+    vim.deprecate = function() end
+    
+    local success = false
+    local error_msg = nil
+    
+    -- 尝试使用新的 API (Neovim 0.11+)
+    if vim.lsp and vim.lsp.config then
+      local ok, _ = pcall(function()
+        if vim.lsp.config[config_name] then
+          vim.lsp.config[config_name] = final_config
+          vim.lsp.enable(config_name)
+          success = true
+        end
+      end)
+      if ok and success then
+        vim.deprecate = original_deprecate
+        return
+      end
+    end
+    
+    -- 回退到 lspconfig API
+    local lsp = require "lspconfig"
+    local ok, _ = pcall(function()
+      if lsp[config_name] and lsp[config_name].setup then
+        lsp[config_name].setup(final_config)
+        success = true
+      end
+    end)
+    
+    -- 恢复原始的弃用函数
+    vim.deprecate = original_deprecate
+    
+    if not success then
       log.warn(
         ("Cannot start LSP %s with config name %s. Reason: The LSP config does not exist, please create an issue so this can be resolved."):format(
           lsp_name,
@@ -231,21 +257,31 @@ module.use_lsp_mason = function(lsp_name, options)
       )
       return
     end
-    lsp[config_name].setup(final_config)
-    local lsp_config_server = lsp[config_name]
-    if lsp_config_server.manager then
-      local buffer_handler = lsp_config_server.filetypes and lsp_config_server.manager.try_add_wrapper
-        or lsp_config_server.manager.try_add
-      for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-        buffer_handler(lsp_config_server.manager, bufnr)
+    
+    -- 处理 buffer 绑定
+    pcall(function()
+      local lsp = require "lspconfig"
+      local lsp_config_server = lsp[config_name]
+      if lsp_config_server and lsp_config_server.manager then
+        local buffer_handler = lsp_config_server.filetypes and lsp_config_server.manager.try_add_wrapper
+          or lsp_config_server.manager.try_add
+        for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+          buffer_handler(lsp_config_server.manager, bufnr)
+        end
       end
-    end
+    end)
   end
 
   -- Auto install if possible
   if utils.is_module_enabled("features", "auto_install") and not opts.no_installer then
-    local lspconfig_to_package = require("mason-lspconfig").get_mappings().lspconfig_to_package
-    module.use_mason_package(lspconfig_to_package[lsp_name], start_lsp)
+    pcall(function()
+      local lspconfig_to_package = require("mason-lspconfig").get_mappings().lspconfig_to_package
+      if lspconfig_to_package and lspconfig_to_package[lsp_name] then
+        module.use_mason_package(lspconfig_to_package[lsp_name], start_lsp)
+      else
+        start_lsp()
+      end
+    end)
   else
     start_lsp()
   end

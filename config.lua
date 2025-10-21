@@ -642,11 +642,40 @@ doom.use_package {
       opts = {}, -- needed
     },
   },
-  opts = {
-    sources = {
-      { "cmp-dbee" },
-    },
-  },
+  config = function()
+    local cmp = require("cmp")
+    cmp.setup {
+      sources = cmp.config.sources({
+        { name = "codeium" }, -- AI 代码补全
+        { name = "nvim_lsp" }, -- LSP 补全
+        { name = "cmp-dbee" }, -- SQL 补全
+        { name = "buffer" }, -- 缓冲区补全
+        { name = "path" }, -- 路径补全
+        { name = "luasnip" }, -- 代码片段
+      }),
+      mapping = cmp.mapping.preset.insert({
+        ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+        ["<C-f>"] = cmp.mapping.scroll_docs(4),
+        ["<C-Space>"] = cmp.mapping.complete(),
+        ["<C-e>"] = cmp.mapping.abort(),
+        ["<CR>"] = cmp.mapping.confirm({ select = true }),
+        ["<Tab>"] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_next_item()
+          else
+            fallback()
+          end
+        end, { "i", "s" }),
+        ["<S-Tab>"] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_prev_item()
+          else
+            fallback()
+          end
+        end, { "i", "s" }),
+      }),
+    }
+  end,
 }
 
 doom.use_package {
@@ -742,8 +771,18 @@ doom.use_package {
 --
 
 doom.use_package {
-  "Exafunction/codeium.vim",
+  "Exafunction/codeium.nvim",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    "hrsh7th/nvim-cmp",
+  },
   event = "BufEnter",
+  config = function()
+    require("codeium").setup {
+      enable_chat = true,
+      enable_cmp_source = true,
+    }
+  end,
 }
 
 doom.use_package "tpope/vim-dadbod"

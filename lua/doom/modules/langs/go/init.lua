@@ -3,7 +3,7 @@ local go = {}
 go.settings = {
   --- Disables auto installing the treesitter
   --- @type boolean
-  disable_treesitter = false,
+  disable_treesitter = false,  -- 重新启用 Treesitter
   --- Treesitter grammars to install
   --- @type string|string[]
   treesitter_grammars = "go",
