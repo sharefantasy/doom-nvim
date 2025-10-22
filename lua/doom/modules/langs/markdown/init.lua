@@ -10,7 +10,7 @@ markdown.settings = {
 
     --- Disables default LSP config
     --- @type boolean
-    disable_lsp = false,
+    disable_lsp = true,
     --- Name of the language server
     --- @type string
     lsp_name = "marksman",
@@ -47,6 +47,12 @@ markdown.autocmds = {
             if not markdown.settings.disable_treesitter then
                 langs_utils.use_tree_sitter(markdown.settings
                                                 .treesitter_grammars)
+                -- 强制启用treesitter高亮（覆盖全局禁用）
+                vim.schedule(function()
+                    local ts_configs = require("nvim-treesitter.configs")
+                    ts_configs.setup({highlight = {enable = true, disable = {}}})
+                    vim.treesitter.start()
+                end)
             end
 
             if not markdown.settings.disable_diagnostics then

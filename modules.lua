@@ -22,14 +22,14 @@ return {
     -- "gitsigns", -- Show git changes in sidebar
     "illuminate", -- Highlight other copies of the word you're hovering on
     "indentlines", -- Show indent lines with special characters
-    "range_highlight", -- Highlight selected range from commands
+    -- "range_highlight", -- Highlight selected range from commands
     "todo_comments", -- Highlight TODO: comments
     -- "doom_themes", -- Extra themes for doom
     -- UI Components
     "lsp_progress", -- Check status of LSP loading
     "dashboard", -- A pretty dashboard upon opening
-    "trouble", -- A pretty diagnostic viewer
-    "statusline", -- A pretty status line at the bottom of the buffer
+    -- "trouble", -- A pretty diagnostic viewer
+    -- "statusline", -- A pretty status line at the bottom of the buffer
     -- "minimap",         -- Shows current position in document
     -- "terminal",        -- Integrated terminal in neovim
     "symbols", -- Navigate between code symbols using telescope

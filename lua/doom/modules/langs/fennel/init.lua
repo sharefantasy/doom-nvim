@@ -8,12 +8,12 @@ fennel.settings = {
   --- @type string|string[]
   treesitter_grammars = "fennel",
 
-  --- Disables default LSP config
+  --- Disables default LSP config (暂时禁用LSP以避免弃用警告)
   --- @type boolean
-  disable_lsp = false,
+  disable_lsp = true,
   --- Name of the language server
   --- @type string
-  lsp_name = "fennel_language_server",
+  lsp_name = "fennel_ls",
 
   --- Disables null-ls formatting sources
   --- @type boolean
@@ -41,6 +41,13 @@ fennel.autocmds = {
 
       if not fennel.settings.disable_treesitter then
         langs_utils.use_tree_sitter(fennel.settings.treesitter_grammars)
+        -- 强制启用treesitter高亮
+        local ts_configs = require("nvim-treesitter.configs")
+        ts_configs.setup({highlight = {enable = true, disable = {}}})
+        -- 为当前缓冲区启动treesitter
+        vim.schedule(function()
+          vim.treesitter.start()
+        end)
       end
 
       if not fennel.settings.disable_formatting then
@@ -53,7 +60,7 @@ fennel.autocmds = {
 
       doom.use_package {
         "Olical/conjure",
-        ft = { "fennel", "fennel" }, -- etc
+        ft = { "fennel" }, -- etc
         dependencies = {
           {
             "PaterJason/cmp-conjure",

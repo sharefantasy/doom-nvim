@@ -1,3 +1,6 @@
+-- 首先加载调试脚本来捕获E5248错误
+vim.cmd("source " .. vim.fn.stdpath("config") .. "/debug_e5248.lua")
+
 -- Check if user is running Doom in a supported Neovim version before trying to load anything
 if vim.fn.has("nvim-0.7.0") ~= 1 then
     local message = table.concat({

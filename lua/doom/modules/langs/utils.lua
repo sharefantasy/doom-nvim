@@ -103,9 +103,17 @@ end
 ---@param success_handler function
 ---@param error_handler function|nil
 module.use_mason_package = function(package_name, success_handler, error_handler)
-  local mason = require "mason-registry"
+  local ok, mason = pcall(require, "mason-registry")
+  if not ok then
+    log.warn("mason-registry not available, skipping package installation for: " .. (package_name or "unknown"))
+    -- 直接调用成功处理器，跳过mason安装
+    vim.schedule(function()
+      success_handler(nil)
+    end)
+    return
+  end
   local on_err = error_handler or default_error_handler
-  print("package_name", package_name)
+  -- print("package_name", package_name)  -- 注释掉以避免E5248错误
   if package_name == nil then
     on_err("nil", "No package_name provided.")
     return
@@ -188,6 +196,38 @@ module.use_lsp_mason = function(lsp_name, options)
 
   local opts = options or {}
   local config_name = opts.name and opts.name or lsp_name
+  
+  -- 检查是否存在对应的LSP配置
+  local lspconfig_ok, lspconfig = pcall(require, "lspconfig")
+  if not lspconfig_ok then
+    log.warn("lspconfig not available, skipping LSP setup for: " .. lsp_name)
+    profiler.stop(profiler_msg)
+    return
+  end
+  
+  -- 检查是否存在对应的LSP配置
+  local has_config = false
+  
+  -- 首先检查lspconfig是否存在该配置（使用安全的方式）
+  local lspconfig_status, lspconfig_result = pcall(function() 
+    -- 使用rawget避免触发元方法
+    return rawget(lspconfig, config_name) 
+  end)
+  if lspconfig_status and lspconfig_result then
+    has_config = true
+  else
+    -- 检查mason-lspconfig映射
+    local mason_mappings_ok, mason_mappings = pcall(require, "mason-lspconfig.mappings.server")
+    if mason_mappings_ok and mason_mappings.lspconfig_to_package and mason_mappings.lspconfig_to_package[config_name] then
+      has_config = true
+    end
+  end
+  
+  if not has_config then
+    log.warn("No LSP configuration found for: " .. config_name .. ", skipping setup")
+    profiler.stop(profiler_msg)
+    return
+  end
 
   -- Resolve the user config from `opts.config` if it's a function
   local user_config = nil

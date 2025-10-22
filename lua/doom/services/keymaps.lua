@@ -159,6 +159,9 @@ module.traverse = function(node, settings, integrations)
     end
 
     -- First must be a string, append first to the prefix
+    if first == nil or type(first) ~= "string" then
+        return  -- 静默跳过无效节点
+    end
     mergedSettings.prefix = mergedSettings.prefix .. first
     local second = node[2]
 

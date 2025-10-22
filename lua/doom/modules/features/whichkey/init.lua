@@ -28,13 +28,12 @@ whichkey.settings = {
         ["!"] = "Filter though external program"
     },
     icons = {breadcrumb = "»", separator = "➜", group = "+"},
-    key_labels = {["<space>"] = "SPC", ["<cr>"] = "RET", ["<tab>"] = "TAB"},
-    window = {padding = {0, 0, 0, 0}, border = doom.border_style},
+    replace = {["<space>"] = "SPC", ["<cr>"] = "RET", ["<tab>"] = "TAB"},
+    win = {padding = {0, 0, 0, 0}, border = doom.border_style},
     layout = {height = {min = 1, max = 10}, spacing = 3, align = "left"},
-    ignore_missing = true,
-    hidden = {"<silent>", "<Cmd>", "<cmd>", "<Plug>", "call", "lua", "^:", "^ "},
     show_help = true,
-    triggers = "auto"
+    triggers = {"<leader>"},
+    defer = function(trigger) return trigger:find("<leader>") ~= nil end
 }
 
 whichkey.packages = {

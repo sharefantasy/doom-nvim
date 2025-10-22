@@ -10,6 +10,7 @@ local utils = require("doom.utils")
 local log = require("doom.utils.logging")
 
 profiler.start(profile_message)
+
 -- If the colorscheme was not found then fallback to defaults.
 if not utils.is_empty(doom.colorscheme) then
     local loaded_colorscheme = xpcall(function()

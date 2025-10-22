@@ -8,8 +8,8 @@ treesitter.settings = {
   treesitter = {
     highlight = { 
       enable = true,
-      -- 为 Go 文件禁用 Treesitter 高亮器以避免错误
-      disable = { "go" },
+      -- 为 Go 和 markdown 文件禁用 Treesitter 高亮器以避免错误
+      disable = { "go", "markdown" },
     },
     incremental_selection = {
       enable = true,
@@ -33,7 +33,7 @@ treesitter.settings = {
         "typescriptreact",
         "svelte",
         "vue",
-        "markdown",
+        -- "markdown",  -- 临时禁用 markdown 自动标签
       },
     },
   },
@@ -77,7 +77,38 @@ treesitter.packages = {
 treesitter.configs = {}
 treesitter.configs["nvim-treesitter"] = function()
   local is_module_enabled = require("doom.utils").is_module_enabled
-  require("nvim-treesitter.configs").setup(vim.tbl_deep_extend("force", doom.core.treesitter.settings.treesitter, {
+  require("nvim-treesitter.configs").setup(vim.tbl_deep_extend("force", {
+    highlight = { 
+      enable = true,
+      -- 为 Go 和 markdown 文件禁用 Treesitter 高亮器以避免错误
+      disable = { "go", "markdown" },
+    },
+    incremental_selection = {
+      enable = true,
+      keymaps = {
+        init_selection = "gnn",
+        node_incremental = "grn",
+        scope_incremental = "grc",
+        node_decremental = "grm",
+      },
+    },
+    indent = { enable = true },
+    playground = { enable = true },
+    context_commentstring = { enable = true },
+    autotag = {
+      enable = true,
+      filetypes = {
+        "html",
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "svelte",
+        "vue",
+        -- "markdown",  -- 临时禁用 markdown 自动标签
+      },
+    },
+  }, {
     autopairs = { enable = is_module_enabled("features", "autopairs") },
   }))
 
@@ -118,6 +149,8 @@ treesitter.configs["tree-textobj"] = function()
     textobjects = {
       select = {
         enable = true,
+        -- 临时禁用 markdown 文件以避免架构兼容性问题
+        disable = { "markdown" },
 
         -- Automatically jump forward to textobj, similar to targets.vim
         lookahead = true,
@@ -164,6 +197,8 @@ treesitter.configs["tree-textsub"] = function()
   require("nvim-treesitter.configs").setup {
     textsubjects = {
       enable = true,
+      -- 临时禁用 markdown 文件以避免架构兼容性问题
+      disable = { "markdown" },
       prev_selection = ",", -- (Optional) keymap to select the previous selection
       keymaps = {
         ["."] = "textsubjects-smart",

@@ -10,23 +10,38 @@ Doom Nvim 是一个受 doom-emacs 启发的 Neovim 配置框架，提供模块�
 - **插件管理**: 使用 lazy.nvim 进行插件管理，支持延迟加载
 - **配置系统**: 通过 `config.lua` 和 `modules.lua` 进行用户配置
 - **用户扩展**: 支持用户自定义模块覆盖默认模块
+- **双语言支持**: 正在进行 Fennel 重写，支持 Lua 和 Fennel 两种开发语言
 
 ## 项目结构
 
 ```
-├── lua/doom/                    # 核心框架代码
-│   ├── core/                    # 核心功能（配置、模块、命令等）
-│   ├── modules/                 # 内置模块
-│   │   ├── features/           # 功能模块（35+）
-│   │   └── langs/              # 语言模块（20+）
-│   ├── services/               # 服务层（自动命令、键映射等）
+├── fnl/                        # Fennel 源代码目录（新增）
+│   ├── doom/                   # Fennel 核心框架代码
+│   │   ├── core/              # 核心功能（配置、模块、命令等）
+│   │   ├── modules/           # 内置模块
+│   │   │   ├── features/     # 功能模块（35+）
+│   │   │   └── langs/        # 语言模块（20+）
+│   │   ├── services/         # 服务层（自动命令、键映射等）
+│   │   └── utils/            # 工具函数
+│   ├── gentlewind/           # Gentlewind 主题（Fennel）
+│   ├── user/                 # 用户自定义模块（Fennel）
+│   │   ├── config.fnl        # 用户配置文件（Fennel）
+│   │   └── modules.fnl       # 模块启用配置（Fennel）
+│   └── init.fnl              # 主入口文件（Fennel）
+├── lua/doom/                   # Lua 核心框架代码（将逐步迁移到fnl）
+│   ├── core/                   # 核心功能
+│   ├── modules/                # 内置模块
+│   ├── services/               # 服务层
 │   ├── utils/                  # 工具函数
 │   └── tools/                  # 开发工具
-├── lua/user/                    # 用户自定义模块目录
-├── config.lua                   # 用户配置文件
-├── modules.lua                  # 模块启用配置
+├── lua/user/                   # 用户自定义模块目录（Lua）
+├── config.lua                  # 用户配置文件（Lua）
+├── modules.lua                 # 模块启用配置（Lua）
 ├── lazy-lock.json              # 插件锁定文件
-└── $HOME/.local/share/lazy/    # lazy.nvim 插件存储目录（运行时生成）
+├── .aniseed.fnl               # Fennel 编译配置
+├── FENNEL_MIGRATION.md        # Fennel 迁移文档
+├── FENNEL_REWRITE_SUMMARY.md  # Fennel 重写总结
+└── $HOME/.local/share/lazy/   # lazy.nvim 插件存储目录（运行时生成）
 ```
 
 ## 构建与命令
@@ -53,6 +68,10 @@ git clone https://github.com/doom-neovim/doom-nvim.git ~/.config/nvim
 # Doom 专用命令
 :DoomCheckUpdates    # 检查更新
 :DoomReload          # 重载配置
+
+# Fennel 开发命令
+./tools/compile-fennel.sh    # 编译 Fennel 代码到 Lua
+./tools/test-fennel.sh        # 测试 Fennel 代码
 ```
 
 ### 插件存储管理
@@ -82,12 +101,19 @@ stylua --config-path .stylua.toml .
 
 # Lua 静态检查（luacheck）
 luacheck .
+
+# Fennel 代码格式化（fnlfmt）
+fnlfmt --write fnl/
+
+# Fennel 语法检查（fennel）
+fennel --compile fnl/doom/core/init.fnl
 ```
 
 ## 代码规范
 
 ### 格式化规则
 
+#### Lua 代码规范
 - **缩进**: 2 个空格
 - **行宽**: 120 字符
 - **引号**: 优先使用双引号
@@ -96,13 +122,32 @@ luacheck .
   - 函数名: `snake_case`
 - **工具**: 使用 stylua 进行格式化，luacheck 进行静态检查
 
+#### Fennel 代码规范
+- **缩进**: 2 个空格
+- **行宽**: 120 字符
+- **括号**: 使用标准 Lisp 括号风格
+- **命名**:
+  - 变量名: `kebab-case`
+  - 函数名: `kebab-case`
+- **注释**: 使用 `;;` 单行注释，`;;` 块注释
+- **工具**: 使用 fnlfmt 进行格式化，fennel 进行语法检查
+
 ### 模块开发规范
 
+#### Lua 模块开发
 1. 模块文件必须返回模块表
 2. 模块应包含 `packages`、`configs`、`settings` 等标准字段
 3. 使用 `doom.use_package()` 添加插件
 4. 使用 `doom.use_keybind()` 添加键绑定
 5. 使用 `doom.use_autocmd()` 添加自动命令
+
+#### Fennel 模块开发
+1. 模块文件必须返回模块表
+2. 使用 `(module module-name)` 声明模块
+3. 模块结构：`{:packages [] :configs {} :settings {}}`
+4. 使用 `(doom.use-package ...)` 添加插件
+5. 使用 `(doom.use-keybind ...)` 添加键绑定
+6. 使用 `(doom.use-autocmd ...)` 添加自动命令
 
 ## 测试框架
 
@@ -180,15 +225,30 @@ return my_feature
 
 ## 开发建议
 
+### 通用开发建议
 1. **模块化开发**: 遵循模块架构，保持模块独立性
 2. **延迟加载**: 利用 lazy.nvim 的延迟加载机制优化启动性能，插件存储在 `$HOME/.local/share/lazy/`
 3. **错误处理**: 使用 `utils.safe_require()` 进行安全的模块加载
 4. **性能监控**: 使用内置的性能分析工具监控启动时间
 5. **文档完善**: 为自定义模块添加详细文档和配置说明
 
+### Fennel 开发建议
+1. **编译流程**: 修改 Fennel 代码后需运行 `./tools/compile-fennel.sh` 编译到 Lua
+2. **语法检查**: 使用 `fennel --compile` 检查语法错误
+3. **代码格式化**: 使用 `fnlfmt` 保持代码风格一致
+4. **模块结构**: 遵循 Fennel 模块规范，使用 kebab-case 命名
+5. **迁移策略**: 新功能优先使用 Fennel 开发，逐步迁移现有 Lua 代码
+
 ## 故障排除
 
+### 通用问题
 - **启动问题**: 检查 `doom.log` 日志文件
-- **插件问题**: 运行 `:PackerSync` 同步插件
+- **插件问题**: 运行 `:Lazy sync` 同步插件
 - **配置问题**: 验证 `config.lua` 和 `modules.lua` 语法
 - **性能问题**: 使用内置 profiler 分析启动时间
+
+### Fennel 相关问题
+- **编译错误**: 检查 Fennel 语法，使用 `fennel --compile` 验证
+- **模块加载失败**: 确保 Fennel 代码已正确编译到 Lua
+- **编译后无效**: 检查编译输出目录和文件权限
+- **混合语言问题**: 确保 Lua 和 Fennel 模块命名不冲突
