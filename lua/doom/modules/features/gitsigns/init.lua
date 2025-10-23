@@ -60,45 +60,14 @@ gitsigns.configs["gitsigns.nvim"] = function()
 end
 
 gitsigns.binds = {
-  {
-    "<leader>g",
-    name = "+git",
-    {
-      {
-        "s",
-        "<cmd>lua require'gitsigns'.stage_hunk()<CR>",
-        name = " Stage Hunk",
-      },
-      {
-        "u",
-        "<cmd>lua require'gitsigns'.undo_stage_hunk()<CR>",
-        name = " Unstage Hunk",
-      },
-      {
-        "R",
-        "<cmd>lua require'gitsigns'.reset_hunk()<CR>",
-        name = " Reset Hunk",
-      },
-      {
-        "n",
-        "<cmd>lua require'gitsigns'.next_hunk()<CR>",
-        name = "Next Hunk",
-      },
-      {
-        "p",
-        "<cmd>lua require'gitsigns'.prev_hunk()<CR>",
-        name = "Prev Hunk",
-      },
-      {
-        "b",
-        "<cmd>lua require'gitsigns'.blame_line()<CR>",
-        name = "Blame Line",
-      },
-      {
-        "h",
-        "<cmd>lua require'gitsigns'.preview_hunk()<CR>",
-        name = " Preview Hunk",
-      },
+  { "<leader>g", group = "git", {
+      { "s", "<cmd>lua require'gitsigns'.stage_hunk()<CR>", desc = "Stage Hunk" },
+      { "u", "<cmd>lua require'gitsigns'.undo_stage_hunk()<CR>", desc = "Unstage Hunk" },
+      { "R", "<cmd>lua require'gitsigns'.reset_hunk()<CR>", desc = "Reset Hunk" },
+      { "n", "<cmd>lua require'gitsigns'.next_hunk()<CR>", desc = "Next Hunk" },
+      { "p", "<cmd>lua require'gitsigns'.prev_hunk()<CR>", desc = "Prev Hunk" },
+      { "b", "<cmd>lua require'gitsigns'.blame_line()<CR>", desc = "Blame Line" },
+      { "h", "<cmd>lua require'gitsigns'.preview_hunk()<CR>", desc = "Preview Hunk" },
     },
   },
 }

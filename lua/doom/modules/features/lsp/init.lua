@@ -287,136 +287,61 @@ end
 
 lsp.binds = function()
   return {
-    { "K", vim.lsp.buf.hover, name = "Show hover doc" },
-    { "[d", vim.diagnostic.goto_prev, name = "Jump to prev diagnostic" },
-    { "]d", vim.diagnostic.goto_next, name = "Jump to next diagnostic" },
-    {
-      "g",
-      {
-        { "D", vim.lsp.buf.declaration, "Jump to declaration" },
-        { "d", vim.lsp.buf.definition, name = "Jump to definition" },
-        { "r", vim.lsp.buf.references, name = "Jump to references" },
-        {
-          "i",
-          vim.lsp.buf.implementation,
-          name = "Jump to implementation",
-        },
-        { "a", vim.lsp.buf.code_action, name = "Do code action" },
+    { "K", vim.lsp.buf.hover, desc = "Show hover doc" },
+    { "[d", vim.diagnostic.goto_prev, desc = "Jump to prev diagnostic" },
+    { "]d", vim.diagnostic.goto_next, desc = "Jump to next diagnostic" },
+    { "g", {
+        { "D", vim.lsp.buf.declaration, desc = "Jump to declaration" },
+        { "d", vim.lsp.buf.definition, desc = "Jump to definition" },
+        { "r", vim.lsp.buf.references, desc = "Jump to references" },
+        { "i", vim.lsp.buf.implementation, desc = "Jump to implementation" },
+        { "a", vim.lsp.buf.code_action, desc = "Do code action" },
       },
     },
-    {
-      "<C-",
-      {
-        {
-          "p>",
-          vim.diagnostic.goto_prev,
-          name = "Jump to prev diagnostic",
-        },
-        {
-          "n>",
-          vim.diagnostic.goto_next,
-          name = "Jump to next diagnostic",
-        },
-        { "k>", vim.lsp.buf.signature_help, name = "Show signature help" },
+    { "<C-", {
+        { "p>", vim.diagnostic.goto_prev, desc = "Jump to prev diagnostic" },
+        { "n>", vim.diagnostic.goto_next, desc = "Jump to next diagnostic" },
+        { "k>", vim.lsp.buf.signature_help, desc = "Show signature help" },
       },
     },
-    {
-      "<leader>",
-      name = "+prefix",
-      {
-        {
-          "c",
-          name = "+code",
-          {
-            { "r", vim.lsp.buf.rename, name = "Rename" },
-            { "a", vim.lsp.buf.code_action, name = "Do action" },
-            {
-              "t",
-              vim.lsp.buf.type_definition,
-              name = "Jump to type",
-            },
-            { "D", vim.lsp.buf.declaration, "Jump to declaration" },
-            {
-              "d",
-              vim.lsp.buf.definition,
-              name = "Jump to definition",
-            },
-            {
-              "R",
-              vim.lsp.buf.references,
-              name = "Jump to references",
-            },
-            {
-              "i",
-              vim.lsp.buf.implementation,
-              name = "Jump to implementation",
-            },
-            {
-              "l",
-              name = "+lsp",
-              {
-                { "i", "<cmd>LspInfo<CR>", name = "Inform" },
-                { "r", "<cmd>LspRestart<CR>", name = "Restart" },
-                { "s", "<cmd>LspStart<CR>", name = "Start" },
-                { "d", "<cmd>LspStop<CR>", name = "Disconnect" },
+    { "<leader>", group = "prefix", {
+        { "c", group = "code", {
+            { "r", vim.lsp.buf.rename, desc = "Rename" },
+            { "a", vim.lsp.buf.code_action, desc = "Do action" },
+            { "t", vim.lsp.buf.type_definition, desc = "Jump to type" },
+            { "D", vim.lsp.buf.declaration, desc = "Jump to declaration" },
+            { "d", vim.lsp.buf.definition, desc = "Jump to definition" },
+            { "R", vim.lsp.buf.references, desc = "Jump to references" },
+            { "i", vim.lsp.buf.implementation, desc = "Jump to implementation" },
+            { "l", group = "lsp", {
+                { "i", "<cmd>LspInfo<CR>", desc = "Inform" },
+                { "r", "<cmd>LspRestart<CR>", desc = "Restart" },
+                { "s", "<cmd>LspStart<CR>", desc = "Start" },
+                { "d", "<cmd>LspStop<CR>", desc = "Disconnect" },
               },
             },
-            {
-              "d",
-              name = "+diagnostics",
-              {
-                {
-                  "[",
-                  vim.diagnostic.goto_prev,
-                  name = "Jump to prev",
-                },
-                {
-                  "]",
-                  vim.diagnostic.goto_next,
-                  name = "Jump to next",
-                },
-                {
-                  "p",
-                  vim.diagnostic.goto_prev,
-                  name = "Jump to prev",
-                },
-                {
-                  "n",
-                  vim.diagnostic.goto_next,
-                  name = "Jump to next",
-                },
-                {
-                  "L",
-                  function()
+            { "d", group = "diagnostics", {
+                { "[", vim.diagnostic.goto_prev, desc = "Jump to prev" },
+                { "]", vim.diagnostic.goto_next, desc = "Jump to next" },
+                { "p", vim.diagnostic.goto_prev, desc = "Jump to prev" },
+                { "n", vim.diagnostic.goto_next, desc = "Jump to next" },
+                { "L", function()
                     vim.diagnostic.open_float(0, {
                       focusable = false,
                       border = doom.border_style,
                     })
-                  end,
-                  name = "Line",
-                },
-                {
-                  "l",
-                  vim.diagnostic.setloclist,
-                  name = "Loclist",
-                },
+                  end, desc = "Line" },
+                { "l", vim.diagnostic.setloclist, desc = "Loclist" },
               },
             },
           },
         },
-        {
-          "t",
-          name = "+tweak",
-          {
-            {
-              "c",
-              function()
+        { "t", group = "tweak", {
+            { "c", function()
                 lsp.__completions_enabled = not lsp.__completions_enabled
                 local bool2str = require("doom.utils").bool2str
                 print(string.format("completion=%s", bool2str(lsp.__completions_enabled)))
-              end,
-              name = "Toggle completion",
-            },
+              end, desc = "Toggle completion" },
           },
         },
       },

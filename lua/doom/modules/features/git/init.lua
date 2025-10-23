@@ -76,27 +76,19 @@ git.configs["diffview"] = function()
 end
 
 git.binds = {
-  "<leader>",
-  name = "+prefix",
-  {
-    {
-      "g",
-      name = "+git",
-      {
-        { "s", "<cmd>Neogit<CR>", name = "Open neogit" },
-        { "b", "<cmd>BlameToggle window<CR>", name = "Open GitBlame" },
-        {
-          "d",
-          {
-            -- {"b", name = "Diff Revision"},
-            { "s", "<cmd>DiffviewOpen<CR>", name = "Resolve Conflict" },
-            { "h", "<cmd>DiffviewOpen HEAD<CR>", name = "Diff Head" },
+  { "<leader>", group = "prefix", {
+    { "g", group = "git", {
+        { "s", "<cmd>Neogit<CR>", desc = "Open neogit" },
+        { "b", "<cmd>BlameToggle window<CR>", desc = "Open GitBlame" },
+        { "d", group = "DiffView", {
+            -- {"b", desc = "Diff Revision"},
+            { "s", "<cmd>DiffviewOpen<CR>", desc = "Resolve Conflict" },
+            { "h", "<cmd>DiffviewOpen HEAD<CR>", desc = "Diff Head" },
           },
-          name = "DiffView",
         },
       },
     },
-  },
+  }},
 }
 
 return git

@@ -91,113 +91,59 @@ dap.configs["osv"] = function()
 end
 
 dap.binds = {
-  "<leader>",
-  name = "+prefix",
-  {
-    {
-      "d",
-      name = "+debug",
-      {
-        {
-          "c",
-          function()
+  { "<leader>", group = "prefix", {
+    { "d", group = "debug", {
+        { "c", function()
             require("dap").continue()
-          end,
-          name = "Continue/Start",
-        },
-        {
-          "d",
-          function()
+          end, desc = "Continue/Start" },
+        { "d", function()
             require("dap").disconnect()
-          end,
-          name = "Disconnect",
-        },
-        {
-          "e",
-          function()
+          end, desc = "Disconnect" },
+        { "e", function()
             require("dapui").eval()
-          end,
-          name = "Evaluate",
-        },
-        {
-          mode = "v",
-          {
-            {
-              "e",
-              function()
+          end, desc = "Evaluate" },
+        { mode = "v", {
+            { "e", function()
                 require("dapui").eval()
-              end,
-              name = "Evaluate",
-            },
+              end, desc = "Evaluate" },
           },
         },
-        {
-          "s",
-          function()
+        { "s", function()
             require("osv").launch { port = 8086 }
-          end,
-          name = "Start NvimDebug",
-        },
-        {
-          "i",
-          function()
+          end, desc = "Start NvimDebug" },
+        { "i", function()
             require("dap").step_into()
-          end,
-          name = "Step into",
-        },
-        {
-          "o",
-          function()
+          end, desc = "Step into" },
+        { "o", function()
             require("dap").step_over()
-          end,
-          name = "Step over",
-        },
-        {
-          "b",
-          name = "+breakpoint",
-          {
-            {
-              "b",
-              function()
+          end, desc = "Step over" },
+        { "b", group = "breakpoint", {
+            { "b", function()
                 require("dap").toggle_breakpoint()
-              end,
-              name = "Toggle breakpoint",
-            },
-            {
-              "c",
-              function()
+              end, desc = "Toggle breakpoint" },
+            { "c", function()
                 vim.fn.inputsave()
                 local condition = vim.fn.input "Condition: "
                 vim.fn.inputrestore()
                 require("dap").toggle_breakpoint(condition)
-              end,
-              name = "Toggle",
-            },
-            {
-              "h",
-              function()
+              end, desc = "Toggle" },
+            { "h", function()
                 vim.fn.inputsave()
                 local number = vim.fn.input "Hit number: "
                 vim.fn.inputrestore()
                 require("dap").toggle_breakpoint(nil, number)
-              end,
-              name = "Hit number",
-            },
-            {
-              "l",
-              function()
+              end, desc = "Hit number" },
+            { "l", function()
                 vim.fn.inputsave()
                 local msg = vim.fn.input "Message: "
                 vim.fn.inputrestore()
                 require("dap").toggle_breakpoint(nil, nil, msg)
-              end,
-              name = "Log",
-            },
+              end, desc = "Log" },
           },
         },
       },
     },
-  },
+  }},
 }
 
 return dap

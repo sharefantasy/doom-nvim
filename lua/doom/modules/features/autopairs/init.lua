@@ -21,27 +21,19 @@ autopairs.configs["nvim-autopairs"] = function()
 end
 
 autopairs.binds = {
-    "<leader>",
-    name = "+prefix",
-    {
-        {
-            "t",
-            name = "+tweak",
-            {
-                {
-                    "p",
-                    function()
+    { "<leader>", group = "prefix", {
+        { "t", group = "tweak", {
+                { "p", function()
                         local autopairs_plugin = require("nvim-autopairs")
                         if autopairs_plugin.state.disabled then
                             autopairs_plugin.enable()
                         else
                             autopairs_plugin.disable()
                         end
-                    end,
-                    name = "Toggle autopairs"
-                }
+                    end, desc = "Toggle autopairs" }
             }
         }
-    }
+    }}
 }
+
 return autopairs

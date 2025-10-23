@@ -14,32 +14,17 @@ auto_session.configs["persistence.nvim"] = function()
 end
 
 auto_session.binds = {
-  "<leader>",
-  name = "+prefix",
-  {
-    {
-      "q",
-      name = "+quit",
-      {
-        {
-          "r",
-          function()
+  { "<leader>", group = "prefix", {
+    { "q", group = "quit", {
+        { "r", function()
             require("persistence").load { last = true }
-          end,
-          name = "Restore session",
-        },
-      },
-      {
-        {
-          "l",
-          function()
+          end, desc = "Restore session" },
+        { "l", function()
             require("persistence").load()
-          end,
-          name = "Restore Last Session in current directory",
-        },
+          end, desc = "Restore Last Session in current directory" },
       },
     },
-  },
+  }},
 }
 
 return auto_session

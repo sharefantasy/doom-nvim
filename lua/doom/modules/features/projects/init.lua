@@ -83,8 +83,8 @@ projects.configs["ast-grep.nvim"] = function()
 end
 
 projects.binds = {
-  { "<leader>fp", "<cmd>Telescope projects<CR>", name = "Switch project" },
-  { "<leader>fa", "<cmd>Telescope ast_grep<CR>", name = "Find by AST" },
+  { "<leader>fp", "<cmd>Telescope projects<CR>", desc = "Switch project" },
+  { "<leader>fa", "<cmd>Telescope ast_grep<CR>", desc = "Find by AST" },
 }
 
 return projects

@@ -118,15 +118,11 @@ dashboard.configs["dashboard-nvim"] = function()
 end
 
 dashboard.binds = {
-  "<leader>",
-  name = "+prefix",
-  {
-    {
-      "o",
-      name = "+open/close",
-      { { "D", "<cmd>Dashboard<CR>", name = "Dashboard" } },
+  { "<leader>", group = "prefix", {
+    { "o", group = "open/close", {
+        { "D", "<cmd>Dashboard<CR>", desc = "Dashboard" } },
     },
-  },
+  }},
 }
 
 dashboard.autocmds = {

@@ -14,14 +14,14 @@ suda.configs = {}
 
 suda.binds = {
     "<leader>",
-    name = "+prefix",
+    group = "+prefix",
     {
         {
             "f",
-            name = "+file",
+            group = "+file",
             {
-                {"R", "<cmd>SudaRead<CR>", name = "Read with sudo"},
-                {"W", "<cmd>SudaWrite<CR>", name = "Write with sudo"}
+                {"R", "<cmd>SudaRead<CR>", desc = "Read with sudo"},
+                {"W", "<cmd>SudaWrite<CR>", desc = "Write with sudo"}
             }
         }
     }

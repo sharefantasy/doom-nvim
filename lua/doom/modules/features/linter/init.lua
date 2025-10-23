@@ -50,7 +50,7 @@ linter.binds = {
         vim.lsp.buf.formatting_sync(nil, null_ls_settings.default_timeout)
       end
     end,
-    name = "Format/Fix",
+    desc = "Format/Fix",
   },
 }
 

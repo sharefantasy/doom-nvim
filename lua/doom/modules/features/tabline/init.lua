@@ -120,35 +120,35 @@ end
 
 tabline.binds = {
     "<leader>",
-    name = "+prefix",
+    group = "+prefix",
     {
         {
             "b",
-            name = "+buffer",
+            group = "+buffer",
             {
                 {
                     "n",
                     function() require("bufferline").cycle(1) end,
-                    name = "Jump to next"
+                    desc = "Jump to next"
                 },
                 {
                     "]",
                     function() require("bufferline").cycle(1) end,
-                    name = "Jump to next"
+                    desc = "Jump to next"
                 },
                 {
                     "p",
                     function()
                         require("bufferline").cycle(-1)
                     end,
-                    name = "Jump to prev"
+                    desc = "Jump to prev"
                 },
                 {
                     "[",
                     function()
                         require("bufferline").cycle(-1)
                     end,
-                    name = "Jump to prev"
+                    desc = "Jump to prev"
                 }
             }
         }

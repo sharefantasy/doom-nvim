@@ -53,34 +53,22 @@ repl.configs = {
     end
 }
 repl.binds = {
-    {
-        "<leader>r",
-        name = "+repl",
-        {
-            {"r", "<cmd>IronRepl<CR>", name = "Repl"},
-            {"f", "<NOP>", name = "Send file"},
-            {"s", "<NOP>", name = "Send line"},
-            {"c", "<NOP>", name = "Send visual / motion"},
-            {"i", "<NOP>", name = "Interupt repl"},
-            {"<cr>", "<NOP>", name = "Enter"}, {"C", "<NOP>", name = "Clear"}
-        }
-    }, {
-        "<C-e>",
-        function()
+    { "<leader>r", group = "repl", {
+        {"r", "<cmd>IronRepl<CR>", desc = "Repl"},
+        {"f", "<NOP>", desc = "Send file"},
+        {"s", "<NOP>", desc = "Send line"},
+        {"c", "<NOP>", desc = "Send visual / motion"},
+        {"i", "<NOP>", desc = "Interupt repl"},
+        {"<cr>", "<NOP>", desc = "Enter"}, {"C", "<NOP>", desc = "Clear"}
+    }},
+    { "<C-e>", function()
             local iron = require("iron.core")
             iron.send_line()
-        end,
-        name = "Repl send line",
-        mode = "n"
-    }, {
-        "<C-e>",
-        function()
+        end, desc = "Repl send line", mode = "n" },
+    { "<C-e>", function()
             local iron = require("iron.core")
             iron.visual_send()
-        end,
-        name = "Repl visual send",
-        mode = "v"
-    }
+        end, desc = "Repl visual send", mode = "v" }
 }
 
 return repl

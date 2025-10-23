@@ -81,14 +81,14 @@ symbols.configs["symbols-outline.nvim"] = function()
 end
 
 symbols.binds = {
-    {"<F2>", ":SymbolsOutline<CR>", name = "Toggle symbols outline"}, {
+    {"<F2>", ":SymbolsOutline<CR>", desc = "Toggle symbols outline"}, {
         "<leader>",
-        name = "+prefix",
+        group = "+prefix",
         {
             {
                 "o",
-                name = "+open/close",
-                {{"s", "<cmd>SymbolsOutline<CR>", name = "Symbol outline"}}
+                group = "+open/close",
+                {{"s", "<cmd>SymbolsOutline<CR>", desc = "Symbol outline"}}
             }
         }
     }

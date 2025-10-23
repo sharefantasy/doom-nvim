@@ -248,33 +248,18 @@ explorer.configs["tmux.nvim"] = function()
 end
 
 explorer.binds = {
-  { "<F3>", ":NvimTreeToggle<CR>", name = "Toggle file explorer" },
-  {
-    "<leader>",
-    name = "+prefix",
-    {
-      {
-        "o",
-        name = "+open/close",
-        { { "e", "<cmd>NvimTreeToggle<CR>", name = "Explorer" } },
+  { "<F3>", ":NvimTreeToggle<CR>", desc = "Toggle file explorer" },
+  { "<leader>", group = "prefix", {
+    { "o", group = "open/close", {
+        { "e", "<cmd>NvimTreeToggle<CR>", desc = "Explorer" } },
+    },
+  }},
+  { "<leader>", {
+    { "p", {
+        { "a", "<cmd>NvimTreeFindFile<CR>", desc = "Show file in explorer" },
       },
     },
-  },
-  {
-    "<leader>",
-    {
-      {
-        "p",
-        {
-          {
-            "a",
-            "<cmd>NvimTreeFindFile<CR>",
-            name = "Show file in explorer",
-          },
-        },
-      },
-    },
-  },
+  }},
 }
 
 explorer.autocmds = {

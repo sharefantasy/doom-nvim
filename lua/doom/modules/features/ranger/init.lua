@@ -21,17 +21,10 @@ ranger.packages = {
 ranger.configs = {}
 
 ranger.binds = {
-    {
-        "<leader>",
-        name = "+prefix",
-        {
-            {
-                "o",
-                name = "+open/close",
-                {{"r", "<cmd>Ranger<CR>", name = "Ranger"}}
-            }
-        }
-    }, {"-", "<cmd>Ranger<CR>", name = "Ranger"}
+    { "<leader>", group = "prefix", {
+        { "o", group = "open/close", { { "r", "<cmd>Ranger<CR>", desc = "Ranger" } } }
+    }},
+    { "-", "<cmd>Ranger<CR>", desc = "Ranger" }
 }
 
 return ranger

@@ -27,14 +27,14 @@ end
 annotations.binds = {
   {
     "<leader>c",
-    name = "+code",
+    group = "+code",
     {
       {
         "g",
         function()
           require("neogen").generate()
         end,
-        name = "Generate annotations",
+        desc = "Generate annotations",
       },
     },
   },

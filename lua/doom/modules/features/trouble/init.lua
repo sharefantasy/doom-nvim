@@ -16,25 +16,14 @@ trouble.configs["trouble.nvim"] = function()
 end
 
 trouble.binds = {
-    "<leader>",
-    name = "+prefix",
-    {
-        {
-            "o",
-            name = "+open/close",
-            {{"T", "<cmd>TroubleToggle<CR>", name = "Trouble"}}
-        }, {
-            "c",
-            name = "+code",
-            {
-                {"e", "<cmd>TroubleToggle<CR>", name = "Open trouble"}, {
-                    "d",
-                    name = "+diagnostics",
-                    {{"t", "<cmd>TroubleToggle<CR>", name = "Trouble"}}
-                }
+    { "<leader>", group = "prefix", {
+        { "o", group = "open/close", { { "T", "<cmd>TroubleToggle<CR>", desc = "Trouble" } } },
+        { "c", group = "code", {
+                { "e", "<cmd>TroubleToggle<CR>", desc = "Open trouble" },
+                { "d", group = "diagnostics", { { "t", "<cmd>TroubleToggle<CR>", desc = "Trouble" } } }
             }
         }
-    }
+    }}
 }
 
 return trouble

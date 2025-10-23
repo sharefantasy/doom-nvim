@@ -19,16 +19,16 @@ restclient.configs["rest.nvim"] = function()
 end
 
 restclient.binds = {
-  { "<F7>", "<cmd>RestNvim<CR>", name = "Open http client" },
+  { "<F7>", "<cmd>RestNvim<CR>", desc = "Open http client" },
   {
     "<leader>",
-    name = "+prefix",
+    group = "+prefix",
     {
       {
         "o",
-        name = "+open/close",
+        group = "+open/close",
         {
-          { "h", "<cmd>RestNvim<CR>", name = "Http" },
+          { "h", "<cmd>RestNvim<CR>", desc = "Http" },
         },
       },
     },

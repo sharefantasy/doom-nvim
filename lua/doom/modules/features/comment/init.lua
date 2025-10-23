@@ -67,25 +67,25 @@ comment.binds = {
     {
         "gc",
         [[<cmd>lua require("Comment.api").call('toggle.linewise', '@g')<CR>]],
-        name = "Comment motion"
+        desc = "Comment motion"
     }, {
         "gc",
         [[<Esc><cmd>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>]],
-        name = "Comment line",
+        desc = "Comment line",
         mode = "v"
     }, {
         "gb",
         [[<Esc><cmd>lua require("Comment.api").toggle.blockwise(vim.fn.visualmode())<CR>]],
-        name = "Comment block",
+        desc = "Comment block",
         mode = "v"
     }, {
         "gcc",
         [[<cmd>lua require("Comment.api").toggle.linewise.current()<CR>]],
-        name = "Comment line"
+        desc = "Comment line"
     }, {
         "gcA",
         [[<cmd>lua require("Comment.api").insert.linewise.eol()<CR>]],
-        name = "Comment end of line"
+        desc = "Comment end of line"
     }
 }
 

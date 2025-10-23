@@ -42,57 +42,34 @@ test.configs["test"] = function()
 end
 
 test.binds = {
-  {
-    "<leader>",
-    name = "+prefix",
-    {
-      {
-        "x",
-        name = "+test",
-        {
-          {
-            "t",
-            name = "run current test",
-            function()
+  { "<leader>", group = "prefix", {
+    { "x", group = "test", {
+        { "t", function()
               local neotest = require "neotest"
               neotest.output_panel.open()
               neotest.summary.open()
               neotest.run.run()
-            end,
-          },
-          {
-            "f",
-            name = "run file test",
-            function()
+            end, desc = "run current test" },
+        { "f", function()
               local neotest = require "neotest"
               neotest.output_panel.open()
               neotest.summary.open()
               neotest.run.run(vim.fn.expand "%")
-            end,
-          },
-          {
-            "d",
-            name = "run debug test",
-            function()
+            end, desc = "run file test" },
+        { "d", function()
               local neotest = require "neotest"
               neotest.output_panel.open()
               neotest.summary.open()
               neotest.run.run { strategy = "dap" }
-            end,
-          },
-          {
-            "c",
-            name = "close test windows",
-            function()
+            end, desc = "run debug test" },
+        { "c", function()
               local neotest = require "neotest"
               neotest.output_panel.close()
               neotest.summary.close()
-            end,
-          },
-        },
+            end, desc = "close test windows" },
       },
     },
-  },
+  }},
 }
 
 return test

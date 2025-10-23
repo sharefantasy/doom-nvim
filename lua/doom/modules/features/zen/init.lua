@@ -53,10 +53,10 @@ zen.configs["TrueZen.nvim"] = function()
 end
 
 zen.binds = {
-    {"<F5>", ":TZAtaraxis<CR>", name = "Enter Nirvana"}, {
+    {"<F5>", ":TZAtaraxis<CR>", desc = "Enter Nirvana"}, {
         "<leader>t",
-        name = "+tweaks",
-        {{"z", ":TZAtaraxis<CR>", name = "Toggle Zen"}}
+        group = "+tweaks",
+        {{"z", ":TZAtaraxis<CR>", desc = "Toggle Zen"}}
     }
 }
 

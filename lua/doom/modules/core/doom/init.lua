@@ -18,31 +18,31 @@ required.configs = {}
 
 required.binds = function()
   local binds = {
-    { "ZZ", require("doom.core.functions").quit_doom, name = "Fast exit" },
-    { "<ESC>", ":noh<CR>", name = "Remove search highlight" },
-    { "<Tab>", ":bnext<CR>", name = "Jump to next buffer" },
-    { "<S-Tab>", ":bprevious<CR>", name = "Jump to prev buffer" },
+    { "ZZ", require("doom.core.functions").quit_doom, desc = "Fast exit" },
+    { "<ESC>", ":noh<CR>", desc = "Remove search highlight" },
+    { "<Tab>", ":bnext<CR>", desc = "Jump to next buffer" },
+    { "<S-Tab>", ":bprevious<CR>", desc = "Jump to prev buffer" },
     {
       "<C-",
       {
-        { "h>", "<C-w>h", name = "Jump window left" },
-        { "j>", "<C-w>j", name = "Jump window down" },
-        { "k>", "<C-w>k", name = "Jump window up" },
-        { "l>", "<C-w>l", name = "Jump window right" },
+        { "h>", "<C-w>h", desc = "Jump window left" },
+        { "j>", "<C-w>j", desc = "Jump window down" },
+        { "k>", "<C-w>k", desc = "Jump window up" },
+        { "l>", "<C-w>l", desc = "Jump window right" },
         {
           mode = "nv",
           {
             {
               "Left>",
               ":vertical resize -2<CR>",
-              name = "Resize window left",
+              desc = "Resize window left",
             },
-            { "Down>", ":resize -2<CR>", name = "Resize window down" },
-            { "Up>", ":resize +2<CR>", name = "Resize window up" },
+            { "Down>", ":resize -2<CR>", desc = "Resize window down" },
+            { "Up>", ":resize +2<CR>", desc = "Resize window up" },
             {
               "Right>",
               ":vertical resize +2<CR>",
-              name = "Resize window right",
+              desc = "Resize window right",
             },
           },
         },
@@ -51,8 +51,8 @@ required.binds = function()
     {
       "<a-",
       {
-        { "j>", ":m .+1<CR>==", name = "Move line down" },
-        { "k>", ":m .-2<CR>==", name = "Move line up" },
+        { "j>", ":m .+1<CR>==", desc = "Move line down" },
+        { "k>", ":m .-2<CR>==", desc = "Move line up" },
       },
     },
     {
@@ -88,13 +88,13 @@ required.binds = function()
             {
               "j>",
               "<ESC>:m '<+1<CR>==gi",
-              name = "Move line down",
+              desc = "Move line down",
               mode = "i",
             },
             {
               "k>",
               "<ESC>:m '<-2<CR>==gi",
-              name = "Move line up",
+              desc = "Move line up",
               mode = "i",
             },
           },
@@ -103,7 +103,7 @@ required.binds = function()
     },
     {
       mode = "t",
-      { { "<Esc>", "<C-\\><C-n>", name = "Exit insert in terminal" } },
+      { { "<Esc>", "<C-\\><C-n>", desc = "Exit insert in terminal" } },
     },
   }
 

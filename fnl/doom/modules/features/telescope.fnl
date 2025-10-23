@@ -3,47 +3,56 @@
 
 (local telescope {})
 
-(telescope.packages
-  {:telescope {:"nvim-telescope/telescope.nvim"
-                :dependencies [:plenary :telescope-fzf-native]
-                :config (fn []
+;; Package definitions
+(set telescope.packages
+  {:telescope {"repo" "nvim-telescope/telescope.nvim"
+                "dependencies" [:plenary :telescope-fzf-native]
+                "config" (fn []
                           (local telescope (require :telescope))
                           (telescope.setup
-                            {:defaults {:mappings {:i {:["<C-u>"] false
-                                                       :["<C-d>"] false}}}})
+                            {:defaults {:mappings {:i {"<C-u>" false
+                                                       "<C-d>" false}}}})
                           (telescope.load_extension :fzf))}
-   :plenary {:"nvim-lua/plenary.nvim"}
-   :telescope-fzf-native {:"nvim-telescope/telescope-fzf-native.nvim"
-                          :build "make"
-                          :cond (fn [] (vim.fn.executable "make") :eq 1)}})
+   :plenary {"repo" "nvim-lua/plenary.nvim"}
+   :telescope-fzf-native {"repo" "nvim-telescope/telescope-fzf-native.nvim"
+                          "build" "make"
+                          "cond" (fn [] (_G.vim.fn.executable "make") :eq 1)}})
 
-(telescope.configs {})
+;; Module configurations
+(set telescope.configs {})
 
-(telescope.settings
+;; Module settings
+(set telescope.settings
   {:telescope_buffer_ignore [:term://*]
-   :telescope_files_ignore ["%.jpg" "%.jpeg" "%.png" "%.svg" "%.otf" "%.ttf" "%.woff" "%.woff2" "%.gif" "%.mp4" "%.mp3" "%.m4a" "%.ogg" "%.flac" "%.pdf" "%.zip" "%.tar" "%.gz" "%.rar" "%.7z" "%.bz2" "%.xz" "%.deb" "%.rpm" "%.msi" "%.phar" "%.vsix" "%.apk" "%.dmg"]})
+   :telescope_files_ignore ["%.jpg" "%.jpeg" "%.png" "%.svg" "%.otf" "%.ttf" 
+                             "%.woff" "%.woff2" "%.gif" "%.mp4" "%.mp3" "%.m4a" 
+                             "%.ogg" "%.flac" "%.pdf" "%.zip" "%.tar" "%.gz" 
+                             "%.rar" "%.7z" "%.bz2" "%.xz" "%.deb" "%.rpm" 
+                             "%.msi" "%.phar" "%.vsix" "%.apk" "%.dmg"]})
 
-(telescope.autocmds [])
+;; Autocommands
+(set telescope.autocmds [])
 
-(telescope.cmds
+;; Commands
+(set telescope.cmds
   [["Telescope"]
    (fn [opts]
-     (require :telescope.builtin).builtin opts)
+     (. (require :telescope.builtin) :builtin opts))
    {:desc "Open Telescope builtin picker"}])
 
-(telescope.binds
-  [{:n {:keybinds
-        [{:["<leader>f"] {:name "+find"
-                            :f {:name "+file"
-                                :f (require :telescope.builtin).find_files
-                                :r (require :telescope.builtin).recent_files
-                                :g (require :telescope.builtin).live_grep
-                                :b (require :telescope.builtin).buffers
-                                :h (require :telescope.builtin).help_tags}}}}]}])
+;; Key bindings - using new which-key format
+(set telescope.binds
+  {:n {:keybinds
+        ["<leader>f" {:group "+find"}
+         "<leader>ff" {:desc "Find files" :cmd (fn [] (. (require :telescope.builtin) :find_files))}
+         "<leader>fr" {:desc "Recent files" :cmd (fn [] (. (require :telescope.builtin) :recent_files))}
+         "<leader>fg" {:desc "Live grep" :cmd (fn [] (. (require :telescope.builtin) :live_grep))}
+         "<leader>fb" {:desc "Buffers" :cmd (fn [] (. (require :telescope.builtin) :buffers))}
+         "<leader>fh" {:desc "Help tags" :cmd (fn [] (. (require :telescope.builtin) :help_tags))}]}})
 
-{: packages telescope.packages
- : configs telescope.configs
- : settings telescope.settings
- : autocmds telescope.autocmds
- : cmds telescope.cmds
- : binds telescope.binds}
+{"packages" telescope.packages
+ "configs" telescope.configs
+ "settings" telescope.settings
+ "autocmds" telescope.autocmds
+ "cmds" telescope.cmds
+ "binds" telescope.binds}

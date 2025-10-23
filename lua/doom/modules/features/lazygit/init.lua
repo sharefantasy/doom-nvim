@@ -11,24 +11,14 @@ lazygit.packages = {
 }
 
 lazygit.binds = {
-  "<leader>",
-  name = "+prefix",
-  {
-    {
-      "o",
-      name = "+open/close",
-      {
-        { "l", "<cmd>LazyGit<CR>", name = "Lazygit" },
-      },
+  { "<leader>", group = "prefix", {
+    { "o", group = "open/close", {
+        { "l", "<cmd>LazyGit<CR>", desc = "Lazygit" } },
     },
-    {
-      "g",
-      name = "+git",
-      {
-        { "o", "<cmd>LazyGit<CR>", name = "Open lazygit" },
-      },
+    { "g", group = "git", {
+        { "o", "<cmd>LazyGit<CR>", desc = "Open lazygit" } },
     },
-  },
+  }},
 }
 
 return lazygit

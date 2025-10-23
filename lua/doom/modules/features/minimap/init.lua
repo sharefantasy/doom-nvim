@@ -19,14 +19,14 @@ minimap.packages = {
 minimap.configs = {}
 
 minimap.binds = {
-    {"<F5>", ":MinimapToggle<CR>", name = "Toggle minimap"}, {
+    {"<F5>", ":MinimapToggle<CR>", desc = "Toggle minimap"}, {
         "<leader>",
-        name = "+prefix",
+        group = "+prefix",
         {
             {
                 "o",
-                name = "+open/close",
-                {{"m", "<cmd>MinimapToggle<CR>", name = "Minimap"}}
+                group = "+open/close",
+                {{"m", "<cmd>MinimapToggle<CR>", desc = "Minimap"}}
             }
         }
     }

@@ -229,8 +229,8 @@ netrw.autocmds = {
 
 netrw.binds = {
     "<leader>o",
-    name = "+open/close",
-    {{"e", ":Lexplore<CR>", name = "Explorer"}}
+    group = "+open/close",
+    {{"e", ":Lexplore<CR>", desc = "Explorer"}}
 }
 
 return netrw

@@ -35,12 +35,12 @@ end
 
 terminal.binds = {
     "<leader>",
-    name = "+prefix",
+    group = "+prefix",
     {
         {
             "o",
-            name = "+open/close",
-            {{"t", "<cmd>ToggleTerm<CR>", name = "Terminal"}}
+            group = "+open/close",
+            {{"t", "<cmd>ToggleTerm<CR>", desc = "Terminal"}}
         }
     }
 }

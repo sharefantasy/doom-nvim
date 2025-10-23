@@ -3,7 +3,7 @@
 
 (local markdown {})
 
-(markdown.settings
+(set markdown.settings
   {:disable_treesitter false
    :treesitter_grammars "markdown"
    :disable_lsp false
@@ -13,46 +13,31 @@
    :formatting_provider "builtins.formatting.prettier"
    :formatting_config nil})
 
-(markdown.packages
-  {:markdown-preview {:"iamcco/markdown-preview.nvim"
-                        :build (fn [] (vim.fn["mkdp#util#install"]))
-                        :config (fn []
-                                  (vim.g.mkdp_filetypes {:markdown})})}})
+(set markdown.packages
+  {:markdown-preview {"repo" "iamcco/markdown-preview.nvim"
+                        "build" (fn [] (_G.vim.fn ["mkdp#util#install"]))
+                        "config" (fn []
+                                  (set _G.vim.g.mkdp_filetypes [:markdown]))}})
 
-(markdown.configs {})
+(set markdown.configs {})
 
-(local langs_utils (require :doom.modules.langs.utils))
+(set markdown.autocmds [])
 
-(markdown.autocmds
-  [{:FileType :markdown
-    (langs_utils.wrap_language_setup "markdown" (fn []
-                                                  (when (not markdown.settings.disable_lsp)
-                                                    (langs_utils.use_lsp_mason markdown.settings.lsp_name))
-                                                  
-                                                  (when (not markdown.settings.disable_treesitter)
-                                                    (langs_utils.use_tree_sitter markdown.settings.treesitter_grammars))
-                                                  
-                                                  (when (not markdown.settings.disable_formatting)
-                                                    (langs_utils.use_null_ls markdown.settings.formatting_package
-                                                                            markdown.settings.formatting_provider
-                                                                            markdown.settings.formatting_config))))
-    :once true}])
-
-(markdown.cmds
+(set markdown.cmds
   [["MarkdownPreview"]
    (fn []
-     (vim.fn["mkdp#util#start_preview"]))
+     (_G.vim.fn ["mkdp#util#start_preview"]))
    {:desc "Start markdown preview"}])
 
-(markdown.binds
-  [{:n {:keybinds
-        [{:["<leader>m"] {:name "+markdown"
-                            :p (vim.fn["mkdp#util#start_preview"])
-                            :s (vim.fn["mkdp#util#stop_preview"])}}]}}])
+(set markdown.binds
+  {:n {:keybinds
+        ["<leader>m" {:group "+markdown"}
+         "<leader>mp" {:desc "Start preview" :cmd (fn [] (_G.vim.fn ["mkdp#util#start_preview"]))}
+         "<leader>ms" {:desc "Stop preview" :cmd (fn [] (_G.vim.fn ["mkdp#util#stop_preview"]))}]}})
 
-{: packages markdown.packages
- : configs markdown.configs
- : settings markdown.settings
- : autocmds markdown.autocmds
- : cmds markdown.cmds
- : binds markdown.binds}
+{"packages" markdown.packages
+ "configs" markdown.configs
+ "settings" markdown.settings
+ "autocmds" markdown.autocmds
+ "cmds" markdown.cmds
+ "binds" markdown.binds}

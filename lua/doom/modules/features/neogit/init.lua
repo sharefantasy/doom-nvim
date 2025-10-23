@@ -16,12 +16,10 @@ neogit.configs["neogit"] = function()
 end
 
 neogit.binds = {
-    "<leader>",
-    name = "+prefix",
-    {
-        {"o", name = "+open/close", {{"g", "<cmd>Neogit<CR>", name = "Neogit"}}},
-        {"g", name = "+git", {{"g", "<cmd>Neogit<CR>", name = "Open neogit"}}}
-    }
+    { "<leader>", group = "prefix", {
+        { "o", group = "open/close", { { "g", "<cmd>Neogit<CR>", desc = "Neogit" } } },
+        { "g", group = "git", { { "g", "<cmd>Neogit<CR>", desc = "Open neogit" } } }
+    }}
 }
 
 return neogit
