@@ -75,7 +75,7 @@ M.setup = function()
       desc = "Toggle Flash Search"
     }
     }
-    ,
+,
   }
 
   -- 重复操作增强
@@ -136,21 +136,23 @@ M.setup = function()
     config = function()
       require("conform").setup {
         formatters_by_ft = {
-          go = { "goimport", "govet", "gofmt" },
+          go = { "goimports", "gofmt" },
           lua = { "stylua" },
-          -- Conform will run multiple formatters sequentially
           python = { "ruff" },
-          -- Use stop_after_first option instead of nested array
-          javascript = { "prettierd", "prettier" },
-          stop_after_first = true,
+          javascript = { "prettierd" },
+          typescript = { "prettierd" },
+          json = { "prettierd" },
+          yaml = { "prettierd" },
+          html = { "prettierd" },
+          css = { "prettierd" },
+          markdown = { "prettierd" },
+        },
+        format_on_save = {
+          timeout_ms = 500,
+          lsp_fallback = true,
         },
       }
-      vim.api.nvim_create_autocmd("BufWritePre", {
-        pattern = "*",
-        callback = function(args)
-          require("conform").format { bufnr = args.buf }
-        end,
-      })
+      -- 移除旧的自动命令，使用format_on_save选项
     end,
   }
 

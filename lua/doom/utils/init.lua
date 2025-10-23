@@ -101,7 +101,15 @@ end
 --- @param severity string The name of desired severity
 --- @return number The count of items
 utils.get_diagnostic_count = function(bufnr, severity)
-    return vim.tbl_count(vim.diagnostic.get(bufnr, {severity = severity}))
+    -- 将字符串severity转换为对应的诊断严重程度常量
+    local severity_map = {
+        ["Error"] = vim.diagnostic.severity.ERROR,
+        ["Warning"] = vim.diagnostic.severity.WARN,
+        ["Information"] = vim.diagnostic.severity.INFO,
+        ["Hint"] = vim.diagnostic.severity.HINT,
+    }
+    local severity_const = severity_map[severity] or severity
+    return vim.tbl_count(vim.diagnostic.get(bufnr, {severity = severity_const}))
 end
 
 --- Check if the given plugin is disabled in doom-nvim/modules.lua

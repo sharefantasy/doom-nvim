@@ -23,6 +23,9 @@ auto_install.packages = {
 
 auto_install.configs = {}
 auto_install.configs["mason.nvim"] = function() require("mason").setup() end
+auto_install.configs["mason-lspconfig"] = function() 
+  require("mason-lspconfig").setup(doom.features.auto_install.settings.lsp)
+end
 
 auto_install.cmds = {
     -- We can't lazy load mason-lspconfig through packer because some helper

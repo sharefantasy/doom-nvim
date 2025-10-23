@@ -28,20 +28,17 @@ return {
     -- UI Components
     "lsp_progress", -- Check status of LSP loading
     "dashboard", -- A pretty dashboard upon opening
-    -- "trouble", -- A pretty diagnostic viewer
-    -- "statusline", -- A pretty status line at the bottom of the buffer
+    "trouble", -- A pretty diagnostic viewer
     -- "minimap",         -- Shows current position in document
-    -- "terminal",        -- Integrated terminal in neovim
+    "terminal", -- Integrated terminal in neovim
     "symbols", -- Navigate between code symbols using telescope
     "ranger", -- File explorer in neovim
-    -- "restclient",      -- Test HTTP requests from neovim (TODO: Test)
-    -- "show_registers",  -- Show and navigate between registers
     -- Tools
     "dap", -- Debug code through neovim
     "repl", -- Interactive REPL in neovim
     "explorer", -- An enhanced filetree explorer
     -- "firenvim", -- Embed neovim in your browser
-    -- "lazygit",         -- Lazy git integration
+    "lazygit", -- Lazy git integration
     -- "neogit", -- A git client for neovim
     -- "neorg", -- Organise your life
     "projects", -- Quickly switch between projects
@@ -73,11 +70,12 @@ return {
     "rust",
     -- "cc",
     -- "ocaml",
-    -- "haskell",
+    "haskell",
     "go", -- JIT
     "c_sharp",
     "clojure",
-    "fennel", -- "kotlin",
+    "fennel",
+    -- "kotlin",
     -- "java",
     -- config
     "json",

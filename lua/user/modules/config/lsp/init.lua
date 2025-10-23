@@ -92,8 +92,8 @@ M.setup = function()
     end,
   }
 
-  -- Ionide-vim - F#支持
-  doom.use_package "ionide/Ionide-vim"
+  -- Ionide-vim - F#支持 (暂时禁用，有兼容性问题)
+  -- doom.use_package "ionide/Ionide-vim"
 
   -- vim-dadbod - 数据库支持
   doom.use_package "tpope/vim-dadbod"

@@ -16,3 +16,6 @@ require("user.modules.config.ui").setup()
 require("user.modules.config.dev_tools").setup()
 require("user.modules.config.lsp").setup()
 require("user.modules.config.search").setup()
+
+doom.use_package { "Olical/nfnl", ft = "fennel" }
+doom.use_package "Olical/aniseed"
