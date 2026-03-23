@@ -26,4 +26,4 @@
  ;; A function that is given the absolute path of a Fennel file and should return
  ;; the equivalent Lua path, by default this will translate `fnl/foo/bar.fnl` to `lua/foo/bar.lua`.
  ;; See the "Writing Lua elsewhere" tip below for an example function that writes to a sub directory.
- :fnl-path->lua-path (fn [fnl-path] ...)}
+ :fnl-path->lua-path (fn [fnl-path] (string.gsub fnl-path "\\.fnl$" ".lua"))}

@@ -17,5 +17,32 @@ require("user.modules.config.dev_tools").setup()
 require("user.modules.config.lsp").setup()
 require("user.modules.config.search").setup()
 
+-- 加载Fennel LSP增强配置
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "fennel",
+  once = true,
+  callback = function()
+    require("user.modules.config.fennel-lsp").setup()
+    require("user.modules.config.fennel-neodev").setup()
+    require("user.modules.config.fennel-fix").setup()
+    require("user.modules.config.fennel-direct").setup()
+  end,
+})
+vim.api.nvim_create_autocmd("User", {
+  pattern = "VeryLazy",
+  once = true,
+  callback = function()
+    require("user.modules.config.whichkey-fix").setup()
+  end,
+})
+-- 加载treesitter重复安装修复配置
+vim.api.nvim_create_autocmd("BufReadPre", {
+  pattern = "*",
+  once = true,
+  callback = function()
+    require("user.modules.config.treesitter-fix").setup()
+  end,
+})
+
 doom.use_package { "Olical/nfnl", ft = "fennel" }
 doom.use_package "Olical/aniseed"

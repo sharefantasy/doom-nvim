@@ -6,6 +6,9 @@ local utils = require("doom.utils")
 
 local hrtime = vim.loop.hrtime
 
+-- 默认关闭 profiler（降低启动期开销）；需要时设置环境变量 DOOM_PROFILE=1
+local enabled = vim.env.DOOM_PROFILE == "1"
+
 local profiler = {}
 
 profiler.all_start = hrtime()
@@ -13,11 +16,18 @@ profiler.chunks = {}
 
 --- Start a profiler entry
 ---@param chunk string name of profiler entry
-profiler.start = function(chunk) profiler.chunks[chunk] = {start = hrtime()} end
+profiler.start = enabled and function(chunk)
+  profiler.chunks[chunk] = { start = hrtime() }
+end or function(_) end
 
 --- Stops a profiler entry
 ---@param chunk string name of profiler entry
-profiler.stop = function(chunk) profiler.chunks[chunk].stop = hrtime() end
+profiler.stop = enabled and function(chunk)
+  local c = profiler.chunks[chunk]
+  if c then
+    c.stop = hrtime()
+  end
+end or function(_) end
 
 --- Logs the current state of the profiler
 ---@param opts nil|table

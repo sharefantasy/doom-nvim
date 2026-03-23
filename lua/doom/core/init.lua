@@ -59,15 +59,21 @@ profiler.start("framework|user settings")
 modules.handle_user_config()
 profiler.stop("framework|user settings")
 modules.try_sync()
-modules.handle_lazynvim()
 profiler.stop("framework|doom.core.modules")
 
--- Load the colourscheme
-profiler.start("framework|doom.core.ui")
-utils.safe_require("doom.core.ui")
-profiler.stop("framework|doom.core.ui")
+local function load_plugins_and_ui()
+  modules.handle_lazynvim()
 
--- Execute autocommand for user to hook custom config into
-vim.api.nvim_exec_autocmds("User", {pattern = "DoomStarted"})
+  -- Load the colourscheme
+  profiler.start("framework|doom.core.ui")
+  utils.safe_require("doom.core.ui")
+  profiler.stop("framework|doom.core.ui")
+
+  -- Execute autocommand for user to hook custom config into
+  vim.api.nvim_exec_autocmds("User", { pattern = "DoomStarted" })
+end
+
+-- UI 也需要在首屏就绪：不再延迟插件与 UI 初始化
+load_plugins_and_ui()
 
 -- vim: fdm=marker

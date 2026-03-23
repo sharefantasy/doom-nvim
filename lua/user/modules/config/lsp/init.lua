@@ -5,6 +5,7 @@ M.setup = function()
   -- nvim-cmp - 代码补全
   doom.use_package {
     "hrsh7th/nvim-cmp",
+    event = "InsertEnter",
     dependencies = {
       {
         "MattiasMTS/cmp-dbee",
@@ -19,7 +20,6 @@ M.setup = function()
       local cmp = require("cmp")
       cmp.setup {
         sources = cmp.config.sources({
-          { name = "codeium" },
           { name = "nvim_lsp" },
           { name = "cmp-dbee" },
           { name = "buffer" },
@@ -47,22 +47,6 @@ M.setup = function()
             end
           end, { "i", "s" }),
         }),
-      }
-    end,
-  }
-
-  -- codeium.nvim - AI代码补全
-  doom.use_package {
-    "Exafunction/codeium.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "hrsh7th/nvim-cmp",
-    },
-    event = "BufEnter",
-    config = function()
-      require("codeium").setup {
-        enable_chat = true,
-        enable_cmp_source = true,
       }
     end,
   }
@@ -123,6 +107,8 @@ M.setup = function()
   -- other.nvim - 文件跳转
   doom.use_package {
     "rgroli/other.nvim",
+    event = "VeryLazy",
+    lazy = true,
     config = function()
       require("other-nvim").setup {
         mappings = {

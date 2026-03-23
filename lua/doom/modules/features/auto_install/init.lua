@@ -15,9 +15,13 @@ auto_install.settings = {
 auto_install.packages = {
   ["mason.nvim"] = {
     "williamboman/mason.nvim",
+    event = "VeryLazy",
+    lazy = true,
   },
   ["mason-lspconfig"] = {
     "williamboman/mason-lspconfig",
+    event = "VeryLazy",
+    lazy = true,
   },
 }
 

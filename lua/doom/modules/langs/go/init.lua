@@ -118,7 +118,12 @@ go.autocmds = {
     "*.go",
     langs_utils.wrap_language_setup("go", function()
       if not go.settings.disable_lsp then
-        langs_utils.use_lsp_mason(go.settings.lsp_name, { config = go.settings.lsp_config })
+        local lsp_config = go.settings.lsp_config
+        -- gopls 替换为 trae-gopls（方案 1）：保持 server 名称不变，仅替换 cmd
+        if lsp_config == nil and vim.fn.executable("trae-gopls") == 1 then
+          lsp_config = { cmd = { "trae-gopls" } }
+        end
+        langs_utils.use_lsp_mason(go.settings.lsp_name, { config = lsp_config })
       end
 
       if not go.settings.disable_treesitter then

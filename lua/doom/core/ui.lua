@@ -15,11 +15,17 @@ profiler.start(profile_message)
 if not utils.is_empty(doom.colorscheme) then
     local loaded_colorscheme = xpcall(function()
         vim.api.nvim_command("colorscheme " .. doom.colorscheme)
-    end, function(err) log.error(debug.traceback(err)) end)
+    end, function(err)
+        -- headless/fastboot 场景下 colorscheme 缺失很常见，不记录为 error 以免污染日志
+        if #vim.api.nvim_list_uis() > 0 then
+            log.error(debug.traceback(err))
+        end
+    end)
 
     if not loaded_colorscheme then
-        log.warn("Colorscheme '" .. doom.colorscheme ..
-                     "' not found, falling back to doom-one")
+        if #vim.api.nvim_list_uis() > 0 then
+            log.warn("Colorscheme '" .. doom.colorscheme .. "' not found, falling back to doom-one")
+        end
         vim.api.nvim_command("colorscheme doom-one")
     end
 else

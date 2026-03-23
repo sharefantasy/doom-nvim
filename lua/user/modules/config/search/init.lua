@@ -3,12 +3,13 @@ local M = {}
 -- 搜索导航插件配置
 M.setup = function()
   -- fzf - 模糊搜索
-  doom.use_package { "junegunn/fzf", build = ":call fzf#install()" }
+  doom.use_package { "junegunn/fzf", build = ":call fzf#install()", cmd = { "FZF" } }
 
   -- fzfx.nvim - 增强模糊搜索
   doom.use_package {
     "linrongbin16/fzfx.nvim",
     dependencies = { "junegunn/fzf" },
+    event = "CmdlineEnter",
     config = function()
       require("fzfx").setup()
     end,

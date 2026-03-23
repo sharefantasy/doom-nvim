@@ -78,11 +78,11 @@ lsp.settings = {
       end,
     },
     sources = {
-      { name = "nvim_lua" },
-      { name = "nvim_lsp" },
-      { name = "luasnip" },
-      { name = "path" },
-      { name = "buffer" },
+      { desc = "nvim_lua" },
+      { desc = "nvim_lsp" },
+      { desc = "luasnip" },
+      { desc = "path" },
+      { desc = "buffer" },
     },
   },
   sorting = {
@@ -99,6 +99,8 @@ lsp.settings = {
 lsp.packages = {
   ["nvim-lspconfig"] = {
     "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
+    lazy = true,
   },
   ["nvim-cmp"] = {
     "hrsh7th/nvim-cmp",
@@ -113,16 +115,22 @@ lsp.packages = {
     dependencies = {
       "hrsh7th/nvim-cmp",
     },
+    event = "InsertEnter",
+    lazy = true,
   },
   ["cmp-nvim-lsp"] = {
     "hrsh7th/cmp-nvim-lsp",
     after = "nvim-cmp",
     dependencies = { "hrsh7th/nvim-cmp" },
+    event = "InsertEnter",
+    lazy = true,
   },
   ["cmp-path"] = {
     "hrsh7th/cmp-path",
     after = "nvim-cmp",
     dependencies = { "hrsh7th/nvim-cmp" },
+    event = "InsertEnter",
+    lazy = true,
   },
   ["cmp-buffer"] = {
     "hrsh7th/cmp-buffer",
@@ -130,6 +138,8 @@ lsp.packages = {
     dependencies = {
       "hrsh7th/nvim-cmp",
     },
+    event = "InsertEnter",
+    lazy = true,
   },
   ["cmp_luasnip"] = {
     "saadparwaiz1/cmp_luasnip",
@@ -137,6 +147,8 @@ lsp.packages = {
     dependencies = {
       "hrsh7th/nvim-cmp",
     },
+    event = "InsertEnter",
+    lazy = true,
   },
   ["lsp_signature.nvim"] = {
     "ray-x/lsp_signature.nvim",
@@ -145,6 +157,7 @@ lsp.packages = {
       "neovim/nvim-lspconfig",
     },
     event = "VeryLazy",
+    lazy = true,
   },
 }
 

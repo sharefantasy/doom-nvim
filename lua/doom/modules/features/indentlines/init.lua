@@ -13,7 +13,8 @@ indentlines.settings = {
 indentlines.packages = {
     ["indent-blankline.nvim"] = {
         "lukas-reineke/indent-blankline.nvim",
-        event = "ColorScheme"
+        event = "VeryLazy",
+        lazy = true,
     }
 }
 

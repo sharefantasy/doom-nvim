@@ -44,6 +44,8 @@ treesitter.packages = {
     "nvim-treesitter/nvim-treesitter",
     build =  ":TSUpdate",
     branch = "master",
+    event = { "BufReadPre", "BufNewFile" },
+    lazy = true,
   },
   ["nvim-ts-context-commentstring"] = {
     "JoosepAlviste/nvim-ts-context-commentstring",
@@ -61,16 +63,20 @@ treesitter.packages = {
     "Wansmer/treesj",
     keys = { "<space>m", "<space>j", "<space>s" },
     dependencies = { "nvim-treesitter/nvim-treesitter" },
+    event = "VeryLazy",
+    lazy = true,
   },
   ["tree-textobj"] = {
     "nvim-treesitter/nvim-treesitter-textobjects",
-    after = "nvim-treesitter",
-    requires = "nvim-treesitter/nvim-treesitter",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    event = { "BufReadPre", "BufNewFile" },
+    lazy = true,
   },
   ["tree-textsub"] = {
     "RRethy/nvim-treesitter-textsubjects",
-    after = "nvim-treesitter",
-    requires = "nvim-treesitter/nvim-treesitter",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    event = { "BufReadPre", "BufNewFile" },
+    lazy = true,
   },
 }
 

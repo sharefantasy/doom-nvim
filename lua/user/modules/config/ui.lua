@@ -5,6 +5,8 @@ M.setup = function()
   -- 主题配置
   doom.use_package {
     "ellisonleao/gruvbox.nvim",
+    lazy = false,
+    priority = 1000,
     config = function()
       require("gruvbox").setup {
         terminal_colors = true, -- add neovim terminal colors
@@ -30,13 +32,13 @@ M.setup = function()
         dim_inactive = true,
         transparent_mode = true,
       }
-      vim.cmd [[colorscheme gruvbox]]
     end,
   }
 
   -- 状态栏配置（使用heirline替代lualine避免E5248错误）
   doom.use_package {
     "rebelot/heirline.nvim",
+    event = "VimEnter",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       -- 简单的状态栏配置
@@ -63,6 +65,7 @@ M.setup = function()
   -- 文件浏览器
   doom.use_package {
     "stevearc/oil.nvim",
+    cmd = { "Oil" },
     ---@module 'oil'
     ---@type oil.SetupOpts
     opts = {},
@@ -74,6 +77,7 @@ M.setup = function()
   -- 大纲视图
   doom.use_package {
     "stevearc/aerial.nvim",
+    cmd = { "AerialToggle", "AerialOpen", "AerialClose" },
     opts = {},
     -- Optional dependencies
     dependencies = {

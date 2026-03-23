@@ -1,5 +1,12 @@
 local dap = {}
 
+local function lazy_load(plugins)
+  local ok, lazy = pcall(require, "lazy")
+  if ok then
+    lazy.load { plugins = plugins }
+  end
+end
+
 dap.settings = {
   debugger_dir = vim.fn.stdpath "data" .. "/dapinstall/",
   debugger_map = {},
@@ -29,11 +36,15 @@ dap.packages = {
     "rcarriga/nvim-dap-ui",
     dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
     after = { "nvim-dap" },
+    cmd = "DapContinue",
+    lazy = true,
   },
   ["osv"] = {
     "jbyuki/one-small-step-for-vimkind",
     dependencies = { "mfussenegger/nvim-dap" },
     after = { "nvim-dap" },
+    cmd = "DapContinue",
+    lazy = true,
   },
 }
 
@@ -94,46 +105,57 @@ dap.binds = {
   { "<leader>", group = "prefix", {
     { "d", group = "debug", {
         { "c", function()
+            lazy_load { "nvim-dap" }
             require("dap").continue()
           end, desc = "Continue/Start" },
         { "d", function()
+            lazy_load { "nvim-dap" }
             require("dap").disconnect()
           end, desc = "Disconnect" },
         { "e", function()
+            lazy_load { "nvim-dap", "nvim-dap-ui" }
             require("dapui").eval()
           end, desc = "Evaluate" },
         { mode = "v", {
             { "e", function()
+                lazy_load { "nvim-dap", "nvim-dap-ui" }
                 require("dapui").eval()
               end, desc = "Evaluate" },
           },
         },
         { "s", function()
+            lazy_load { "nvim-dap", "one-small-step-for-vimkind" }
             require("osv").launch { port = 8086 }
           end, desc = "Start NvimDebug" },
         { "i", function()
+            lazy_load { "nvim-dap" }
             require("dap").step_into()
           end, desc = "Step into" },
         { "o", function()
+            lazy_load { "nvim-dap" }
             require("dap").step_over()
           end, desc = "Step over" },
         { "b", group = "breakpoint", {
             { "b", function()
+                lazy_load { "nvim-dap" }
                 require("dap").toggle_breakpoint()
               end, desc = "Toggle breakpoint" },
             { "c", function()
+                lazy_load { "nvim-dap" }
                 vim.fn.inputsave()
                 local condition = vim.fn.input "Condition: "
                 vim.fn.inputrestore()
                 require("dap").toggle_breakpoint(condition)
               end, desc = "Toggle" },
             { "h", function()
+                lazy_load { "nvim-dap" }
                 vim.fn.inputsave()
                 local number = vim.fn.input "Hit number: "
                 vim.fn.inputrestore()
                 require("dap").toggle_breakpoint(nil, number)
               end, desc = "Hit number" },
             { "l", function()
+                lazy_load { "nvim-dap" }
                 vim.fn.inputsave()
                 local msg = vim.fn.input "Message: "
                 vim.fn.inputrestore()

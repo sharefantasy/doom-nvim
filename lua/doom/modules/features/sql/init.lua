@@ -6,6 +6,9 @@ sql.packages = {
     ["dbee"] = {
         "kndndrj/nvim-dbee",
         dependencies = {"MunifTanjim/nui.nvim"},
+        cmd = { "Dbee" },
+        keys = { { "<leader>as", mode = "n" } },
+        lazy = true,
         build = function()
             -- Install tries to automatically detect the install method.
             -- if it fails, try calling it with one of these parameters:
@@ -54,7 +57,13 @@ sql.binds = {
             {
                 {
                     "s",
-                    function() require("dbee").toggle() end,
+                    function()
+                      local ok, lazy = pcall(require, "lazy")
+                      if ok then
+                        lazy.load { plugins = { "nvim-dbee" } }
+                      end
+                      require("dbee").toggle()
+                    end,
                     name = "Open SQL Viewer"
                 }
             }

@@ -7,10 +7,10 @@
   {:disable_treesitter false
    :treesitter_grammars "fennel"
    :disable_lsp false
-   :lsp_name "fennel_language_server"
-   :disable_formatting false
-   :formatting_package "fnlfmt"
-   :formatting_provider "builtins.formatting.fnlfmt"
+   :lsp_name "fennel_ls"
+   :disable_formatting true
+   :formatting_package nil
+   :formatting_provider nil
    :formatting_config nil})
 
 (fennel.packages
@@ -42,10 +42,12 @@
                                                 (when (not fennel.settings.disable_treesitter)
                                                   (langs_utils.use_tree_sitter fennel.settings.treesitter_grammars))
                                                 
-                                                (when (not fennel.settings.disable_formatting)
-                                                  (langs_utils.use_null_ls fennel.settings.formatting_package
-                                                                           fennel.settings.formatting_provider
-                                                                           fennel.settings.formatting_config))))
+                                                ;; 格式化功能暂时禁用
+                                                ;; (when (not fennel.settings.disable_formatting)
+                                                ;;   (langs_utils.use_null_ls fennel.settings.formatting_package
+                                                ;;                            fennel.settings.formatting_provider
+                                                ;;                            fennel.settings.formatting_config))
+                                                )
     :once true}])
 
 (fennel.cmds [])

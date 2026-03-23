@@ -178,10 +178,23 @@ end
 --- langs_utils.use_tree_sitter({"c", "cpp"})
 --- ````
 module.use_tree_sitter = function(grammars)
-  if type(grammars) == "table" then
-    require("nvim-treesitter.install").ensure_installed(unpack(grammars))
-  else
-    require("nvim-treesitter.install").ensure_installed(grammars)
+  local install = require("nvim-treesitter.install")
+  local parsers = require("nvim-treesitter.parsers")
+  
+  -- 标准化输入为table
+  local grammar_list = type(grammars) == "table" and grammars or {grammars}
+  
+  -- 检查哪些语法需要安装
+  local to_install = {}
+  for _, lang in ipairs(grammar_list) do
+    if not parsers.has_parser(lang) then
+      table.insert(to_install, lang)
+    end
+  end
+  
+  -- 只安装未安装的语法
+  if #to_install > 0 then
+    install.ensure_installed(to_install)
   end
 end
 
@@ -193,6 +206,14 @@ module.use_lsp_mason = function(lsp_name, options)
   if not utils.is_module_enabled("features", "lsp") then
     return
   end
+
+  -- 如果 nvim-lspconfig 被 lazy 加载，先确保它已进入 runtimepath
+  pcall(function()
+    local ok_lazy, lazy = pcall(require, "lazy")
+    if ok_lazy then
+      lazy.load { plugins = { "nvim-lspconfig" } }
+    end
+  end)
 
   local opts = options or {}
   local config_name = opts.name and opts.name or lsp_name
@@ -207,16 +228,32 @@ module.use_lsp_mason = function(lsp_name, options)
   
   -- 检查是否存在对应的LSP配置
   local has_config = false
-  
-  -- 首先检查lspconfig是否存在该配置（使用安全的方式）
-  local lspconfig_status, lspconfig_result = pcall(function() 
-    -- 使用rawget避免触发元方法
-    return rawget(lspconfig, config_name) 
-  end)
-  if lspconfig_status and lspconfig_result then
+
+  -- 0) Neovim 0.11+ 新 API：如果用户通过 vim.lsp.config 自定义过，也认为存在
+  if vim.lsp and vim.lsp.config and vim.lsp.config[config_name] then
     has_config = true
-  else
-    -- 检查mason-lspconfig映射
+  end
+
+  -- 1) 优先检查 lspconfig.configs（不会触发元方法，且是官方存储位置）
+  if not has_config then
+    local ok_configs, configs = pcall(require, "lspconfig.configs")
+    if ok_configs and configs and configs[config_name] then
+      has_config = true
+    end
+  end
+
+  -- 2) 回退检查 lspconfig[server]（可能触发元方法加载 server 配置，避免 rawget 误判）
+  if not has_config then
+    local ok_server, server = pcall(function()
+      return lspconfig[config_name]
+    end)
+    if ok_server and type(server) == "table" and (type(server.setup) == "function" or server.manager ~= nil) then
+      has_config = true
+    end
+  end
+
+  -- 3) 最后检查 mason-lspconfig 映射
+  if not has_config then
     local mason_mappings_ok, mason_mappings = pcall(require, "mason-lspconfig.mappings.server")
     if mason_mappings_ok and mason_mappings.lspconfig_to_package and mason_mappings.lspconfig_to_package[config_name] then
       has_config = true
@@ -224,15 +261,25 @@ module.use_lsp_mason = function(lsp_name, options)
   end
   
   if not has_config then
-    log.warn("No LSP configuration found for: " .. config_name .. ", skipping setup")
+    log.warn("No LSP configuration found for: " .. (config_name or "unknown") .. ", skipping setup")
     profiler.stop(profiler_msg)
-    return
+    -- 不要直接 return：在 nvim-lspconfig 的 0.11 兼容层下，这个检测可能出现假阴性。
   end
 
   -- Resolve the user config from `opts.config` if it's a function
   local user_config = nil
   if opts.config then
     user_config = type(opts.config) == "function" and opts.config() or opts.config
+  end
+
+  -- 如果系统 PATH 中没有该 LSP 二进制，但 mason 已安装，则自动使用 mason/bin 下的可执行文件
+  -- 这样可以在不提前加载 mason-lspconfig 的情况下保持 LSP 可用。
+  if (not user_config or user_config.cmd == nil) and vim.fn.executable(lsp_name) == 0 then
+    local mason_cmd = vim.fn.stdpath("data") .. "/mason/bin/" .. lsp_name
+    if vim.fn.executable(mason_cmd) == 1 then
+      user_config = user_config or {}
+      user_config.cmd = { mason_cmd }
+    end
   end
 
   -- Combine default on_attach with provided on_attach
@@ -261,14 +308,32 @@ module.use_lsp_mason = function(lsp_name, options)
     local success = false
     local error_msg = nil
     
-    -- 尝试使用新的 API (Neovim 0.11+)
-    if vim.lsp and vim.lsp.config then
+    -- Neovim 0.11+：优先使用 vim.lsp.config/vim.lsp.enable，避免 nvim-lspconfig 的 framework 兼容层问题
+    if vim.fn.has("nvim-0.11") == 1 and vim.lsp and vim.lsp.config and vim.lsp.enable and vim.lsp.start then
       local ok, _ = pcall(function()
-        if vim.lsp.config[config_name] then
-          vim.lsp.config[config_name] = final_config
-          vim.lsp.enable(config_name)
-          success = true
+        local base = {}
+        local ok_cfg, cfg_mod = pcall(require, "lspconfig.configs." .. config_name)
+        if ok_cfg and cfg_mod and type(cfg_mod.default_config) == "table" then
+          base = cfg_mod.default_config
         end
+
+        local merged = vim.tbl_deep_extend("force", vim.deepcopy(base), final_config)
+        merged.name = config_name
+
+        vim.lsp.config[config_name] = merged
+        vim.lsp.enable(config_name)
+
+        -- 立即绑定当前已打开的 buffers
+        local fts = {}
+        for _, ft in ipairs(merged.filetypes or {}) do
+          fts[ft] = true
+        end
+        for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+          if vim.api.nvim_buf_is_loaded(bufnr) and fts[vim.bo[bufnr].filetype] then
+            pcall(vim.lsp.start, merged, { bufnr = bufnr })
+          end
+        end
+        success = true
       end)
       if ok and success then
         vim.deprecate = original_deprecate
@@ -278,12 +343,16 @@ module.use_lsp_mason = function(lsp_name, options)
     
     -- 回退到 lspconfig API
     local lsp = require "lspconfig"
-    local ok, _ = pcall(function()
-      if lsp[config_name] and lsp[config_name].setup then
-        lsp[config_name].setup(final_config)
+    local ok, err = pcall(function()
+      local server = lsp[config_name]
+      if server and server.setup then
+        server.setup(final_config)
         success = true
       end
     end)
+    if not ok then
+      error_msg = err
+    end
     
     -- 恢复原始的弃用函数
     vim.deprecate = original_deprecate
@@ -295,6 +364,9 @@ module.use_lsp_mason = function(lsp_name, options)
           config_name
         )
       )
+      if error_msg then
+        log.warn(("LSP %s setup error: %s"):format(lsp_name, tostring(error_msg)))
+      end
       return
     end
     
@@ -314,7 +386,7 @@ module.use_lsp_mason = function(lsp_name, options)
 
   -- Auto install if possible
   if utils.is_module_enabled("features", "auto_install") and not opts.no_installer then
-    pcall(function()
+    local ok = pcall(function()
       local lspconfig_to_package = require("mason-lspconfig").get_mappings().lspconfig_to_package
       if lspconfig_to_package and lspconfig_to_package[lsp_name] then
         module.use_mason_package(lspconfig_to_package[lsp_name], start_lsp)
@@ -322,6 +394,10 @@ module.use_lsp_mason = function(lsp_name, options)
         start_lsp()
       end
     end)
+    if not ok then
+      -- mason-lspconfig 未加载/不可用时，不应阻塞 LSP 启动
+      start_lsp()
+    end
   else
     start_lsp()
   end

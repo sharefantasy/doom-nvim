@@ -1,4 +1,4 @@
-;; init.fnl - Main entry point for Aniseed-based Doom Nvim
+;; init.fnl - Main entry point for Aniseed-based Doom Nam
 ;; This replaces the original init.lua
 
 ;; Check if user is running Doom in a supported Neovim version
@@ -11,10 +11,10 @@
   (vim.notify message vim.log.levels.ERROR))
 
 ;; Configure Aniseed
-(module {...
-         :autoload true
-         :compile-path "lua"
-         :fnl-path "fnl"})
+(module
+  {:autoload true
+   :compile-path "lua"
+   :fnl-path "fnl"})
 
 ;; Load the profiler
 (local profiler (require :doom.services.profiler))

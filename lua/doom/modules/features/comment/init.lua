@@ -50,6 +50,8 @@ comment.settings = {
 comment.packages = {
   ["Comment.nvim"] = {
     "numToStr/Comment.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    lazy = true,
   },
 }
 

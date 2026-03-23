@@ -76,7 +76,7 @@ whichkey.configs["which-key.nvim"] = function()
                     keymaps[v][node.lhs] = {name = node.name}
                     -- If this is an actual keymap
                 elseif rhs_type == "string" or rhs_type == "function" then
-                    keymaps[v][node.lhs] = {node.name}
+                    keymaps[v][node.lhs] = {desc = node.name}
                 end
             end
         end

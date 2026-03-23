@@ -5,6 +5,7 @@ M.setup = function()
   -- tmux.nvim - tmux集成
   doom.use_package {
     "aserowy/tmux.nvim",
+    event = "VeryLazy",
     config = function()
       require("tmux").setup {
         copy_sync = {
@@ -21,6 +22,7 @@ M.setup = function()
   doom.use_package {
     "ThePrimeagen/refactoring.nvim",
     dependencies = { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" },
+    cmd = { "Refactor" },
     config = function()
       require("refactoring").setup {
         prompt_func_return_type = { go = true, python = true, lua = true },
@@ -35,17 +37,19 @@ M.setup = function()
   doom.use_package {
     "ThePrimeagen/harpoon",
     dependencies = { "nvim-lua/plenary.nvim" },
+    event = "VeryLazy",
   }
 
   -- nvim-tree-remote.nvim - 远程文件管理
-  doom.use_package "kiyoon/nvim-tree-remote.nvim"
+  doom.use_package { "kiyoon/nvim-tree-remote.nvim", event = "VeryLazy" }
 
   -- urlview.nvim - URL查看器
-  doom.use_package "axieax/urlview.nvim"
+  doom.use_package { "axieax/urlview.nvim", cmd = { "UrlView" } }
 
   -- godbolt.nvim - 在线编译器
   doom.use_package {
     "p00f/godbolt.nvim",
+    cmd = { "Godbolt", "GodboltCompiler" },
     config = function()
       require("godbolt").setup {
         languages = {
@@ -65,6 +69,7 @@ M.setup = function()
   -- messages.nvim - 消息管理
   doom.use_package {
     "AckslD/messages.nvim",
+    cmd = { "Messages" },
     config = 'require("messages").setup()',
   }
 
@@ -77,6 +82,7 @@ M.setup = function()
       "nvim-neotest/neotest",
       "kndndrj/projector-dbee",
     },
+    cmd = { "Projector" },
     config = function()
       require("projector").setup {
         outputs = {
@@ -93,6 +99,7 @@ M.setup = function()
       "mfussenegger/nvim-dap",
       "nvim-treesitter/nvim-treesitter",
     },
+    event = "VeryLazy",
     config = function()
       require("nvim-dap-virtual-text").setup {
         enabled = true,
@@ -122,6 +129,7 @@ M.setup = function()
   -- spectre.nvim - 搜索替换工具
   doom.use_package {
     "nvim-pack/nvim-spectre",
+    cmd = { "Spectre" },
     config = function()
       require("spectre").setup()
     end,
@@ -172,6 +180,7 @@ M.setup = function()
   doom.use_package {
     "ray-x/web-tools.nvim",
     dependencies = { "/guihua.lua" },
+    cmd = { "Npm", "Yarn", "Npx", "Node", "Pnpm", "StopJob" },
     config = function()
       require("web-tools").setup {
         keymaps = {
@@ -189,12 +198,14 @@ M.setup = function()
       { "ray-x/guihua.lua", run = "cd lua/fzy && make" },
       { "neovim/nvim-lspconfig" },
     },
+    event = "VeryLazy",
   }
 
   -- sad.nvim - 搜索替换
   doom.use_package {
     "ray-x/sad.nvim",
     requires = { "ray-x/guihua.lua", run = "cd lua/fzy && make" },
+    cmd = { "Sad" },
     config = function()
       require("sad").setup {}
     end,

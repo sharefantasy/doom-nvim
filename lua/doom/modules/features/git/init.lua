@@ -3,13 +3,20 @@ local git = {}
 git.settings = {}
 
 git.packages = {
-  ["neogit"] = { "TimUntersberger/neogit", cmd = "Neogit", lazy = true },
+  ["neogit"] = {
+    "TimUntersberger/neogit",
+    cmd = "Neogit",
+    lazy = true,
+    dependencies = { "ibhagwan/fzf-lua", "nvim-telescope/telescope.nvim" },
+  },
   ["blame"] = { "FabijanZulj/blame.nvim", cmd = "BlameToggle", lazy = true },
   ["diffview"] = { "sindrets/diffview.nvim", cmd = "DiffviewOpen", lazy = true },
   ["fzf-lua"] = {
     "ibhagwan/fzf-lua",
     -- optional for icon support
     dependencies = { "nvim-tree/nvim-web-devicons" },
+    cmd = { "FzfLua" },
+    lazy = true,
   },
 }
 
