@@ -8,7 +8,9 @@ auto_install.settings = {
         --- List of lsp providers to automatically install and setup
         ensure_installed = {},
         --- Whether or not to automatically install the lsp providers in ensure_installed
-        automatic_installation = true
+        automatic_installation = true,
+        --- Disable mason-lspconfig auto-enable to avoid Neovim 0.11 cmd=function issue
+        automatic_enable = false
     }
 }
 

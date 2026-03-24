@@ -35,6 +35,17 @@
 ;; Add ~/.local/share to runtimepath early
 (vim.opt.runtimepath:append (vim.fn.stdpath :data))
 
+;; Sanitize group names (augroup / highlight) to avoid E5248 on invalid characters
+(let [orig-create-augroup vim.api.nvim_create_augroup
+      orig-set-hl vim.api.nvim_set_hl]
+  (fn sanitize-group-name [name]
+    (let [name (if (= (type name) :string) name (tostring name))
+          sanitized (string.gsub name "[^%w_]" "_")]
+      sanitized))
+  (set vim.api.nvim_create_augroup (fn [name opts]
+                                    (orig-create-augroup (sanitize-group-name name) opts)))
+  (set vim.api.nvim_set_hl orig-set-hl))
+
 ;; Load the doom-nvim framework
 (require :doom.core)
 

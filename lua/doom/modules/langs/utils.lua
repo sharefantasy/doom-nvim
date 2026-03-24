@@ -75,7 +75,7 @@ module.use_null_ls = function(package_name, null_ls_path, configure_function)
     end
 
     local on_error = function(_, message)
-      log.error(("There was an error setting up null_ls provider `%s`. Reason: \n%s"):format(null_ls_path, message))
+      log.warn(("There was an error setting up null_ls provider `%s`. Reason: \n%s"):format(null_ls_path, message))
     end
 
     -- If auto_install module is enabled, try to install package before starting
@@ -95,7 +95,8 @@ end
 ---@param package_name string Name of the package that's being installed
 ---@param err_message string Reason for erroring out of installing mason package
 local default_error_handler = function(package_name, err_message)
-  error(("Error installing mason package `%s`.  Reason: \n%s "):format(package_name, err_message))
+  -- 不抛出 Lua error，避免在打开文件时打断流程；改为警告提示
+  log.warn(("Error installing mason package `%s`.  Reason: \n%s "):format(package_name, err_message))
 end
 
 --- Installs a mason package and provides an on-ready handler
@@ -319,6 +320,26 @@ module.use_lsp_mason = function(lsp_name, options)
 
         local merged = vim.tbl_deep_extend("force", vim.deepcopy(base), final_config)
         merged.name = config_name
+
+        -- Neovim 0.11: vim.lsp.enable 期望 cmd 为 table；如果是函数则先解析
+        if type(merged.cmd) == "function" then
+          local ok_cmd, cmd = pcall(merged.cmd)
+          if ok_cmd and type(cmd) == "table" then
+            merged.cmd = cmd
+          end
+        end
+
+        -- Neovim 0.11: root_dir 可能收到 bufnr（number），需转换为文件路径
+        if type(merged.root_dir) == "function" then
+          local root_dir_fn = merged.root_dir
+          merged.root_dir = function(fname)
+            local resolved = fname
+            if type(fname) == "number" then
+              resolved = vim.api.nvim_buf_get_name(fname)
+            end
+            return root_dir_fn(resolved)
+          end
+        end
 
         vim.lsp.config[config_name] = merged
         vim.lsp.enable(config_name)

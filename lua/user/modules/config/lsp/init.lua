@@ -89,10 +89,11 @@ M.setup = function()
     config = function()
       require("conform").setup {
         formatters_by_ft = {
-          go = { "goimport", "govet", "gofmt" },
+          go = { "goimports", "gofmt" },
           lua = { "stylua" },
           python = { "ruff" },
-          javascript = { { "prettierd", "prettier" } },
+          -- conform.nvim v9+: 用 `stop_after_first` 代替旧的嵌套 `{ { ... } }` 语法
+          javascript = { "prettierd", "prettier", stop_after_first = true },
         },
       }
       vim.api.nvim_create_autocmd("BufWritePre", {

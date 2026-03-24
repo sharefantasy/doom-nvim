@@ -111,6 +111,41 @@ go.configs["go-dap"] = function()
   }
 end
 
+local function apply_gopls_cmd_env(lsp_config)
+  local cmd_env = (lsp_config and lsp_config.cmd_env) or {}
+  local private_hosts = vim.env.GOPRIVATE
+  if private_hosts == nil or private_hosts == "" then
+    private_hosts = "code.byted.org,git.byted.org"
+  end
+  cmd_env.GOPRIVATE = cmd_env.GOPRIVATE or private_hosts
+  cmd_env.GONOSUMDB = cmd_env.GONOSUMDB or private_hosts
+  cmd_env.GONOPROXY = cmd_env.GONOPROXY or private_hosts
+
+  local config = lsp_config or {}
+  config.cmd_env = cmd_env
+
+  -- 避免 gopls 因为 go.mod 需 tidy 而中断加载
+  config.settings = config.settings or {}
+  config.settings.gopls = config.settings.gopls or {}
+  local build_flags = config.settings.gopls.buildFlags
+  if type(build_flags) ~= "table" then
+    build_flags = {}
+  end
+  local has_mod = false
+  for _, flag in ipairs(build_flags) do
+    if flag == "-mod=mod" then
+      has_mod = true
+      break
+    end
+  end
+  if not has_mod then
+    table.insert(build_flags, "-mod=mod")
+  end
+  config.settings.gopls.buildFlags = build_flags
+
+  return config
+end
+
 local langs_utils = require "doom.modules.langs.utils"
 go.autocmds = {
   {
@@ -123,6 +158,7 @@ go.autocmds = {
         if lsp_config == nil and vim.fn.executable("trae-gopls") == 1 then
           lsp_config = { cmd = { "trae-gopls" } }
         end
+        lsp_config = apply_gopls_cmd_env(lsp_config)
         langs_utils.use_lsp_mason(go.settings.lsp_name, { config = lsp_config })
       end
 

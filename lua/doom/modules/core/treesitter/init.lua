@@ -8,8 +8,8 @@ treesitter.settings = {
   treesitter = {
     highlight = { 
       enable = true,
-      -- 为 Go 和 markdown 文件禁用 Treesitter 高亮器以避免错误
-      disable = { "go", "markdown" },
+      -- 为 markdown 文件禁用 Treesitter 高亮器以避免错误
+      disable = { "markdown" },
     },
     incremental_selection = {
       enable = true,
@@ -86,8 +86,8 @@ treesitter.configs["nvim-treesitter"] = function()
   require("nvim-treesitter.configs").setup(vim.tbl_deep_extend("force", {
     highlight = { 
       enable = true,
-      -- 为 Go 和 markdown 文件禁用 Treesitter 高亮器以避免错误
-      disable = { "go", "markdown" },
+      -- 为 markdown 文件禁用 Treesitter 高亮器以避免错误
+      disable = { "markdown" },
     },
     incremental_selection = {
       enable = true,

@@ -5,13 +5,119 @@ pcall(function()
   end
 end)
 
+-- Sanitize group names (augroup / highlight) to avoid E5248 on invalid characters
+do
+  local orig_create_augroup = vim.api.nvim_create_augroup
+  local orig_create_autocmd = vim.api.nvim_create_autocmd
+  local orig_set_hl = vim.api.nvim_set_hl
+  local orig_nvim_command = vim.api.nvim_command
+  local orig_cmd = vim.cmd
+  local orig_exec2 = vim.api.nvim_exec2
+  local orig_exec = vim.api.nvim_exec
+
+  local function sanitize_group_name(name)
+    if type(name) ~= "string" then
+      name = tostring(name)
+    end
+    -- 仅允许字母/数字/下划线，兼容 Neovim 0.11 对 augroup 的限制
+    local sanitized = name:gsub("[^%w_]", "_")
+    return sanitized
+  end
+
+  vim.api.nvim_create_augroup = function(name, opts)
+    return orig_create_augroup(sanitize_group_name(name), opts)
+  end
+
+  vim.api.nvim_create_autocmd = function(event, opts)
+    if opts and type(opts.group) == "string" then
+      opts.group = sanitize_group_name(opts.group)
+    end
+    return orig_create_autocmd(event, opts)
+  end
+
+  vim.api.nvim_set_hl = orig_set_hl
+
+  local function sanitize_cmd_line(cmd)
+    if type(cmd) ~= "string" then
+      return cmd
+    end
+    local trimmed = cmd:gsub("^%s+", ""):gsub("%s+$", "")
+    local lower = trimmed:lower()
+    if lower:match("^augroup") then
+      local tokens = {}
+      for t in trimmed:gmatch("%S+") do
+        table.insert(tokens, t)
+      end
+      if tokens[2] then
+        tokens[2] = sanitize_group_name(tokens[2])
+      end
+      return table.concat(tokens, " ")
+    end
+    return cmd
+  end
+
+  local function sanitize_cmd(cmd)
+    if type(cmd) ~= "string" then
+      return cmd
+    end
+    if not cmd:find("\n") then
+      return sanitize_cmd_line(cmd)
+    end
+    local lines = {}
+    for line in cmd:gmatch("([^\n]*)\n?") do
+      if line ~= "" then
+        table.insert(lines, sanitize_cmd_line(line))
+      else
+        table.insert(lines, line)
+      end
+    end
+    return table.concat(lines, "\n")
+  end
+
+  if orig_exec2 then
+    vim.api.nvim_exec2 = function(cmd, opts)
+      return orig_exec2(sanitize_cmd(cmd), opts)
+    end
+  end
+
+  if orig_exec then
+    vim.api.nvim_exec = function(cmd, output)
+      return orig_exec(sanitize_cmd(cmd), output)
+    end
+  end
+
+  vim.api.nvim_command = function(cmd)
+    return orig_nvim_command(sanitize_cmd(cmd))
+  end
+
+  vim.cmd = setmetatable({}, {
+    __call = function(_, cmd)
+      if type(cmd) == "string" then
+        return orig_nvim_command(sanitize_cmd(cmd))
+      end
+      return orig_cmd(cmd)
+    end,
+    __index = orig_cmd,
+  })
+end
+
 -- Fastboot: 首屏只保证快捷键/基础交互，其余在事件循环开始后再加载
 -- 通过 `DOOM_FASTBOOT=0` 可关闭
+-- 为避免“先显示默认 UI → 再应用配置导致跳变”，当命令行带文件参数时默认自动关闭 fastboot
+-- 如需强制开启（即使打开文件也延迟加载），设置 `DOOM_FASTBOOT_FORCE=1`
 local fastboot = vim.env.DOOM_FASTBOOT
 if fastboot == nil then
   fastboot = "1"
 end
 fastboot = fastboot ~= "0"
+
+if fastboot and vim.env.DOOM_FASTBOOT_FORCE ~= "1" then
+  local has_ui = #vim.api.nvim_list_uis() > 0
+  local has_file_args = vim.fn.argc(-1) > 0
+  if has_ui and has_file_args then
+    fastboot = false
+  end
+end
 vim.g.doom_fastboot = fastboot
 
 -- Fastboot 模式下，禁用旧 packer 的 start 包自动加载（否则会在首屏阶段把一堆插件拉起来）
@@ -25,6 +131,11 @@ local function strip_packpath_site()
     end
   end
   vim.o.packpath = table.concat(out, ",")
+end
+
+-- 如果检测到遗留 packer 插件目录，移除 data_site 以避免旧插件干扰（如 gruvbox 版本冲突）
+if vim.loop.fs_stat(data_site .. "/pack/packer/start") then
+  strip_packpath_site()
 end
 
 if fastboot then

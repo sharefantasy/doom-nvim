@@ -15,18 +15,6 @@ whichkey.settings = {
             g = true
         }
     },
-    operators = {
-        d = "Delete",
-        c = "Change",
-        y = "Yank (copy)",
-        ["g~"] = "Toggle case",
-        ["gu"] = "Lowercase",
-        ["gU"] = "Uppercase",
-        [">"] = "Indent right",
-        ["<lt>"] = "Indent left",
-        ["zf"] = "Create fold",
-        ["!"] = "Filter though external program"
-    },
     icons = {breadcrumb = "»", separator = "➜", group = "+"},
     replace = {["<space>"] = "SPC", ["<cr>"] = "RET", ["<tab>"] = "TAB"},
     win = {padding = {0, 0, 0, 0}, border = doom.border_style},
@@ -57,7 +45,10 @@ whichkey.configs["which-key.nvim"] = function()
         local module = {}
         module.name = "whichkey"
 
-        local keymaps = {}
+        -- which-key v3: 使用 `wk.add(spec, opts)` 新格式，避免旧版 `register()` spec 触发告警
+        -- spec 只用于 which-key 展示，不负责真正的 keymap 设置
+        ---@type table<string, table[]>
+        local specs = {}
 
         --- Handles each node of the nest keymap config (except the top level)
         --- @param node NestIntegrationNode
@@ -69,23 +60,26 @@ whichkey.configs["which-key.nvim"] = function()
             end
 
             for _, v in ipairs(vim.split(node_settings.mode or "n", "")) do
-                if keymaps[v] == nil then keymaps[v] = {} end
+                if specs[v] == nil then specs[v] = {} end
                 -- If this is a keymap group
                 local rhs_type = type(node.rhs)
                 if rhs_type == "table" then
-                    keymaps[v][node.lhs] = {name = node.name}
+                    table.insert(specs[v], { node.lhs, group = node.name })
                     -- If this is an actual keymap
                 elseif rhs_type == "string" or rhs_type == "function" then
-                    keymaps[v][node.lhs] = {desc = node.name}
+                    table.insert(specs[v], { node.lhs, desc = node.name })
                 end
             end
         end
 
         module.on_complete = function()
-            for k, v in pairs(keymaps) do
-                require("which-key").register(v, {mode = k})
+            local wk = require("which-key")
+            for mode, spec in pairs(specs) do
+                if spec and #spec > 0 then
+                    wk.add(spec, { mode = mode })
+                end
             end
-            keymaps = {}
+            specs = {}
         end
 
         return module
