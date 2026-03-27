@@ -21,36 +21,15 @@ SKIPPED_FILES=0
 FAILED_FILES=0
 START_TIME=$(date +%s)
 
-# 编译函数，带增量编译优化
-compile_fennel() {
-    local fnl_file="$1"
-    local lua_file="${fnl_file/$FNL_DIR/$LUA_DIR}"
-    lua_file="${lua_file%.fnl}.lua"
-    
-    # 创建目录
-    mkdir -p "$(dirname "$lua_file")"
-    
-    # 检查是否需要重新编译（增量编译优化）
-    if [[ -f "$lua_file" ]] && [[ "$fnl_file" -ot "$lua_file" ]]; then
-        echo "✅ $(basename "$fnl_file") (已是最新，跳过)"
-        ((SKIPPED_FILES++))
-        return 0
-    fi
-    
-    echo "编译: $(basename "$fnl_file")"
-    
-    # 使用nvim与Aniseed编译
-    if nvim --headless --clean -c "
-        set rtp+=~/.local/share/nvim/lazy/aniseed
-        lua require('aniseed.compile').compile('$fnl_file', '$lua_file')
-        quit
-    " 2>/dev/null; then
-        echo "✅ $(basename "$fnl_file")"
-        ((COMPILED_FILES++))
+compile_all_fennel() {
+    echo "编译全部 Fennel 文件..."
+
+    if nvim --headless --clean \
+        -c "set rtp+=~/.local/share/nvim/lazy/nfnl" \
+        -c "lua require('nfnl.api')['compile-all-files']('$PROJECT_ROOT')" \
+        -c "quit"; then
         return 0
     else
-        echo "❌ 编译失败: $(basename "$fnl_file")"
-        ((FAILED_FILES++))
         return 1
     fi
 }
@@ -70,10 +49,12 @@ echo "📁 找到 $TOTAL_FILES 个 Fennel 文件"
 # 开始编译
 echo "🚀 开始编译..."
 
-# 顺序编译所有文件
-for fnl_file in "${FNL_FILES[@]}"; do
-    compile_fennel "$fnl_file"
-done
+# 统一编译所有文件
+if compile_all_fennel; then
+    COMPILED_FILES=$TOTAL_FILES
+else
+    FAILED_FILES=$TOTAL_FILES
+fi
 
 # 计算耗时
 END_TIME=$(date +%s)

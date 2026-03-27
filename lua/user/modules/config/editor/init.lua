@@ -60,27 +60,27 @@ M.setup = function()
         "s",
         mode = { "n", "o", "x" },
         function() require("flash").jump() end,
-        desc = "Flash"
+        desc = "跳转"
       }, {
       "S",
       mode = { "n", "o", "x" },
       function() require("flash").treesitter() end,
-      desc = "Flash Treesitter"
+      desc = "树跳"
     }, {
       "r",
       mode = "o",
       function() require("flash").remote() end,
-      desc = "Remote Flash"
+      desc = "远跳"
     }, {
       "R",
       mode = { "o", "x" },
       function() require("flash").treesitter_search() end,
-      desc = "Treesitter Search"
+      desc = "树搜"
     }, {
       "<c-s>",
       mode = { "c" },
       function() require("flash").toggle() end,
-      desc = "Toggle Flash Search"
+      desc = "开关"
     }
     }
     ,

@@ -33,10 +33,21 @@
        :use_cmd nil})
 
 ;; Set up helper functions for doom global
+(fn normalize-package [pkg]
+  (if (= (type pkg) :table)
+    (do
+      (local repo (or (. pkg :repo) (. pkg "repo")))
+      (when (and repo (not (. pkg 1)))
+        (tset pkg 1 repo)
+        (tset pkg :repo nil)
+        (tset pkg "repo" nil))
+      pkg)
+    pkg))
+
 (fn doom.use_package [...]
   "Add packages to doom's package list"
   (each [_, pkg (ipairs [...])]
-    (table.insert doom.packages pkg)))
+    (table.insert doom.packages (normalize-package pkg))))
 
 (fn doom.use_keybind [...]
   "Add keybinds to doom's keybind list"

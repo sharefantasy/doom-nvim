@@ -169,10 +169,10 @@ M.setup = function()
       },
     },
     keys = {
-      { "<leader>te", "<cmd>HurlRunnerToEntry<CR>", desc = "Run Api request to entry" },
-      { "<leader>tm", "<cmd>HurlToggleMode<CR>", desc = "Hurl Toggle Mode" },
-      { "<leader>tv", "<cmd>HurlVerbose<CR>", desc = "Run Api in verbose mode" },
-      { "<leader>th", ":HurlRunner<CR>", desc = "Hurl Runner", mode = "v" },
+      { "<leader>te", "<cmd>HurlRunnerToEntry<CR>", desc = "跑请求" },
+      { "<leader>tm", "<cmd>HurlToggleMode<CR>", desc = "切模式" },
+      { "<leader>tv", "<cmd>HurlVerbose<CR>", desc = "详输出" },
+      { "<leader>th", ":HurlRunner<CR>", desc = "选区跑", mode = "v" },
     },
   }
 

@@ -239,10 +239,26 @@ doom = {
   ---@vararg DoomPackage|string|DoomPackage[] Packages to install
   use_package = function(...)
     local arg = { ... }
+    local normalize_package = function(pkg)
+      if type(pkg) ~= "table" then
+        return pkg
+      end
+
+      local repo = pkg.repo or pkg["repo"]
+      if repo ~= nil and pkg[1] == nil then
+        pkg[1] = repo
+        pkg.repo = nil
+        pkg["repo"] = nil
+      end
+
+      return pkg
+    end
+
+    local normalized = vim.tbl_map(normalize_package, arg)
     -- Get table of packages via git repository name
     local packages_to_add = vim.tbl_map(function(t)
       return type(t) == "string" and t or t[1]
-    end, arg)
+    end, normalized)
 
     -- Predicate returns false if the package needs to be overriden
     local package_override_predicate = function(t)
@@ -252,7 +268,7 @@ doom = {
     -- Iterate over existing packages, removing all packages that are about to be overriden
     doom.packages = vim.tbl_filter(package_override_predicate, doom.packages)
 
-    for _, packer_spec in ipairs(arg) do
+    for _, packer_spec in ipairs(normalized) do
       table.insert(doom.packages, type(packer_spec) == "string" and { packer_spec } or packer_spec)
     end
   end,

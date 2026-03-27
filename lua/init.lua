@@ -4,7 +4,7 @@ if (vim.fn.has("nvim-0.7.0") ~= 1) then
   vim.notify(message, vim.log.levels.ERROR)
 else
 end
-local _2amodule_name_2a = "table: 0x0105fa7360"
+local _2amodule_name_2a = "table: 0x0107e8c110"
 local _2amodule_2a
 do
   package.loaded[_2amodule_name_2a] = {}
@@ -39,20 +39,20 @@ do
     local sanitized = string.gsub(name0, "[^%w_]", "_")
     return sanitized
   end
-  local function _6_(name, opts)
+  local function _4_(name, opts)
     return orig_create_augroup(sanitize_group_name(name), opts)
   end
-  vim.api.nvim_create_augroup = _6_
+  vim.api.nvim_create_augroup = _4_
   vim.api.nvim_set_hl = orig_set_hl
 end
 require("doom.core")
-local function _8_()
+local function _5_()
   if (doom.check_updates and doom.core.updater) then
     return doom.core.updater.check_updates(true)
   else
     return nil
   end
 end
-vim.defer_fn(_8_, 1)
+vim.defer_fn(_5_, 1)
 profiler.stop("framework|init.fnl")
 return _2amodule_2a

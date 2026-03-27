@@ -1,0 +1,2 @@
+local _2afile_2a = "/Users/fankainang/sources/doom-nvim/fnl/user/modules.fnl"
+return {features = {"lsp", "telescope", "whichkey"}, langs = {"lua", "fennel", "javascript", "typescript", "html", "css", "vue", "svelte", "tailwindcss", "rust", "go", "cc", "python", "bash", "fish", "json", "yaml", "toml", "markdown", "dockerfile", "terraform", "sql", "haskell", "clojure", "ocaml", "gdscript", "glsl", "java", "kotlin", "php", "ruby", "c_sharp", "nix", "thrift"}}

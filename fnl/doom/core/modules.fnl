@@ -27,7 +27,7 @@
   (local logger (require :doom.utils.logging))
   ;; Handle the Modules
   (each [section_name _ (pairs doom.modules)]
-    (each [module_name module (pairs doom.modules[section_name])]
+    (each [module_name module (pairs (. doom.modules section_name))]
       (when (not= (type module) :table)
         (print (.. "Error on module " module_name " type is " (type module) " val is " module)))
       
@@ -42,7 +42,7 @@
         (each [_, dependent_module (ipairs module.requires_modules)]
           (local [dep_section_name dep_module_name] (vim.split dependent_module "%\."))
           
-          (when (not doom.modules[dep_section_name][dep_module_name])
+          (when (not (. (. doom.modules dep_section_name) dep_module_name))
             (set should_enable_module false)
             (logger.error
              (.. "Doom module \"" section_name "." module_name "\" depends on a module that is not enabled \""
@@ -53,10 +53,17 @@
         (when module.packages
           (each [dependency_name packer_spec (pairs module.packages)]
             ;; Set packer_spec to configure function
-            (when (and module.configs module.configs[dependency_name])
-              (set packer_spec.config module.configs[dependency_name]))
+            (when (and module.configs (. module.configs dependency_name))
+              (set packer_spec.config (. module.configs dependency_name)))
 
             (local spec (vim.deepcopy packer_spec))
+
+            ;; Normalize repo key to lazy-style spec
+            (when (and (= (type spec) :table) (or (. spec :repo) (. spec "repo")) (not (. spec 1)))
+              (local repo (or (. spec :repo) (. spec "repo")))
+              (tset spec 1 repo)
+              (tset spec :repo nil)
+              (tset spec "repo" nil))
 
             ;; Set/unset frozen packer dependencies
             (when (= (type spec.commit) :table)

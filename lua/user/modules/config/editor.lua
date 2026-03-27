@@ -52,7 +52,7 @@ M.setup = function()
         "s",
         mode = { "n", "o", "x" },
         function() require("flash").jump() end,
-        desc = "Flash"
+        desc = "跳转"
       }, {
       -- "S",
       -- mode = { "n", "o", "x" },
@@ -62,7 +62,7 @@ M.setup = function()
       "r",
       mode = "o",
       function() require("flash").remote() end,
-      desc = "Remote Flash"
+      desc = "远跳"
     }, {
       -- "R",
       -- mode = { "o", "x" },
@@ -72,7 +72,7 @@ M.setup = function()
       "<c-s>",
       mode = { "c" },
       function() require("flash").toggle() end,
-      desc = "Toggle Flash Search"
+      desc = "开关"
     }
     }
 ,

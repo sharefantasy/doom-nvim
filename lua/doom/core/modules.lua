@@ -70,7 +70,15 @@ modules.load_modules = function()
                             packer_spec.config = module.configs[dependency_name]
                         end
 
-                        local spec = vim.deepcopy(packer_spec)
+                    local spec = vim.deepcopy(packer_spec)
+
+                    -- Normalize repo key to lazy-style spec
+                    local repo = spec.repo or spec["repo"]
+                    if repo ~= nil and spec[1] == nil then
+                        spec[1] = repo
+                        spec.repo = nil
+                        spec["repo"] = nil
+                    end
 
                         -- Set/unset frozen packer dependencies
                         if type(spec.commit) == "table" then

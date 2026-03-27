@@ -16,7 +16,7 @@
                                                :select {:disable ["markdown"]}}))}})
 
 (treesitter.configs {})
-(treesitter.settings {})
+(treesitter.settings {:show_compiler_warning_message false})
 (treesitter.autocmds [])
 (treesitter.cmds [])
 (treesitter.binds [])

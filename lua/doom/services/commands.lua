@@ -62,6 +62,13 @@ local del_command_implementations = {
 }
 local del_command_fn = utils.pick_compatible_field(del_command_implementations)
 
+local function normalize_name(name)
+    if type(name) == "table" and name[1] ~= nil and type(name[1]) == "string" then
+        return name[1]
+    end
+    return name
+end
+
 -- API
 local commands_service = {}
 
@@ -74,13 +81,15 @@ commands_service.stored_names = {}
 ---@param command string|function(CommandArgs)
 ---@param opts SetCommandOptions|nil
 commands_service.set = function(name, command, opts)
-    commands_service.stored_names[name] = true
-    set_command_fn(name, command, opts or {})
+    local normalized = normalize_name(name)
+    commands_service.stored_names[normalized] = true
+    set_command_fn(normalized, command, opts or {})
 end
 
 commands_service.del = function(name)
-    commands_service.stored_names[name] = nil
-    del_command_fn(name)
+    local normalized = normalize_name(name)
+    commands_service.stored_names[normalized] = nil
+    del_command_fn(normalized)
 end
 
 commands_service.del_all = function()

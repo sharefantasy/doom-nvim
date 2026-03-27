@@ -3,7 +3,7 @@ local treesitter = {}
 treesitter.settings = {
   --- Checks if the user is using clang and tells them to use GCC if they are.
   --- @type boolean
-  show_compiler_warning_message = true,
+  show_compiler_warning_message = false,
 
   treesitter = {
     highlight = { 
@@ -22,7 +22,6 @@ treesitter.settings = {
     },
     indent = { enable = true },
     playground = { enable = true },
-    context_commentstring = { enable = true },
     autotag = {
       enable = true,
       filetypes = {
@@ -83,6 +82,7 @@ treesitter.packages = {
 treesitter.configs = {}
 treesitter.configs["nvim-treesitter"] = function()
   local is_module_enabled = require("doom.utils").is_module_enabled
+  vim.g.skip_ts_context_commentstring_module = true
   require("nvim-treesitter.configs").setup(vim.tbl_deep_extend("force", {
     highlight = { 
       enable = true,
@@ -100,7 +100,6 @@ treesitter.configs["nvim-treesitter"] = function()
     },
     indent = { enable = true },
     playground = { enable = true },
-    context_commentstring = { enable = true },
     autotag = {
       enable = true,
       filetypes = {
@@ -144,6 +143,9 @@ treesitter.configs["nvim-treesitter"] = function()
       end
     end, 1000)
   end
+end
+treesitter.configs["nvim-ts-context-commentstring"] = function()
+  require("ts_context_commentstring").setup {}
 end
 treesitter.configs["treesj"] = function()
   require("treesj").setup {--[[ your config ]]

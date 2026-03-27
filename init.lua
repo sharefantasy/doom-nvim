@@ -9,6 +9,7 @@ end)
 do
   local orig_create_augroup = vim.api.nvim_create_augroup
   local orig_create_autocmd = vim.api.nvim_create_autocmd
+  local orig_clear_autocmds = vim.api.nvim_clear_autocmds
   local orig_set_hl = vim.api.nvim_set_hl
   local orig_nvim_command = vim.api.nvim_command
   local orig_cmd = vim.cmd
@@ -30,9 +31,17 @@ do
 
   vim.api.nvim_create_autocmd = function(event, opts)
     if opts and type(opts.group) == "string" then
-      opts.group = sanitize_group_name(opts.group)
+      local group_name = sanitize_group_name(opts.group)
+      opts.group = orig_create_augroup(group_name, { clear = false })
     end
     return orig_create_autocmd(event, opts)
+  end
+
+  vim.api.nvim_clear_autocmds = function(opts)
+    if opts and type(opts.group) == "string" then
+      opts.group = sanitize_group_name(opts.group)
+    end
+    return orig_clear_autocmds(opts)
   end
 
   vim.api.nvim_set_hl = orig_set_hl

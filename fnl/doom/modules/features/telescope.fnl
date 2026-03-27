@@ -6,8 +6,8 @@
 ;; Package definitions
 (set telescope.packages
   {:telescope {"repo" "nvim-telescope/telescope.nvim"
-                "dependencies" [:plenary :telescope-fzf-native]
-                "config" (fn []
+               "dependencies" ["nvim-lua/plenary.nvim" "nvim-telescope/telescope-fzf-native.nvim"]
+               "config" (fn []
                           (local telescope (require :telescope))
                           (telescope.setup
                             {:defaults {:mappings {:i {"<C-u>" false
@@ -35,20 +35,20 @@
 
 ;; Commands
 (set telescope.cmds
-  [["Telescope"]
-   (fn [opts]
-     (. (require :telescope.builtin) :builtin opts))
-   {:desc "Open Telescope builtin picker"}])
+  [["Telescope"
+    (fn [opts]
+      (. (require :telescope.builtin) :builtin opts))
+    {:desc "内置搜"}])
 
 ;; Key bindings - using new which-key format
 (set telescope.binds
   {:n {:keybinds
-        ["<leader>f" {:group "+find"}
-         "<leader>ff" {:desc "Find files" :cmd (fn [] (. (require :telescope.builtin) :find_files))}
-         "<leader>fr" {:desc "Recent files" :cmd (fn [] (. (require :telescope.builtin) :recent_files))}
-         "<leader>fg" {:desc "Live grep" :cmd (fn [] (. (require :telescope.builtin) :live_grep))}
-         "<leader>fb" {:desc "Buffers" :cmd (fn [] (. (require :telescope.builtin) :buffers))}
-         "<leader>fh" {:desc "Help tags" :cmd (fn [] (. (require :telescope.builtin) :help_tags))}]}})
+        ["<leader>f" {:name "+搜索"}
+         "<leader>ff" {:desc "找文件" :cmd (fn [] (. (require :telescope.builtin) :find_files))}
+         "<leader>fr" {:desc "最近" :cmd (fn [] (. (require :telescope.builtin) :recent_files))}
+         "<leader>fg" {:desc "全文搜" :cmd (fn [] (. (require :telescope.builtin) :live_grep))}
+         "<leader>fb" {:desc "缓冲" :cmd (fn [] (. (require :telescope.builtin) :buffers))}
+         "<leader>fh" {:desc "帮助" :cmd (fn [] (. (require :telescope.builtin) :help_tags))}]}})
 
 {"packages" telescope.packages
  "configs" telescope.configs

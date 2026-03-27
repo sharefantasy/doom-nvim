@@ -160,7 +160,7 @@ local function nvim_tree_on_attach(bufnr)
 
   local function opts(desc)
     return {
-      desc = "nvim-tree: " .. desc,
+      desc = "树:" .. desc,
       buffer = bufnr,
       noremap = true,
       silent = true,
@@ -170,17 +170,17 @@ local function nvim_tree_on_attach(bufnr)
 
   api.config.mappings.default_on_attach(bufnr)
 
-  vim.keymap.set("n", "u", api.tree.change_root_to_node, opts "Dir up")
-  vim.keymap.set("n", "<F1>", api.node.show_info_popup, opts "Show info popup")
-  vim.keymap.set("n", "l", nt_remote.tabnew, opts "Open in treemux")
-  vim.keymap.set("n", "<CR>", nt_remote.tabnew, opts "Open in treemux")
-  vim.keymap.set("n", "<C-t>", nt_remote.tabnew, opts "Open in treemux")
-  vim.keymap.set("n", "<2-LeftMouse>", nt_remote.tabnew, opts "Open in treemux")
-  vim.keymap.set("n", "h", api.tree.close, opts "Close node")
-  vim.keymap.set("n", "v", nt_remote.vsplit, opts "Vsplit in treemux")
-  vim.keymap.set("n", "<C-v>", nt_remote.vsplit, opts "Vsplit in treemux")
-  vim.keymap.set("n", "<C-x>", nt_remote.split, opts "Split in treemux")
-  vim.keymap.set("n", "o", nt_remote.tabnew_main_pane, opts "Open in treemux without tmux split")
+  vim.keymap.set("n", "u", api.tree.change_root_to_node, opts "上级")
+  vim.keymap.set("n", "<F1>", api.node.show_info_popup, opts "信息")
+  vim.keymap.set("n", "l", nt_remote.tabnew, opts "新开")
+  vim.keymap.set("n", "<CR>", nt_remote.tabnew, opts "新开")
+  vim.keymap.set("n", "<C-t>", nt_remote.tabnew, opts "新开")
+  vim.keymap.set("n", "<2-LeftMouse>", nt_remote.tabnew, opts "新开")
+  vim.keymap.set("n", "h", api.tree.close, opts "收起")
+  vim.keymap.set("n", "v", nt_remote.vsplit, opts "竖分")
+  vim.keymap.set("n", "<C-v>", nt_remote.vsplit, opts "竖分")
+  vim.keymap.set("n", "<C-x>", nt_remote.split, opts "横分")
+  vim.keymap.set("n", "o", nt_remote.tabnew_main_pane, opts "主窗")
 
   vim.keymap.set("n", "-", "", { buffer = bufnr })
   vim.keymap.del("n", "-", { buffer = bufnr })
@@ -248,15 +248,15 @@ explorer.configs["tmux.nvim"] = function()
 end
 
 explorer.binds = {
-  { "<F3>", ":NvimTreeToggle<CR>", desc = "Toggle file explorer" },
-  { "<leader>", group = "prefix", {
-    { "o", group = "open/close", {
-        { "e", "<cmd>NvimTreeToggle<CR>", desc = "Explorer" } },
+  { "<F3>", ":NvimTreeToggle<CR>", desc = "文件树" },
+  { "<leader>", group = "前缀", {
+    { "o", group = "开关", {
+        { "e", "<cmd>NvimTreeToggle<CR>", desc = "文件树" } },
     },
   }},
   { "<leader>", {
     { "p", {
-        { "a", "<cmd>NvimTreeFindFile<CR>", desc = "Show file in explorer" },
+        { "a", "<cmd>NvimTreeFindFile<CR>", desc = "定位" },
       },
     },
   }},
