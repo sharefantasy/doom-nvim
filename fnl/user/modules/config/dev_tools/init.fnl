@@ -4,8 +4,8 @@
 ;; 开发工具插件配置
 (fn M.setup []
   ;; tmux.nvim - tmux集成
-  (doom.use_package
-    {"aserowy/tmux.nvim"
+  (gentlewind.use_package
+    {:repo "aserowy/tmux.nvim"
      :event "VeryLazy"
      :config (fn []
                ((require :tmux).setup
@@ -15,8 +15,8 @@
                   :resize {:enable_default_keybindings false}}))})
 
   ;; refactoring.nvim - 代码重构工具
-  (doom.use_package
-    {"ThePrimeagen/refactoring.nvim"
+  (gentlewind.use_package
+    {:repo "ThePrimeagen/refactoring.nvim"
      :dependencies ["nvim-lua/plenary.nvim" "nvim-treesitter/nvim-treesitter"]
      :cmd ["Refactor"]
      :config (fn []
@@ -27,20 +27,20 @@
                   :print_var_statements {:go true :python true :lua true}}))})
 
   ;; harpoon - 文件标记工具
-  (doom.use_package
-    {"ThePrimeagen/harpoon"
+  (gentlewind.use_package
+    {:repo "ThePrimeagen/harpoon"
      :dependencies ["nvim-lua/plenary.nvim"]
      :event "VeryLazy"})
 
   ;; nvim-tree-remote.nvim - 远程文件管理
-  (doom.use_package {"kiyoon/nvim-tree-remote.nvim" :event "VeryLazy"})
+  (gentlewind.use_package {:repo "kiyoon/nvim-tree-remote.nvim" :event "VeryLazy"})
 
   ;; urlview.nvim - URL查看器
-  (doom.use_package {"axieax/urlview.nvim" :cmd ["UrlView"]})
+  (gentlewind.use_package {:repo "axieax/urlview.nvim" :cmd ["UrlView"]})
 
   ;; godbolt.nvim - 在线编译器
-  (doom.use_package
-    {"p00f/godbolt.nvim"
+  (gentlewind.use_package
+    {:repo "p00f/godbolt.nvim"
      :cmd ["Godbolt" "GodboltCompiler"]
      :config (fn []
                ((require :godbolt).setup
@@ -52,14 +52,14 @@
                   :url "https://godbolt.org"}))})
 
   ;; messages.nvim - 消息管理
-  (doom.use_package
-    {"AckslD/messages.nvim"
+  (gentlewind.use_package
+    {:repo "AckslD/messages.nvim"
      :cmd ["Messages"]
      :config (fn [] ((require :messages).setup))})
 
   ;; nvim-projector - 项目管理
-  (doom.use_package
-    {"kndndrj/nvim-projector"
+  (gentlewind.use_package
+    {:repo "kndndrj/nvim-projector"
      :dependencies ["MunifTanjim/nui.nvim"
                     "kndndrj/projector-neotest"
                     "nvim-neotest/neotest"
@@ -71,8 +71,8 @@
                  {:outputs [(:new projector_dbee.OutputBuilder)]}))})
 
   ;; nvim-dap-virtual-text - DAP虚拟文本
-  (doom.use_package
-    {"theHamsta/nvim-dap-virtual-text"
+  (gentlewind.use_package
+    {:repo "theHamsta/nvim-dap-virtual-text"
      :dependencies ["mfussenegger/nvim-dap" "nvim-treesitter/nvim-treesitter"]
      :event "VeryLazy"
      :config (fn []
@@ -96,14 +96,14 @@
                   :virt_text_win_col nil}))})
 
   ;; spectre.nvim - 搜索替换工具
-  (doom.use_package
-    {"nvim-pack/nvim-spectre"
+  (gentlewind.use_package
+    {:repo "nvim-pack/nvim-spectre"
      :cmd ["Spectre"]
      :config (fn [] ((require :spectre).setup))})
 
   ;; hurl.nvim - HTTP客户端
-  (doom.use_package
-    {"jellydn/hurl.nvim"
+  (gentlewind.use_package
+    {:repo "jellydn/hurl.nvim"
      :dependencies ["MunifTanjim/nui.nvim" "nvim-lua/plenary.nvim" "nvim-treesitter/nvim-treesitter"]
      :ft ["hurl" "http"]
      :opts {:debug false
@@ -121,8 +121,8 @@
             ["<leader>th" ":HurlRunner<CR>" :desc "选区跑" :mode "v"]]})
 
   ;; web-tools.nvim - Web开发工具
-  (doom.use_package
-    {"ray-x/web-tools.nvim"
+  (gentlewind.use_package
+    {:repo "ray-x/web-tools.nvim"
      :dependencies ["/guihua.lua"]
      :cmd ["Npm" "Yarn" "Npx" "Node" "Pnpm" "StopJob"]
      :config (fn []
@@ -131,19 +131,17 @@
                             :repeat_rename "."}}))})
 
   ;; navigator.lua - LSP导航
-  (doom.use_package
-    {"ray-x/navigator.lua"
-     :requires [{"ray-x/guihua.lua" :run "cd lua/fzy && make"}
-                {"neovim/nvim-lspconfig"}]
+  (gentlewind.use_package
+    {:repo "ray-x/navigator.lua"
+     :requires [{:repo "ray-x/guihua.lua" :run "cd lua/fzy && make"}
+                {:repo "neovim/nvim-lspconfig"}]
      :event "VeryLazy"})
 
   ;; sad.nvim - 搜索替换
-  (doom.use_package
-    {"ray-x/sad.nvim"
-     :requires [{"ray-x/guihua.lua" :run "cd lua/fzy && make"}]
+  (gentlewind.use_package
+    {:repo "ray-x/sad.nvim"
+     :requires [{:repo "ray-x/guihua.lua" :run "cd lua/fzy && make"}]
      :cmd ["Sad"]
      :config (fn [] ((require :sad).setup {}))}))
-
-M)
 
 M

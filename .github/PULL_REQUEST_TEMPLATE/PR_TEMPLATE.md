@@ -17,6 +17,6 @@ Related issue: # (issue_number)
 
 ### Checklist
 
-- [ ] I have checked [contributing guidelines](https://github.com/NTBBloodbath/doom-nvim/blob/main/docs/contributing.md#contributing-code)
+- [ ] I have checked [contributing guidelines](https://github.com/NTBBloodbath/gentlewind-nvim/blob/main/docs/contributing.md#contributing-code)
 - [ ] I have tested my code
 - [ ] I have updated the documentation (if necessary)

@@ -3,7 +3,7 @@ local M = {}
 -- 编辑器增强插件配置
 M.setup = function()
   -- 窗口焦点管理
-  doom.use_package {
+  gentlewind.use_package {
     "nvim-focus/focus.nvim",
     config = function()
       require("focus").setup {
@@ -41,7 +41,7 @@ M.setup = function()
   }
 
   -- 快速跳转
-  doom.use_package {
+  gentlewind.use_package {
     "folke/flash.nvim",
     event = "VeryLazy",
     ---@type Flash.Config
@@ -79,10 +79,10 @@ M.setup = function()
   }
 
   -- 重复操作增强
-  doom.use_package "tpope/vim-repeat"
+  gentlewind.use_package "tpope/vim-repeat"
 
   -- 包围操作
-  doom.use_package {
+  gentlewind.use_package {
     "ur4ltz/surround.nvim",
     config = function()
       require("surround").setup { mappings_style = "sandwich" }
@@ -90,7 +90,7 @@ M.setup = function()
   }
 
   -- 文本对象增强
-  doom.use_package {
+  gentlewind.use_package {
     "chrisgrieser/nvim-various-textobjs",
     lazy = false,
     opts = {
@@ -101,13 +101,13 @@ M.setup = function()
   }
 
   -- 书签管理
-  doom.use_package {
+  gentlewind.use_package {
     "ThePrimeagen/harpoon",
     dependencies = { "nvim-lua/plenary.nvim" },
   }
 
   -- 代码重构
-  -- doom.use_package {
+  -- gentlewind.use_package {
   --   "ThePrimeagen/refactoring.nvim",
   --   dependencies = { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" },
   --   config = function()
@@ -121,7 +121,7 @@ M.setup = function()
   -- }
 
   -- 代码重构（简化版）
-  -- doom.use_package {
+  -- gentlewind.use_package {
   --   "ThePrimeagen/refactoring.nvim",
   --   dependencies = { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" },
   --   config = function()
@@ -130,7 +130,7 @@ M.setup = function()
   -- }
 
   -- 代码格式化
-  doom.use_package {
+  gentlewind.use_package {
     "stevearc/conform.nvim",
     opts = {},
     config = function()
@@ -157,7 +157,7 @@ M.setup = function()
   }
 
   -- 注释增强
-  -- doom.use_package {
+  -- gentlewind.use_package {
   --   "nvim-orgmode/orgmode",
   --   dependencies = { { "nvim-treesitter/nvim-treesitter", lazy = true } },
   --   event = "VeryLazy",
@@ -180,7 +180,7 @@ M.setup = function()
   -- }
 
   -- 代码注释增强
-  -- doom.use_package {
+  -- gentlewind.use_package {
   --   "nvim-pack/nvim-spectre",
   --   config = function()
   --     require("spectre").setup()
@@ -188,16 +188,16 @@ M.setup = function()
   -- }
 
   -- 代码注释增强
-  -- doom.use_package {
+  -- gentlewind.use_package {
   --   "code-biscuits/nvim-biscuits",
   --   requires = { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" },
   -- }
 
   -- 环境变量管理
-  doom.use_package { "ellisonleao/dotenv.nvim" }
+  gentlewind.use_package { "ellisonleao/dotenv.nvim" }
 
   -- 重复命令增强
-  doom.use_package "tpope/vim-repeat"
+  gentlewind.use_package "tpope/vim-repeat"
 end
 
 return M

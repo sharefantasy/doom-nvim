@@ -11,7 +11,7 @@ fi
 Help()
 {
   # Display Help
-  echo "Bootstraps a docker image for contributing changes to doom-nvim"
+  echo "Bootstraps a docker image for contributing changes to gentlewind-nvim"
   echo
   echo "Syntax: ./start_docker.sh [-b <branch_name>]"
   echo "options:"
@@ -24,7 +24,7 @@ Help()
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 # Default options
-BRANCH_NAME=doom-nvim-contrib # Branch to checkout / create
+BRANCH_NAME=gentlewind-nvim-contrib # Branch to checkout / create
 
 while getopts "b:h" option; do
   case $option in
@@ -44,17 +44,17 @@ done
 cd "$SCRIPT_DIR" || exit
 
 # Create the worktree if it doesn't already exist
-if [[ ! -d "$SCRIPT_DIR"/doom-nvim-contrib ]]; then
-  echo "0. Creating new git worktree of doom-nvim at $SCRIPT_DIR/doom-nvim-contrib"
+if [[ ! -d "$SCRIPT_DIR"/gentlewind-nvim-contrib ]]; then
+  echo "0. Creating new git worktree of gentlewind-nvim at $SCRIPT_DIR/gentlewind-nvim-contrib"
   if git show-ref --quiet refs/heads/"$BRANCH_NAME"; then
-    git worktree add ./doom-nvim-contrib "$BRANCH_NAME"
+    git worktree add ./gentlewind-nvim-contrib "$BRANCH_NAME"
   else
-    git worktree add ./doom-nvim-contrib origin/main -b "$BRANCH_NAME"
+    git worktree add ./gentlewind-nvim-contrib origin/main -b "$BRANCH_NAME"
   fi
 fi
 
 # CD into worktree
-cd ./doom-nvim-contrib || exit
+cd ./gentlewind-nvim-contrib || exit
 
 echo "1. Setting up branch"
 # If branch exists just check it out
@@ -82,32 +82,32 @@ fi
 
 cd .. || exit
 echo " - Success!  Checked out $BRANCH_NAME branch at:"
-echo "   $SCRIPT_DIR/doom-nvim-contrib"
+echo "   $SCRIPT_DIR/gentlewind-nvim-contrib"
 echo ""
 
 echo "2. Setting up docker environment"
 # Ensure docker image exists
-if [[ ! "$(docker images -q doom-nvim-contrib)" ]]; then
+if [[ ! "$(docker images -q gentlewind-nvim-contrib)" ]]; then
   echo " - Docker image does not exist.  Building docker image..."
-  docker build -t doom-nvim-contrib .
+  docker build -t gentlewind-nvim-contrib .
 fi
 
-if [ "$(docker ps -aq -f status=exited -f name=doom-nvim-contrib-container)" ]; then
+if [ "$(docker ps -aq -f status=exited -f name=gentlewind-nvim-contrib-container)" ]; then
   echo " - Cleaning up old container..."
   # cleanup
-  docker rm doom-nvim-contrib-container >> /dev/null
+  docker rm gentlewind-nvim-contrib-container >> /dev/null
 fi
 
 # Create docker container if haven't already
-echo " - Success! Running docker container doom-nvim-contrib-container..."
+echo " - Success! Running docker container gentlewind-nvim-contrib-container..."
 docker run \
   -it \
   -e UID="1000" \
   -e GID="1000" \
-  -v "$SCRIPT_DIR"/doom-nvim-contrib:/home/doom/.config/nvim \
-  -v "$SCRIPT_DIR"/workspace:/home/doom/workspace \
-  --name doom-nvim-contrib-container \
-  --user doom \
-  doom-nvim-contrib
+  -v "$SCRIPT_DIR"/gentlewind-nvim-contrib:/home/gentlewind/.config/nvim \
+  -v "$SCRIPT_DIR"/workspace:/home/gentlewind/workspace \
+  --name gentlewind-nvim-contrib-container \
+  --user gentlewind \
+  gentlewind-nvim-contrib
 
 

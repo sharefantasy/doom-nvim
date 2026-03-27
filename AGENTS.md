@@ -1,8 +1,8 @@
-# Doom Nvim 架构概述
+# Gentlewind Nvim 架构概述
 
 ## 项目概述
 
-Doom Nvim 是一个受 doom-emacs 启发的 Neovim 配置框架，提供模块化、可配置的 Neovim 配置方案。项目采用模块化架构，支持特性模块和语言模块的动态加载，具有快速启动、稳定更新、可扩展性强等特点。
+Gentlewind Nvim 是一个受 gentlewind-emacs 启发的 Neovim 配置框架，提供模块化、可配置的 Neovim 配置方案。项目采用模块化架构，支持特性模块和语言模块的动态加载，具有快速启动、稳定更新、可扩展性强等特点。
 
 ### 核心架构
 
@@ -18,7 +18,7 @@ Doom Nvim 是一个受 doom-emacs 启发的 Neovim 配置框架，提供模块�
 
 ```
 ├── fnl/                        # 🌟 Fennel 源代码目录【主要开发目录】
-│   ├── doom/                   # Fennel 核心框架代码
+│   ├── gentlewind/                   # Fennel 核心框架代码
 │   │   ├── core/              # 核心功能（配置、模块、命令等）
 │   │   ├── modules/           # 内置模块
 │   │   │   ├── features/     # 功能模块（35+）
@@ -30,7 +30,7 @@ Doom Nvim 是一个受 doom-emacs 启发的 Neovim 配置框架，提供模块�
 │   │   ├── config.fnl        # 用户配置文件（Fennel）
 │   │   └── modules.fnl       # 模块启用配置（Fennel）
 │   └── init.fnl              # 主入口文件（Fennel）
-├── lua/doom/                   # ⚠️ Lua 核心框架代码【编译生成，请勿直接修改】
+├── lua/gentlewind/                   # ⚠️ Lua 核心框架代码【编译生成，请勿直接修改】
 │   ├── core/                   # 核心功能（从 Fennel 编译）
 │   ├── modules/                # 内置模块（从 Fennel 编译）
 │   ├── services/               # 服务层（从 Fennel 编译）
@@ -52,10 +52,10 @@ Doom Nvim 是一个受 doom-emacs 启发的 Neovim 配置框架，提供模块�
 
 ```bash
 # 自动安装
-curl -s https://raw.githubusercontent.com/doom-neovim/doom-nvim/main/tools/install.sh | sh
+curl -s https://raw.githubusercontent.com/gentlewind-neovim/gentlewind-nvim/main/tools/install.sh | sh
 
 # 手动安装
-git clone https://github.com/doom-neovim/doom-nvim.git ~/.config/nvim
+git clone https://github.com/gentlewind-neovim/gentlewind-nvim.git ~/.config/nvim
 ```
 
 ### 开发命令
@@ -67,9 +67,9 @@ git clone https://github.com/doom-neovim/doom-nvim.git ~/.config/nvim
 :Lazy update          # 更新插件
 :Lazy install         # 安装缺失插件
 
-# Doom 专用命令
-:DoomCheckUpdates    # 检查更新
-:DoomReload          # 重载配置
+# Gentlewind 专用命令
+:GentlewindCheckUpdates    # 检查更新
+:GentlewindReload          # 重载配置
 
 # Fennel 开发命令
 ./tools/compile-fennel.sh    # 🔄 编译 Fennel 代码到 Lua（重要！）
@@ -110,7 +110,7 @@ luacheck .
 fnlfmt --write fnl/
 
 # Fennel 语法检查（fennel）
-fennel --compile fnl/doom/core/init.fnl
+fennel --compile fnl/gentlewind/core/init.fnl
 ```
 
 ## 代码规范
@@ -141,17 +141,17 @@ fennel --compile fnl/doom/core/init.fnl
 #### Lua 模块开发
 1. 模块文件必须返回模块表
 2. 模块应包含 `packages`、`configs`、`settings` 等标准字段
-3. 使用 `doom.use_package()` 添加插件
-4. 使用 `doom.use_keybind()` 添加键绑定
-5. 使用 `doom.use_autocmd()` 添加自动命令
+3. 使用 `gentlewind.use_package()` 添加插件
+4. 使用 `gentlewind.use_keybind()` 添加键绑定
+5. 使用 `gentlewind.use_autocmd()` 添加自动命令
 
 #### Fennel 模块开发
 1. 模块文件必须返回模块表
 2. 使用 `(module module-name)` 声明模块
 3. 模块结构：`{:packages [] :configs {} :settings {}}`
-4. 使用 `(doom.use-package ...)` 添加插件
-5. 使用 `(doom.use-keybind ...)` 添加键绑定
-6. 使用 `(doom.use-autocmd ...)` 添加自动命令
+4. 使用 `(gentlewind.use-package ...)` 添加插件
+5. 使用 `(gentlewind.use-keybind ...)` 添加键绑定
+6. 使用 `(gentlewind.use-autocmd ...)` 添加自动命令
 
 ## 测试框架
 
@@ -160,7 +160,7 @@ fennel --compile fnl/doom/core/init.fnl
 - **静态代码分析**: luacheck 检查 Lua 代码质量
 - **代码格式化**: stylua 确保代码风格一致性
 - **插件锁定**: lazy-lock.json 确保插件版本稳定性
-- **错误日志**: 详细的错误日志记录在 `~/.local/share/nvim/doom.log`
+- **错误日志**: 详细的错误日志记录在 `~/.local/share/nvim/gentlewind.log`
 - **插件缓存**: lazy.nvim 插件缓存存储在 `$HOME/.local/share/lazy/`
 
 ## 安全配置
@@ -186,10 +186,10 @@ fennel --compile fnl/doom/core/init.fnl
 
 ```lua
 -- config.lua 关键配置
-doom.freeze_dependencies = false  -- 是否锁定插件版本
-doom.logging = 'trace'            -- 日志级别
-doom.indent = 2                   -- 缩进设置
-doom.colorscheme = "gruvbox"     -- 主题设置
+gentlewind.freeze_dependencies = false  -- 是否锁定插件版本
+gentlewind.logging = 'trace'            -- 日志级别
+gentlewind.indent = 2                   -- 缩进设置
+gentlewind.colorscheme = "gruvbox"     -- 主题设置
 ```
 
 ### 模块配置
@@ -247,7 +247,7 @@ return my_feature
 ## 故障排除
 
 ### 通用问题
-- **启动问题**: 检查 `doom.log` 日志文件
+- **启动问题**: 检查 `gentlewind.log` 日志文件
 - **插件问题**: 运行 `:Lazy sync` 同步插件
 - **配置问题**: 验证 `config.lua` 和 `modules.lua` 语法
 - **性能问题**: 使用内置 profiler 分析启动时间

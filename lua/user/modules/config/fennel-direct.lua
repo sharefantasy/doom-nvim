@@ -15,8 +15,8 @@ local function get_fennel_globals()
     -- Neovim全局变量
     "vim",
     
-    -- Doom Nvim全局变量
-    "doom", "_doom",
+    -- Gentlewind Nvim全局变量
+    "gentlewind", "_gentlewind",
     
     -- Fennel特殊形式和函数
     "fn", "let", "when", "if", "each", "for", "while", "do", 
@@ -210,7 +210,7 @@ local function create_test_commands()
     
     -- 测试基本符号
     print("\nTesting basic symbols:")
-    local test_symbols = {"vim", "doom", "require", "fn", "let"}
+    local test_symbols = {"vim", "gentlewind", "require", "fn", "let"}
     for _, symbol in ipairs(test_symbols) do
       print("  - " .. symbol .. ": " .. (vim.fn.exists(symbol) == 1 and "exists" or "not found"))
     end

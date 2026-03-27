@@ -65,7 +65,7 @@ end
 -- 主设置函数
 M.setup = function()
   -- 覆盖原有的treesitter安装函数
-  local langs_utils = require("doom.modules.langs.utils")
+  local langs_utils = require("gentlewind.modules.langs.utils")
   local original_use_tree_sitter = langs_utils.use_tree_sitter
   
   langs_utils.use_tree_sitter = function(grammars)

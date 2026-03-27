@@ -1,6 +1,6 @@
-# Doom Nvim Fennel 重写项目
+# Gentlewind Nvim Fennel 重写项目
 
-本项目已将 Doom Nvim 从 Lua 重写为 Fennel 语言，使用 Aniseed 框架进行编译和管理。
+本项目已将 Gentlewind Nvim 从 Lua 重写为 Fennel 语言，使用 Aniseed 框架进行编译和管理。
 
 ## 🚀 快速开始
 
@@ -31,7 +31,7 @@
 ```bash
 nvim --headless --clean -c "
   set rtp+=~/.local/share/nvim/lazy/aniseed
-  lua require('aniseed.compile').compile('fnl/doom/core/init.fnl', 'lua/doom/core/init.lua')
+  lua require('aniseed.compile').compile('fnl/gentlewind/core/init.fnl', 'lua/gentlewind/core/init.lua')
   quit
 "
 ```
@@ -48,7 +48,7 @@ nvim
 
 ```
 fnl/                    # Fennel 源代码
-├── doom/
+├── gentlewind/
 │   ├── core/          # 核心模块
 │   ├── modules/       # 功能模块
 │   ├── services/      # 服务层
@@ -61,7 +61,7 @@ lua/                    # 编译后的 Lua 代码（自动生成）
 
 ### 添加新模块
 
-1. 在 `fnl/doom/modules/` 下创建新的 Fennel 文件
+1. 在 `fnl/gentlewind/modules/` 下创建新的 Fennel 文件
 2. 遵循模块标准结构：
 
 ```fennel

@@ -27,7 +27,7 @@ M.setup = function()
     override = function(root_dir, options)
       -- 为所有Fennel相关目录启用完整库支持
       if string.find(root_dir, "fnl") or string.find(root_dir, "fennel") or 
-         string.find(root_dir, "doom") or string.find(root_dir, "nvim") then
+         string.find(root_dir, "gentlewind") or string.find(root_dir, "nvim") then
         options.library.enabled = true
         options.library.plugins = true  
         options.library.types = true
@@ -54,7 +54,7 @@ M.setup = function()
           local settings = client.config.settings or {}
           settings.diagnostics = settings.diagnostics or {}
           settings.diagnostics.globals = {
-            "vim", "doom", "_doom", "require", "module", "fn", "let",
+            "vim", "gentlewind", "_gentlewind", "require", "module", "fn", "let",
             "when", "if", "each", "for", "while", "do", "collect",
             "icollect", "accumulate", "values", "comment", "hashfn",
             "lambda", "partial", "pick-args", "pick-values", "doto",
@@ -100,7 +100,7 @@ M.setup = function()
     local test_code = [[
 ;; 测试符号访问
 (local message (.. "Hello from " vim.fn.expand "%"))
-(when doom.features.lsp
+(when gentlewind.features.lsp
   (print "LSP is enabled"))
 ]]
     print("Test code for symbol validation:")

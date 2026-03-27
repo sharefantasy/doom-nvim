@@ -1,4 +1,4 @@
-;; Aniseed configuration for Doom Nvim
+;; Aniseed configuration for Gentlewind Nvim
 ;; This file configures how Aniseed compiles Fennel to Lua
 
 {:compile-path "lua"
@@ -8,5 +8,5 @@
  :compiler {:metadata true
             :useMetadata true
             :requireAsInclude false
-            :moduleName "doom"
-            :modulePrefix "doom"}}
+            :moduleName "gentlewind"
+            :modulePrefix "gentlewind"}}

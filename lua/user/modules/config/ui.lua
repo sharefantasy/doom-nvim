@@ -3,7 +3,7 @@ local M = {}
 -- UI 相关插件配置
 M.setup = function()
   -- 主题配置
-  doom.use_package {
+  gentlewind.use_package {
     "ellisonleao/gruvbox.nvim",
     lazy = false,
     priority = 1000,
@@ -36,7 +36,7 @@ M.setup = function()
   }
 
   -- 状态栏配置（使用heirline替代lualine避免E5248错误）
-  doom.use_package {
+  gentlewind.use_package {
     "rebelot/heirline.nvim",
     event = "VimEnter",
     dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -63,7 +63,7 @@ M.setup = function()
   }
 
   -- 文件浏览器
-  doom.use_package {
+  gentlewind.use_package {
     "stevearc/oil.nvim",
     cmd = { "Oil" },
     ---@module 'oil'
@@ -75,7 +75,7 @@ M.setup = function()
   }
 
   -- 大纲视图
-  doom.use_package {
+  gentlewind.use_package {
     "stevearc/aerial.nvim",
     cmd = { "AerialToggle", "AerialOpen", "AerialClose" },
     opts = {},
@@ -87,7 +87,7 @@ M.setup = function()
   }
 
   -- 消息通知
-  doom.use_package {
+  gentlewind.use_package {
     "folke/noice.nvim",
     event = "VeryLazy",
     dependencies = {
@@ -183,13 +183,13 @@ M.setup = function()
   }
 
   -- 消息管理
-  doom.use_package {
+  gentlewind.use_package {
     "AckslD/messages.nvim",
     config = 'require("messages").setup()',
   }
 
   -- 标题增强
-  doom.use_package {
+  gentlewind.use_package {
     "lukas-reineke/headlines.nvim",
     dependencies = "nvim-treesitter/nvim-treesitter",
   }

@@ -35,9 +35,9 @@ Example: steps to reproduce the behavior:
 </details>
 
 <details>
-<summary>Doom Report Output</summary>
+<summary>Gentlewind Report Output</summary>
 
-<!-- Run `:DoomReport` and copy the contents of `~/.local/share/nvim/doom_report.md` -->
+<!-- Run `:GentlewindReport` and copy the contents of `~/.local/share/nvim/gentlewind_report.md` -->
 
 </details>
 

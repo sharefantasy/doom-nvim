@@ -3,7 +3,7 @@ local M = {}
 -- 编辑器增强插件配置
 M.setup = function()
   -- focus.nvim - 窗口焦点管理
-  doom.use_package {
+  gentlewind.use_package {
     "nvim-focus/focus.nvim",
     config = function()
       require("focus").setup {
@@ -41,7 +41,7 @@ M.setup = function()
   }
 
   -- surround.nvim - 环绕操作增强
-  doom.use_package {
+  gentlewind.use_package {
     "ur4ltz/surround.nvim",
     config = function()
       require("surround").setup { mappings_style = "sandwich" }
@@ -49,7 +49,7 @@ M.setup = function()
   }
 
   -- flash.nvim - 快速跳转
-  doom.use_package {
+  gentlewind.use_package {
     "folke/flash.nvim",
     event = "VeryLazy",
     ---@type Flash.Config
@@ -87,10 +87,10 @@ M.setup = function()
   }
 
   -- vim-repeat - 重复操作增强
-  doom.use_package "tpope/vim-repeat"
+  gentlewind.use_package "tpope/vim-repeat"
 
   -- nvim-various-textobjs - 文本对象增强
-  doom.use_package {
+  gentlewind.use_package {
     "chrisgrieser/nvim-various-textobjs",
     lazy = false,
     opts = {
@@ -101,7 +101,7 @@ M.setup = function()
   }
 
   -- hydra.nvim - 键绑定模式
-  doom.use_package "anuvyklack/hydra.nvim"
+  gentlewind.use_package "anuvyklack/hydra.nvim"
 end
 
 return M

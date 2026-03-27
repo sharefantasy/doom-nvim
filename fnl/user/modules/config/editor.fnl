@@ -4,8 +4,8 @@
 ;; 编辑器增强插件配置
 (fn M.setup []
   ;; 窗口焦点管理
-  (doom.use_package
-    {"nvim-focus/focus.nvim"
+  (gentlewind.use_package
+    {:repo "nvim-focus/focus.nvim"
      :config (fn []
                ((require :focus).setup
                  {:enable true
@@ -30,8 +30,8 @@
                        :winhighlight true}}))})
 
   ;; 快速跳转
-  (doom.use_package
-    {"folke/flash.nvim"
+  (gentlewind.use_package
+    {:repo "folke/flash.nvim"
      :event "VeryLazy"
      :opts {}
      :keys
@@ -40,28 +40,28 @@
       ["<c-s>" (fn [] ((require :flash).toggle)) :mode ["c"] :desc "开关"]]})
 
   ;; 重复操作增强
-  (doom.use_package "tpope/vim-repeat")
+  (gentlewind.use_package "tpope/vim-repeat")
 
   ;; 包围操作
-  (doom.use_package
-    {"ur4ltz/surround.nvim"
+  (gentlewind.use_package
+    {:repo "ur4ltz/surround.nvim"
      :config (fn []
                ((require :surround).setup {:mappings_style "sandwich"}))})
 
   ;; 文本对象增强
-  (doom.use_package
-    {"chrisgrieser/nvim-various-textobjs"
+  (gentlewind.use_package
+    {:repo "chrisgrieser/nvim-various-textobjs"
      :lazy false
      :opts {:keymaps {:useDefaults true}}})
 
   ;; 书签管理
-  (doom.use_package
-    {"ThePrimeagen/harpoon"
+  (gentlewind.use_package
+    {:repo "ThePrimeagen/harpoon"
      :dependencies ["nvim-lua/plenary.nvim"]})
 
   ;; 代码格式化
-  (doom.use_package
-    {"stevearc/conform.nvim"
+  (gentlewind.use_package
+    {:repo "stevearc/conform.nvim"
      :opts {}
      :config (fn []
                ((require :conform).setup
@@ -77,7 +77,5 @@
                                      :markdown ["prettierd"]}
                   :format_on_save {:timeout_ms 500
                                    :lsp_fallback true}}))}))
-
-M)
 
 M

@@ -3,7 +3,7 @@ local M = {}
 -- 开发工具插件配置
 M.setup = function()
   -- tmux.nvim - tmux集成
-  doom.use_package {
+  gentlewind.use_package {
     "aserowy/tmux.nvim",
     event = "VeryLazy",
     config = function()
@@ -19,7 +19,7 @@ M.setup = function()
   }
 
   -- refactoring.nvim - 代码重构工具
-  doom.use_package {
+  gentlewind.use_package {
     "ThePrimeagen/refactoring.nvim",
     dependencies = { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" },
     cmd = { "Refactor" },
@@ -34,20 +34,20 @@ M.setup = function()
   }
 
   -- harpoon - 文件标记工具
-  doom.use_package {
+  gentlewind.use_package {
     "ThePrimeagen/harpoon",
     dependencies = { "nvim-lua/plenary.nvim" },
     event = "VeryLazy",
   }
 
   -- nvim-tree-remote.nvim - 远程文件管理
-  doom.use_package { "kiyoon/nvim-tree-remote.nvim", event = "VeryLazy" }
+  gentlewind.use_package { "kiyoon/nvim-tree-remote.nvim", event = "VeryLazy" }
 
   -- urlview.nvim - URL查看器
-  doom.use_package { "axieax/urlview.nvim", cmd = { "UrlView" } }
+  gentlewind.use_package { "axieax/urlview.nvim", cmd = { "UrlView" } }
 
   -- godbolt.nvim - 在线编译器
-  doom.use_package {
+  gentlewind.use_package {
     "p00f/godbolt.nvim",
     cmd = { "Godbolt", "GodboltCompiler" },
     config = function()
@@ -67,14 +67,14 @@ M.setup = function()
   }
 
   -- messages.nvim - 消息管理
-  doom.use_package {
+  gentlewind.use_package {
     "AckslD/messages.nvim",
     cmd = { "Messages" },
     config = 'require("messages").setup()',
   }
 
   -- nvim-projector - 项目管理
-  doom.use_package {
+  gentlewind.use_package {
     "kndndrj/nvim-projector",
     dependencies = {
       "MunifTanjim/nui.nvim",
@@ -93,7 +93,7 @@ M.setup = function()
   }
 
   -- nvim-dap-virtual-text - DAP虚拟文本
-  doom.use_package {
+  gentlewind.use_package {
     "theHamsta/nvim-dap-virtual-text",
     dependencies = {
       "mfussenegger/nvim-dap",
@@ -127,7 +127,7 @@ M.setup = function()
   }
 
   -- spectre.nvim - 搜索替换工具
-  doom.use_package {
+  gentlewind.use_package {
     "nvim-pack/nvim-spectre",
     cmd = { "Spectre" },
     config = function()
@@ -136,7 +136,7 @@ M.setup = function()
   }
 
   -- hurl.nvim - HTTP客户端
-  doom.use_package {
+  gentlewind.use_package {
     "jellydn/hurl.nvim",
     dependencies = {
       "MunifTanjim/nui.nvim",
@@ -177,7 +177,7 @@ M.setup = function()
   }
 
   -- web-tools.nvim - Web开发工具
-  doom.use_package {
+  gentlewind.use_package {
     "ray-x/web-tools.nvim",
     dependencies = { "/guihua.lua" },
     cmd = { "Npm", "Yarn", "Npx", "Node", "Pnpm", "StopJob" },
@@ -192,7 +192,7 @@ M.setup = function()
   }
 
   -- navigator.lua - LSP导航
-  doom.use_package {
+  gentlewind.use_package {
     "ray-x/navigator.lua",
     requires = {
       { "ray-x/guihua.lua", run = "cd lua/fzy && make" },
@@ -202,7 +202,7 @@ M.setup = function()
   }
 
   -- sad.nvim - 搜索替换
-  doom.use_package {
+  gentlewind.use_package {
     "ray-x/sad.nvim",
     requires = { "ray-x/guihua.lua", run = "cd lua/fzy && make" },
     cmd = { "Sad" },

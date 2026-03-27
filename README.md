@@ -1,12 +1,12 @@
 
 <div align="center">
 
-# Doom Nvim
+# Gentlewind Nvim
 
-![License](https://img.shields.io/github/license/doom-neovim/doom-nvim?style=for-the-badge)
+![License](https://img.shields.io/github/license/gentlewind-neovim/gentlewind-nvim?style=for-the-badge)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](http://makeapullrequest.com)
-![Latest Release](https://img.shields.io/github/v/release/doom-neovim/doom-nvim?include_prereleases&style=for-the-badge&color=red)
-![GitHub last commit (branch)](https://img.shields.io/github/last-commit/doom-neovim/doom-nvim/main?style=for-the-badge)
+![Latest Release](https://img.shields.io/github/v/release/gentlewind-neovim/gentlewind-nvim?include_prereleases&style=for-the-badge&color=red)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/gentlewind-neovim/gentlewind-nvim/main?style=for-the-badge)
 ![Neovim version](https://img.shields.io/badge/Neovim-0.8-57A143?style=for-the-badge&logo=neovim)
 [![Discord](https://img.shields.io/badge/discord-join-7289da?style=for-the-badge&logo=discord)](https://discord.gg/xhvBM45zBf)
 
@@ -14,19 +14,19 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-14-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-![Doom Nvim demo](https://i.imgur.com/ejEnlEP.png)
+![Gentlewind Nvim demo](https://i.imgur.com/ejEnlEP.png)
 
 </div>
 
 ##### IMPORTANT NOTICE
 
 This project is **NOT** abandoned. There is a major refactoring and incremental rewrite happening under the hood. If you want to
-know the current progress on this or if you want to contribute by making suggestions, reporting bugs, writing code for Doom, etc.
+know the current progress on this or if you want to contribute by making suggestions, reporting bugs, writing code for Gentlewind, etc.
 please join us in the [Discord](https://discord.gg/xhvBM45zBf) server. Any suggestion is welcome!
 
-## What is Doom Nvim?
+## What is Gentlewind Nvim?
 
-Doom Nvim is a Neovim interpretation of the [doom-emacs](https://github.com/hlissner/doom-emacs) framework, adapted to Vim philosophy.
+Gentlewind Nvim is a Neovim interpretation of the [gentlewind-emacs](https://github.com/hlissner/gentlewind-emacs) framework, adapted to Vim philosophy.
 
 Our goal is to provide a configurable, extensible, performant and stable basis for any neovim configuration.
 Some of the defining features that make this project unique are:
@@ -44,16 +44,16 @@ Some of the defining features that make this project unique are:
 ### Mac OS / Linux
 
 ```bash
-curl -s https://raw.githubusercontent.com/doom-neovim/doom-nvim/main/tools/install.sh | sh
+curl -s https://raw.githubusercontent.com/gentlewind-neovim/gentlewind-nvim/main/tools/install.sh | sh
 ```
 
 ### Manual (Mac OS / Linux)
 
-1. Clone doom-nvim to ~/.config/nvim
-  - `git clone https://github.com/doom-neovim/doom-nvim.git ${XDG_CONFIG_HOME:-$HOME/.config}/nvim`
+1. Clone gentlewind-nvim to ~/.config/nvim
+  - `git clone https://github.com/gentlewind-neovim/gentlewind-nvim.git ${XDG_CONFIG_HOME:-$HOME/.config}/nvim`
 2. (optional) Checkout the latest stable version in a new branch called `my-config` so the auto-updater works.
   - `git checkout tags/$(git tag -l --sort -version:refname | head -n 1) -b my-config`
-  - ℹ️ The auto-updater will be broken without this step but you're free to check updates using the `:DoomCheckUpdates` command and manage updates manually.
+  - ℹ️ The auto-updater will be broken without this step but you're free to check updates using the `:GentlewindCheckUpdates` command and manage updates manually.
 
 ---
 
@@ -63,7 +63,7 @@ curl -s https://raw.githubusercontent.com/doom-neovim/doom-nvim/main/tools/insta
   - [Enabling/disabling modules](#enablingdisabling-modules)
   - [All modules](#all-modules)
 - [Configuring and personalising: `config.lua`](#configuring-and-personalising-configlua)
-  - [Modifying neovim and doom options](#modifying-neovim-and-doom-options)
+  - [Modifying neovim and gentlewind options](#modifying-neovim-and-gentlewind-options)
     * [Adding plugins](#adding-plugins)
     * [Adding keybinds](#adding-keybinds)
     * [Adding autocommands](#adding-autocommands)
@@ -78,7 +78,7 @@ curl -s https://raw.githubusercontent.com/doom-neovim/doom-nvim/main/tools/insta
 
 ## Configuring
 
-Doom nvim is configured by enabling modules in the `modules.lua` file and then
+Gentlewind nvim is configured by enabling modules in the `modules.lua` file and then
 tweaking, overriding or adding new packages, keybinds and more within the
 `config.lua` module.
 
@@ -91,12 +91,12 @@ tweaking, overriding or adding new packages, keybinds and more within the
 #### What is a module?
 
 A module is a collection of packages, autocommands, keybinds and functions that
-add new capabilities or functionality to Doom Nvim.  See what's available in
+add new capabilities or functionality to Gentlewind Nvim.  See what's available in
 `modules.lua` and enable the modules that you think you would like.  Then restart
-`doom-nvim`, run `:PackerSync` and then restart `doom-nvim` again.
+`gentlewind-nvim`, run `:PackerSync` and then restart `gentlewind-nvim` again.
 
 We organise modules into 2 categories:
-- `features` extend the abilities of Doom Nvim by adding new functionality.
+- `features` extend the abilities of Gentlewind Nvim by adding new functionality.
 - `langs` add support for new languages.
 
 #### Enabling/disabling modules
@@ -123,22 +123,22 @@ return {
 
 #### All modules
 
-Doom-nvim currently has 35+ `features` modules and 20+ `langs` modules.
+Gentlewind-nvim currently has 35+ `features` modules and 20+ `langs` modules.
 You can find a full list of modules [here](./docs/modules.md#all-modules)
 
 ### Configuring and personalising: `config.lua`
 
-#### Modifying neovim and doom options
+#### Modifying neovim and gentlewind options
 
-Doom nvim provides a number of config options, including wrapping some of vim's
+Gentlewind nvim provides a number of config options, including wrapping some of vim's
 own options.  See all available config options [in the API Reference](./docs/api.md).
 
 ```lua
 -- config.lua
 
-doom.freeze_dependencies = false  -- Don't use pinned packer dependencies
-doom.logging = 'trace'            -- Debug doom internal issues
-doom.indent = 2                   -- Sets vim.opt.shiftwith, vim.opt.softtabstop, vim.opt.tabstop to 2
+gentlewind.freeze_dependencies = false  -- Don't use pinned packer dependencies
+gentlewind.logging = 'trace'            -- Debug gentlewind internal issues
+gentlewind.indent = 2                   -- Sets vim.opt.shiftwith, vim.opt.softtabstop, vim.opt.tabstop to 2
 
 vim.opt.colorcolumn = 120         -- Regular vim options can also be set
 ```
@@ -148,17 +148,17 @@ vim.opt.colorcolumn = 120         -- Regular vim options can also be set
 
 ##### Adding plugins
 
-Additional packages can be installed with the `doom.use_package()` function.
+Additional packages can be installed with the `gentlewind.use_package()` function.
 This is a wrapper around `packer.use()` and provides the same API. [DOCS](https://github.com/wbthomason/packer.nvim#quickstart)
 
 ```lua
 -- config.lua
 
 -- Simple config
-doom.use_package('sainnhe/sonokai', 'EdenEast/nightfox.nvim')
+gentlewind.use_package('sainnhe/sonokai', 'EdenEast/nightfox.nvim')
 
 -- Advanced config
-doom.use_package({
+gentlewind.use_package({
   'rafcamlet/nvim-luapad',
   opt = true,
   cmd = 'Luapad'
@@ -169,14 +169,14 @@ doom.use_package({
 
 ##### Adding Keybinds
 
-Additional keybinds can be defined with the `doom.use_keybind()` function.
+Additional keybinds can be defined with the `gentlewind.use_keybind()` function.
 This is a wrapper around a custom `nest.nvim` implementation and provides the
 same API. [DOCS](https://github.com/connorgmeehan/nest.nvim/tree/integrations-api#quickstart-guide)
 
 ```lua
 -- config.lua
 
-doom.use_keybind({
+gentlewind.use_keybind({
   { '<leader>u', name = '+user', { -- Names this group in whichkey "+user"
     { 's', '<cmd>Telescope git_status<CR>', name = 'Git status' } -- Adds `<leader>us` keybind to trigger `Telescope git_status`
   }},
@@ -188,12 +188,12 @@ doom.use_keybind({
 
 ##### Adding autocommands
 
-Additional autocommands can be defined with the `doom.use_autocmd()` function.
+Additional autocommands can be defined with the `gentlewind.use_autocmd()` function.
 
 ```lua
 -- config.lua
 
-doom.use_autocmd({
+gentlewind.use_autocmd({
   -- { "<event>", "<aupat>", "<command or function>"}
   { "FileType", "javascript", function() print('Yuck!') end}
 })
@@ -201,16 +201,16 @@ doom.use_autocmd({
 
 ##### Adding commands
 
-Additional commands can be define with the `doom.use_cmd()` function.
+Additional commands can be define with the `gentlewind.use_cmd()` function.
 
 ```lua
 -- config.lua
 
 -- Bind single
-doom.use_cmd( { 'Test', function() print('test') end } )
+gentlewind.use_cmd( { 'Test', function() print('test') end } )
 
 -- Bind multiple
-doom.use_cmd({
+gentlewind.use_cmd({
   { 'Test1', function() print('test1') end },
   { 'Test2', function() print('test2') end },
 })
@@ -218,7 +218,7 @@ doom.use_cmd({
 
 #### Configuring modules
 
-The settings and config for all modules are also exposed inside of the `doom` global object.
+The settings and config for all modules are also exposed inside of the `gentlewind` global object.
 Here you can override the plugin git sources, pre-defined settings, keybinds or autocmds.
 
 
@@ -232,12 +232,12 @@ return {
 }
 ```
 
-The same module with be avaliable in your `config.lua` in the `doom.features.module_name` field.
+The same module with be avaliable in your `config.lua` in the `gentlewind.features.module_name` field.
 The settings should have autocomplete from lua lsp.
 ```lua
 -- config.lua
-local whichkey = doom.features.whichkey -- Get the whichkey module
--- You can also access it as `doom.modules.features.whichkey`
+local whichkey = gentlewind.features.whichkey -- Get the whichkey module
+-- You can also access it as `gentlewind.modules.features.whichkey`
 
 -- Some common settings are exposed in the `<module>.settings` table.
 whichkey.settings.window.height.max = 5
@@ -274,7 +274,7 @@ whichkey.configs["which-key.nvim"] = function ()
 end
 
 -- Another example with a language module
-local lua = doom.langs.lua
+local lua = gentlewind.langs.lua
 
 -- Disable lua-dev loading library definitions
 lua.settings.dev.library.plugins = false
@@ -282,9 +282,9 @@ lua.settings.dev.library.plugins = false
 
 #### Overriding modules or adding custom modules
 
-It's possible to add your own doom modules or completely replace builtin doom
-modules without editing the original files.  Doom will first check the `lua/user/modules`
-directory if a module exists before loading the default from `lua/doom/modules`.
+It's possible to add your own gentlewind modules or completely replace builtin gentlewind
+modules without editing the original files.  Gentlewind will first check the `lua/user/modules`
+directory if a module exists before loading the default from `lua/gentlewind/modules`.
 
 As an example, if we wanted to replace the `lua` module in the `langs` section we
 would create a new file at `lua/user/modules/langs/lua/init.lua`.
@@ -308,22 +308,22 @@ return {
 
 The majors changes between v3 and v4 are the following.
 
-- `doom_config.lua` renamed to `config.lua`
-- Adding custom commands, keybinds and autocommands done using new [`doom.use_*`](#-configlua-)
+- `gentlewind_config.lua` renamed to `config.lua`
+- Adding custom commands, keybinds and autocommands done using new [`gentlewind.use_*`](#-configlua-)
   helper functions.
-- Adding extra plugins done using new [`doom.use_package`](#adding-plugins) helper
+- Adding extra plugins done using new [`gentlewind.use_package`](#adding-plugins) helper
   function.
-- `doom_modules.lua` renamed to `modules.lua`
+- `gentlewind_modules.lua` renamed to `modules.lua`
 - Many of the modules categories have been combined, there are now only `features`
-  (modifying capabilities of doom-nvim) and `languages` (add support for a language)
+  (modifying capabilities of gentlewind-nvim) and `languages` (add support for a language)
 - Languages `+lsp`, `+formatting`, etc flags are no longer necessary
 
-> Because of the durastic changes to the way you configure doom-nvim we recommend
+> Because of the durastic changes to the way you configure gentlewind-nvim we recommend
 > starting a new branch and porting your changes across.
 
 ## Uninstalling
 
-To uninstall doom-nvim delete the `.nvim` folder from `$XDG_CONFIG_HOME/nvim` (`rm -r ~/.config/nvim`)
+To uninstall gentlewind-nvim delete the `.nvim` folder from `$XDG_CONFIG_HOME/nvim` (`rm -r ~/.config/nvim`)
 You will also need to delete `packer_compiled.lua` from `$XDG_DATA_HOME/nvim/plugin/packer_compiled` (`rm ~/.local/share/nvim/plugin/packer_compiled.lua`)
 
 ## Contributing
@@ -332,29 +332,29 @@ For for information please see our [contributing docs](./docs/contributing.md).
 
 ## Contributors
 
-Special thanks to these amazing people for helping improve doom (see [emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Special thanks to these amazing people for helping improve gentlewind (see [emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://johnirle.com/"><img src="https://avatars.githubusercontent.com/u/11879736?v=4?s=100" width="100px;" alt=""/><br /><sub><b>John Irle</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/commits?author=JohnIrle" title="Documentation">📖</a></td>
-    <td align="center"><a href="http://www.brianketelsen.com/"><img src="https://avatars.githubusercontent.com/u/37492?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Brian Ketelsen</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/commits?author=bketelsen" title="Code">💻</a> <a href="https://github.com/doom-neovim/doom-nvim/issues?q=author%3Abketelsen" title="Bug reports">🐛</a></td>
-    <td align="center"><a href="https://github.com/Samantha-uk"><img src="https://avatars.githubusercontent.com/u/45871296?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Samantha-uk</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/commits?author=Samantha-uk" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://rscircus.github.io/"><img src="https://avatars.githubusercontent.com/u/1167114?v=4?s=100" width="100px;" alt=""/><br /><sub><b>rscircus</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/commits?author=rscircus" title="Documentation">📖</a></td>
-    <td align="center"><a href="http://bandithedoge.com/"><img src="https://avatars.githubusercontent.com/u/26331682?v=4?s=100" width="100px;" alt=""/><br /><sub><b>bandithedoge</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/commits?author=bandithedoge" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/vhyrro"><img src="https://avatars.githubusercontent.com/u/76052559?v=4?s=100" width="100px;" alt=""/><br /><sub><b>vhyrro</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/commits?author=vhyrro" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/Mremmalex"><img src="https://avatars.githubusercontent.com/u/40169444?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ifeanyichukwu Sampson Ebenezer</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/issues?q=author%3AMremmalex" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://johnirle.com/"><img src="https://avatars.githubusercontent.com/u/11879736?v=4?s=100" width="100px;" alt=""/><br /><sub><b>John Irle</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/commits?author=JohnIrle" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://www.brianketelsen.com/"><img src="https://avatars.githubusercontent.com/u/37492?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Brian Ketelsen</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/commits?author=bketelsen" title="Code">💻</a> <a href="https://github.com/gentlewind-neovim/gentlewind-nvim/issues?q=author%3Abketelsen" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/Samantha-uk"><img src="https://avatars.githubusercontent.com/u/45871296?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Samantha-uk</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/commits?author=Samantha-uk" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://rscircus.github.io/"><img src="https://avatars.githubusercontent.com/u/1167114?v=4?s=100" width="100px;" alt=""/><br /><sub><b>rscircus</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/commits?author=rscircus" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://bandithedoge.com/"><img src="https://avatars.githubusercontent.com/u/26331682?v=4?s=100" width="100px;" alt=""/><br /><sub><b>bandithedoge</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/commits?author=bandithedoge" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/vhyrro"><img src="https://avatars.githubusercontent.com/u/76052559?v=4?s=100" width="100px;" alt=""/><br /><sub><b>vhyrro</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/commits?author=vhyrro" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/Mremmalex"><img src="https://avatars.githubusercontent.com/u/40169444?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ifeanyichukwu Sampson Ebenezer</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/issues?q=author%3AMremmalex" title="Bug reports">🐛</a></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://github.com/GustavoPrietoP"><img src="https://avatars.githubusercontent.com/u/70907734?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Gustavo Prieto</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/commits?author=GustavoPrietoP" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/ZeusThundr"><img src="https://avatars.githubusercontent.com/u/76399616?v=4?s=100" width="100px;" alt=""/><br /><sub><b>ZeusThundr</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/issues?q=author%3AZeusThundr" title="Bug reports">🐛</a></td>
-    <td align="center"><a href="https://github.com/leonistor"><img src="https://avatars.githubusercontent.com/u/310468?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Leo Nistor</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/issues?q=author%3Aleonistor" title="Bug reports">🐛</a></td>
-    <td align="center"><a href="https://github.com/notusknot"><img src="https://avatars.githubusercontent.com/u/69602000?v=4?s=100" width="100px;" alt=""/><br /><sub><b>notusknot</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/commits?author=notusknot" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/bdillahu"><img src="https://avatars.githubusercontent.com/u/2058566?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Bruce Dillahunty</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/commits?author=bdillahu" title="Documentation">📖</a> <a href="https://github.com/doom-neovim/doom-nvim/issues?q=author%3Abdillahu" title="Bug reports">🐛</a></td>
-    <td align="center"><a href="https://github.com/amxj9"><img src="https://avatars.githubusercontent.com/u/2029709?v=4?s=100" width="100px;" alt=""/><br /><sub><b>amxj9</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/issues?q=author%3Aamxj9" title="Bug reports">🐛</a></td>
-    <td align="center"><a href="https://github.com/AceMouty"><img src="https://avatars.githubusercontent.com/u/45374681?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Kyle Guerrero</b></sub></a><br /><a href="https://github.com/doom-neovim/doom-nvim/commits?author=AceMouty" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/GustavoPrietoP"><img src="https://avatars.githubusercontent.com/u/70907734?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Gustavo Prieto</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/commits?author=GustavoPrietoP" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/ZeusThundr"><img src="https://avatars.githubusercontent.com/u/76399616?v=4?s=100" width="100px;" alt=""/><br /><sub><b>ZeusThundr</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/issues?q=author%3AZeusThundr" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/leonistor"><img src="https://avatars.githubusercontent.com/u/310468?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Leo Nistor</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/issues?q=author%3Aleonistor" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/notusknot"><img src="https://avatars.githubusercontent.com/u/69602000?v=4?s=100" width="100px;" alt=""/><br /><sub><b>notusknot</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/commits?author=notusknot" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/bdillahu"><img src="https://avatars.githubusercontent.com/u/2058566?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Bruce Dillahunty</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/commits?author=bdillahu" title="Documentation">📖</a> <a href="https://github.com/gentlewind-neovim/gentlewind-nvim/issues?q=author%3Abdillahu" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/amxj9"><img src="https://avatars.githubusercontent.com/u/2029709?v=4?s=100" width="100px;" alt=""/><br /><sub><b>amxj9</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/issues?q=author%3Aamxj9" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/AceMouty"><img src="https://avatars.githubusercontent.com/u/45374681?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Kyle Guerrero</b></sub></a><br /><a href="https://github.com/gentlewind-neovim/gentlewind-nvim/commits?author=AceMouty" title="Documentation">📖</a></td>
   </tr>
 </table>
 

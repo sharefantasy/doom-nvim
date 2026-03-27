@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This script updates pinned dependencies in ../lua/doom/modules/init.lua
+# This script updates pinned dependencies in ../lua/gentlewind/modules/init.lua
 # It uses grep to find instances of packer.use, uses the repository url to fetch the latest commit sha, and modifies the values
 # Dependencies
 # perl -- used for Regexing the repository <account>/<repo_name> with capture groups to extract inner text
@@ -15,7 +15,7 @@ repo=''
 latest_commit=''
 
 # Find all module package declaration files
-find ../lua/doom/modules -name 'init.lua' |
+find ../lua/gentlewind/modules -name 'init.lua' |
   while read -r file_path; do
     # Update commit shas
     echo ""
@@ -99,6 +99,6 @@ find ../lua/doom/modules -name 'init.lua' |
 
 
 # Delete backup files
-find ../lua/doom/modules -name "*.bak" -type f -delete
+find ../lua/gentlewind/modules -name "*.bak" -type f -delete
 
 

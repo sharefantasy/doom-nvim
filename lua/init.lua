@@ -1,6 +1,6 @@
-local _2afile_2a = "/Users/fankainang/sources/doom-nvim/fnl/init.fnl"
+local _2afile_2a = "/Users/fankainang/sources/gentlewind-nvim/fnl/init.fnl"
 if (vim.fn.has("nvim-0.7.0") ~= 1) then
-  local message = table.concat({"You are using an unsupported version of Neovim.", "", "Doom nvim and many of its plugins require at least version 0.7.0 to work as expected.", "Consider updating if you run into issues.", "https://github.com/doom-neovim/doom-nvim/blob/main/docs/updating-neovim.md"}, "\n")
+  local message = table.concat({"You are using an unsupported version of Neovim.", "", "Gentlewind nvim and many of its plugins require at least version 0.7.0 to work as expected.", "Consider updating if you run into issues.", "https://github.com/gentlewind-neovim/gentlewind-nvim/blob/main/docs/updating-neovim.md"}, "\n")
   vim.notify(message, vim.log.levels.ERROR)
 else
 end
@@ -15,7 +15,7 @@ do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local profiler = require("doom.services.profiler")
+local profiler = require("gentlewind.services.profiler")
 profiler.start("framework|init.fnl")
 local lazypath = (vim.fn.stdpath("data") .. "/lazy/lazy.nvim")
 if not vim.loop.fs_stat(lazypath) then
@@ -45,10 +45,10 @@ do
   vim.api.nvim_create_augroup = _4_
   vim.api.nvim_set_hl = orig_set_hl
 end
-require("doom.core")
+require("gentlewind.core")
 local function _5_()
-  if (doom.check_updates and doom.core.updater) then
-    return doom.core.updater.check_updates(true)
+  if (gentlewind.check_updates and gentlewind.core.updater) then
+    return gentlewind.core.updater.check_updates(true)
   else
     return nil
   end

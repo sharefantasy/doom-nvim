@@ -3,7 +3,7 @@
 
 set -e
 
-echo "🧪 Testing Doom Nvim Fennel Migration"
+echo "🧪 Testing Gentlewind Nvim Fennel Migration"
 echo "======================================"
 
 # Test 1: Check Fennel syntax
@@ -18,7 +18,7 @@ done
 
 # Test 2: Check module structure
 echo "2️⃣  Checking module structure..."
-find fnl/doom/modules -name "*.fnl" -type f | while read -r file; do
+find fnl/gentlewind/modules -name "*.fnl" -type f | while read -r file; do
     echo "  Checking $file"
     if ! grep -q "packages" "$file" || ! grep -q "configs" "$file"; then
         echo "  ⚠️  Warning: $file missing standard module fields"
@@ -29,11 +29,11 @@ done
 echo "3️⃣  Checking required files..."
 required_files=(
     "fnl/init.fnl"
-    "fnl/doom/core/init.fnl"
-    "fnl/doom/core/config.fnl"
-    "fnl/doom/core/modules.fnl"
-    "fnl/doom/core/doom_global.fnl"
-    "fnl/doom/utils.fnl"
+    "fnl/gentlewind/core/init.fnl"
+    "fnl/gentlewind/core/config.fnl"
+    "fnl/gentlewind/core/modules.fnl"
+    "fnl/gentlewind/core/gentlewind_global.fnl"
+    "fnl/gentlewind/utils.fnl"
 )
 
 for file in "${required_files[@]}"; do

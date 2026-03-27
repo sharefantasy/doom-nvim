@@ -1,15 +1,15 @@
 # Colors
 
-This module contains the embedded colorschemes for Doom Nvim and the utils
+This module contains the embedded colorschemes for Gentlewind Nvim and the utils
 module required by those colorschemes.
 
 Actually the embedded colorschemes are the following:
 
-- doom-one (dark and light variant)
+- gentlewind-one (dark and light variant)
 
 ## utils
 
-The utils module contains a few utilities for easily port Doom Emacs colorschemes
+The utils module contains a few utilities for easily port Gentlewind Emacs colorschemes
 to Lua colorschemes. These utilities are the following:
 
 - `Lighten` - lighten the provided HEX color in X percentage (5 by default).
@@ -20,32 +20,32 @@ to Lua colorschemes. These utilities are the following:
 
 ### Write colorschemes
 
-If you want to write colorschemes for Doom Nvim you will need to follow some
+If you want to write colorschemes for Gentlewind Nvim you will need to follow some
 requirements.
 
-- The colorscheme should be a Doom Emacs colorscheme, see [emacs-doom-themes].
+- The colorscheme should be a Gentlewind Emacs colorscheme, see [emacs-gentlewind-themes].
 - The colorscheme should be written in pure Lua **without using helpers like lush**,
-  you can take a look at [doom-one] source or use it as a template (highly recommended).
+  you can take a look at [gentlewind-one] source or use it as a template (highly recommended).
 
 ### Update embedded colorschemes
 
-If you want to update the embedded colorschemes like [doom-one] you'll need to
-copy the doom-one files to the proper locations and change a few lines to match
-Doom Nvim structure.
+If you want to update the embedded colorschemes like [gentlewind-one] you'll need to
+copy the gentlewind-one files to the proper locations and change a few lines to match
+Gentlewind Nvim structure.
 
-- Changes in `colors/doom-one.lua`:
+- Changes in `colors/gentlewind-one.lua`:
 
 ```lua
 --- FROM:
-package.loaded['doom-one'] = nil
-require('doom-one')
+package.loaded['gentlewind-one'] = nil
+require('gentlewind-one')
 
 --- TO:
-package.loaded['colors.doom-one'] = nil
-require('colors.doom-one')
+package.loaded['colors.gentlewind-one'] = nil
+require('colors.gentlewind-one')
 ```
 
-- Changes in `doom-one/init.lua`:
+- Changes in `gentlewind-one/init.lua`:
 
 ```lua
 --- FROM:
@@ -55,5 +55,5 @@ local utils = require('utils')
 local utils = require('colors.utils')
 ```
 
-[doom-one]: https://github.com/NTBBloodbath/doom-one.nvim
-[emacs-doom-themes]: https://github.com/hlissner/emacs-doom-themes
+[gentlewind-one]: https://github.com/NTBBloodbath/gentlewind-one.nvim
+[emacs-gentlewind-themes]: https://github.com/hlissner/emacs-gentlewind-themes

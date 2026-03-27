@@ -1,0 +1,19 @@
+local fidget = {}
+
+fidget.settings = {}
+
+fidget.packages = {
+    ["fidget.nvim"] = {
+        "j-hui/fidget.nvim",
+        dependencies = {"neovim/nvim-lspconfig"},
+        -- after = "nvim-lspconfig",
+        event = "VeryLazy"
+    }
+}
+
+fidget.configs = {}
+fidget.configs["fidget.nvim"] = function()
+    require("fidget").setup(gentlewind.features.lsp_progress.settings)
+end
+
+return fidget

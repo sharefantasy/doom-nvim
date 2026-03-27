@@ -12,7 +12,7 @@ M.setup = function()
 
   -- which-key v3: 避免使用已弃用的 opts（如 ignore_missing/hidden/triggers_blacklist/window 等），
   -- 否则会在启动时提示 “There are issues with your config ...”。
-  -- 这里只保留必要且兼容的配置，避免覆盖 Doom 内置的 whichkey 配置太多。
+  -- 这里只保留必要且兼容的配置，避免覆盖 Gentlewind 内置的 whichkey 配置太多。
   wk.setup {
     preset = "modern",
     icons = {

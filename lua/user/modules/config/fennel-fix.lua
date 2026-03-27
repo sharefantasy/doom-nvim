@@ -1,5 +1,5 @@
 -- Fennel符号修复 - 根本解决方案
--- 专门解决Fennel中Lua符号（vim, doom等）不可见的问题
+-- 专门解决Fennel中Lua符号（vim, gentlewind等）不可见的问题
 
 local M = {}
 
@@ -14,8 +14,8 @@ local function setup_fennel_globals()
     -- Neovim全局变量
     "vim",
     
-    -- Doom Nvim全局变量
-    "doom", "_doom",
+    -- Gentlewind Nvim全局变量
+    "gentlewind", "_gentlewind",
     
     -- Fennel特殊形式和函数
     "fn", "let", "when", "if", "each", "for", "while", "do", 
@@ -196,8 +196,8 @@ M.setup = function()
     -- 测试基本的符号访问
     local test_cases = {
       'vim.fn.expand "%"',
-      'doom.features.lsp',
-      'require("doom.utils")',
+      'gentlewind.features.lsp',
+      'require("gentlewind.utils")',
     }
     
     for _, test in ipairs(test_cases) do

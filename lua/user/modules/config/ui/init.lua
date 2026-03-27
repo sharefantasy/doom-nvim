@@ -3,7 +3,7 @@ local M = {}
 -- UI界面插件配置
 M.setup = function()
   -- noice.nvim - 消息和命令行美化
-  doom.use_package {
+  gentlewind.use_package {
     "folke/noice.nvim",
     event = "VeryLazy",
     dependencies = {
@@ -84,7 +84,7 @@ M.setup = function()
   }
 
   -- heirline.nvim - 状态栏（替换lualine避免E5248错误）
-  doom.use_package {
+  gentlewind.use_package {
     "rebelot/heirline.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
@@ -415,7 +415,7 @@ M.setup = function()
   }
 
   -- heirline.nvim - 状态栏（暂时禁用避免E5248错误）
-  -- doom.use_package {
+  -- gentlewind.use_package {
   --   "rebelot/heirline.nvim",
   --   dependencies = { "nvim-tree/nvim-web-devicons" },
   --   config = function()
@@ -441,7 +441,7 @@ M.setup = function()
   -- }
 
   -- gruvbox.nvim - 主题
-  doom.use_package {
+  gentlewind.use_package {
     "ellisonleao/gruvbox.nvim",
     config = function()
       require("gruvbox").setup {
@@ -473,7 +473,7 @@ M.setup = function()
   }
 
   -- barbecue.nvim - 面包屑导航
-  -- doom.use_package {
+  -- gentlewind.use_package {
   --   "utilyre/barbecue.nvim",
   --   name = "barbecue",
   --   version = "*",
@@ -487,7 +487,7 @@ M.setup = function()
   -- }
 
   -- oil.nvim - 文件管理器
-  doom.use_package {
+  gentlewind.use_package {
     "stevearc/oil.nvim",
     ---@module 'oil'
     ---@type oil.SetupOpts
@@ -496,7 +496,7 @@ M.setup = function()
   }
 
   -- aerial.nvim - 代码大纲
-  -- doom.use_package {
+  -- gentlewind.use_package {
   --   "stevearc/aerial.nvim",
   --   opts = {},
   --   dependencies = {
@@ -506,13 +506,13 @@ M.setup = function()
   -- }
 
   -- headlines.nvim - 标题高亮
-  -- doom.use_package {
+  -- gentlewind.use_package {
   --   "lukas-reineke/headlines.nvim",
   --   dependencies = "nvim-treesitter/nvim-treesitter",
   -- }
 
   -- nvim-biscuits - 代码注释
-  -- doom.use_package {
+  -- gentlewind.use_package {
   --   "code-biscuits/nvim-biscuits",
   --   requires = { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" },
   -- }

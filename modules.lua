@@ -1,10 +1,10 @@
--- modules.lua - Doom nvim module selection
+-- modules.lua - Gentlewind nvim module selection
 --
--- modules.lua controls what Doom nvim plugins modules are enabled and
+-- modules.lua controls what Gentlewind nvim plugins modules are enabled and
 -- what features are being used.
 --
 -- Uncomment a plugin to enable it and comment out to disable and uninstall it.
--- Once done, restart doom-nvim and run `:PackerInstall`.
+-- Once done, restart gentlewind-nvim and run `:PackerInstall`.
 return {
   features = {
     -- Language features
@@ -24,7 +24,7 @@ return {
     "indentlines", -- Show indent lines with special characters
     -- "range_highlight", -- Highlight selected range from commands
     "todo_comments", -- Highlight TODO: comments
-    -- "doom_themes", -- Extra themes for doom
+    -- "gentlewind_themes", -- Extra themes for gentlewind
     -- UI Components
     "lsp_progress", -- Check status of LSP loading
     "dashboard", -- A pretty dashboard upon opening

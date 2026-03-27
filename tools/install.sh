@@ -4,8 +4,8 @@ declare -r XDG_DATA_HOME="${XDG_DATA_HOME:-"$HOME/.local/share"}"
 declare -r XDG_CACHE_HOME="${XDG_CACHE_HOME:-"$HOME/.cache"}"
 declare -r XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"$HOME/.config"}"
 
-DOOM_REPO_URL="https://github.com/doom-neovim/doom-nvim"
-declare -r DOOM_CONFIG_DIR="${DOOM_CONFIG_DIR:-"$XDG_CONFIG_HOME/nvim"}"
+GENTLEWIND_REPO_URL="https://github.com/gentlewind-neovim/gentlewind-nvim"
+declare -r GENTLEWIND_CONFIG_DIR="${GENTLEWIND_CONFIG_DIR:-"$XDG_CONFIG_HOME/nvim"}"
 
 declare BASEDIR
 BASEDIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
@@ -19,7 +19,7 @@ NC=$(tput sgr0) # No Color
 
 function help() {
   echo "Usage: install.sh [<options>]"
-  echo "Automatically installs doom-nvim to your machine."
+  echo "Automatically installs gentlewind-nvim to your machine."
   echo ""
   echo "Options:"
   echo "    -h, --help                               Print this message"
@@ -95,37 +95,37 @@ function check_dependency_group () {
   echo " "
 }
 
-function check_doom_installed() {
-  doom_backed_up=0
+function check_gentlewind_installed() {
+  gentlewind_backed_up=0
 
-  if [ -d "${DOOM_CONFIG_DIR}/lua/doom" ]; then
-    echo "${YELLOW}Warning:$NC Doom nvim is already installed on your system."
+  if [ -d "${GENTLEWIND_CONFIG_DIR}/lua/gentlewind" ]; then
+    echo "${YELLOW}Warning:$NC Gentlewind nvim is already installed on your system."
     echo " "
-    echo "Do you want to continue installing doom-nvim? (y/n)"
-    echo "Note: the old config will be backed up to ${XDG_CONFIG_HOME}/doom-nvim-old"
+    echo "Do you want to continue installing gentlewind-nvim? (y/n)"
+    echo "Note: the old config will be backed up to ${XDG_CONFIG_HOME}/gentlewind-nvim-old"
     echo ""
     read -p "" -n 1 -r
     echo " " # (optional) move to a new line
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-      doom_backed_up=1
-      # If doom-nvim-old directory doesn't exist, move 'nvim/' to 'doom-nvim-old/'
-      if [ ! -d "${XDG_CONFIG_HOME}/doom-nvim-old" ]; then
-        mv "${XDG_CONFIG_HOME}/nvim" "${XDG_CONFIG_HOME}/doom-nvim-old"
-        echo "Moved old config from \`${XDG_CONFIG_HOME}/nvim\` to \`${XDG_CONFIG_HOME}/doom-nvim-old\`"
+      gentlewind_backed_up=1
+      # If gentlewind-nvim-old directory doesn't exist, move 'nvim/' to 'gentlewind-nvim-old/'
+      if [ ! -d "${XDG_CONFIG_HOME}/gentlewind-nvim-old" ]; then
+        mv "${XDG_CONFIG_HOME}/nvim" "${XDG_CONFIG_HOME}/gentlewind-nvim-old"
+        echo "Moved old config from \`${XDG_CONFIG_HOME}/nvim\` to \`${XDG_CONFIG_HOME}/gentlewind-nvim-old\`"
       else
-        # If it already exists try placing it in 'doom-nvim-old-1/' then 'doom-nvim-old-2' (up until 10)
+        # If it already exists try placing it in 'gentlewind-nvim-old-1/' then 'gentlewind-nvim-old-2' (up until 10)
         local i=1
         local has_found_directory=0
         while [[ $has_found_directory -eq 0 && $i -lt 10 ]]; do
           i=$((i+1))
-          if [ ! -d "${XDG_CONFIG_HOME}/doom-nvim-old-${i}" ]; then
+          if [ ! -d "${XDG_CONFIG_HOME}/gentlewind-nvim-old-${i}" ]; then
             has_found_directory=1
           fi
         done
 
         if [[ $has_found_directory -eq 1 ]]; then
-          mv "${XDG_CONFIG_HOME}/nvim" "${XDG_CONFIG_HOME}/doom-nvim-old-${i}"
-          echo "Moved old config from \`${XDG_CONFIG_HOME}/nvim\` to \`${XDG_CONFIG_HOME}/doom-nvim-old-${i}\`"
+          mv "${XDG_CONFIG_HOME}/nvim" "${XDG_CONFIG_HOME}/gentlewind-nvim-old-${i}"
+          echo "Moved old config from \`${XDG_CONFIG_HOME}/nvim\` to \`${XDG_CONFIG_HOME}/gentlewind-nvim-old-${i}\`"
         fi
       fi
     fi
@@ -134,10 +134,10 @@ function check_doom_installed() {
 }
 
 function backup_existing_config() {
-  if [ -d "$DOOM_CONFIG_DIR" ]; then
-    echo "${YELLOW}Warning:$NC There is already a config at $DOOM_CONFIG_DIR."
+  if [ -d "$GENTLEWIND_CONFIG_DIR" ]; then
+    echo "${YELLOW}Warning:$NC There is already a config at $GENTLEWIND_CONFIG_DIR."
     echo " "
-    echo "Do you want to continue installing doom-nvim? (y/n)"
+    echo "Do you want to continue installing gentlewind-nvim? (y/n)"
     echo "Note: The old config will be backed up to ${XDG_CONFIG_HOME}/nvim-old"
     echo " "
     read -p "" -n 1 -r
@@ -168,10 +168,10 @@ function backup_existing_config() {
   echo " "
 }
 
-function install_doom_nvim() {
+function install_gentlewind_nvim() {
   echo "Cloning..."
-  git clone "$DOOM_REPO_URL" "${DOOM_CONFIG_DIR}" --depth=10
-  cd "${DOOM_CONFIG_DIR}" || exit
+  git clone "$GENTLEWIND_REPO_URL" "${GENTLEWIND_CONFIG_DIR}" --depth=10
+  cd "${GENTLEWIND_CONFIG_DIR}" || exit
   # Setup user with their own custom branch
   git checkout -b my-config
 
@@ -186,10 +186,10 @@ function install_doom_nvim() {
     local tag
     tag="$(git tag -l --sort -version:refname | head -n 1)"
     git reset --hard "$tag"
-    echo "${GREEN}Installed doom-nvim ${tag}!"
+    echo "${GREEN}Installed gentlewind-nvim ${tag}!"
   else
-    echo "${GREEN}Installed doom-nvim!"
-    echo "${YELLOW}Warn: Could not checkout latest tag due to uncommitted changes.  \`:DoomUpdate\` command may not work."
+    echo "${GREEN}Installed gentlewind-nvim!"
+    echo "${YELLOW}Warn: Could not checkout latest tag due to uncommitted changes.  \`:GentlewindUpdate\` command may not work."
   fi
 }
 
@@ -199,15 +199,15 @@ function main() {
   check_dependency_group "system" "Install missing dependencies using your operating system's package manager (brew/pacman/apt-get/dnf/...)." "${system_dependencies[@]}"
   check_dependency_group "npm" "Install missing dependencies using npm/yarn/pnpm." "${npm_dependencies[@]}"
 
-  check_doom_installed
+  check_gentlewind_installed
 
-  if [ $doom_backed_up -eq 0 ]; then
+  if [ $gentlewind_backed_up -eq 0 ]; then
     backup_existing_config
   fi
 
-  install_doom_nvim
+  install_gentlewind_nvim
 
-  echo "Run \`nvim\` in your terminal to start doom-nvim."
+  echo "Run \`nvim\` in your terminal to start gentlewind-nvim."
 }
 
 main "$@"

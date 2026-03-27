@@ -1,8 +1,8 @@
-# Doom Nvim Fennel 重写项目总结
+# Gentlewind Nvim Fennel 重写项目总结
 
 ## 🎉 项目完成状态
 
-✅ **成功完成！** 我已经将整个 Doom Nvim 项目从 Lua 重写为 Fennel 语言。
+✅ **成功完成！** 我已经将整个 Gentlewind Nvim 项目从 Lua 重写为 Fennel 语言。
 
 ## 📊 完成的工作
 
@@ -12,31 +12,31 @@
 - ✅ **编译系统** - 创建了自动化编译脚本和工具
 
 ### 2. 核心模块迁移 (100% 完成)
-- ✅ `fnl/doom/core/init.fnl` - 主入口点
-- ✅ `fnl/doom/core/config.fnl` - 配置管理
-- ✅ `fnl/doom/core/modules.fnl` - 模块系统
-- ✅ `fnl/doom/core/doom_global.fnl` - 全局对象
-- ✅ `fnl/doom/core/commands.fnl` - 核心命令
-- ✅ `fnl/doom/core/functions.fnl` - 工具函数
-- ✅ `fnl/doom/core/ui.fnl` - UI 配置
+- ✅ `fnl/gentlewind/core/init.fnl` - 主入口点
+- ✅ `fnl/gentlewind/core/config.fnl` - 配置管理
+- ✅ `fnl/gentlewind/core/modules.fnl` - 模块系统
+- ✅ `fnl/gentlewind/core/gentlewind_global.fnl` - 全局对象
+- ✅ `fnl/gentlewind/core/commands.fnl` - 核心命令
+- ✅ `fnl/gentlewind/core/functions.fnl` - 工具函数
+- ✅ `fnl/gentlewind/core/ui.fnl` - UI 配置
 
 ### 3. 服务层迁移 (100% 完成)
-- ✅ `fnl/doom/services/profiler.fnl` - 性能分析
-- ✅ `fnl/doom/services/keymaps.fnl` - 键映射管理
-- ✅ `fnl/doom/services/commands.fnl` - 命令管理
-- ✅ `fnl/doom/services/autocommands.fnl` - 自动命令管理
+- ✅ `fnl/gentlewind/services/profiler.fnl` - 性能分析
+- ✅ `fnl/gentlewind/services/keymaps.fnl` - 键映射管理
+- ✅ `fnl/gentlewind/services/commands.fnl` - 命令管理
+- ✅ `fnl/gentlewind/services/autocommands.fnl` - 自动命令管理
 
 ### 4. 核心模块 (100% 完成)
-- ✅ `fnl/doom/modules/core/doom.fnl` - 核心功能
-- ✅ `fnl/doom/modules/core/nest.fnl` - 键绑定系统
-- ✅ `fnl/doom/modules/core/treesitter.fnl` - 语法高亮
-- ✅ `fnl/doom/modules/core/reloader.fnl` - 热重载
-- ✅ `fnl/doom/modules/core/updater.fnl` - 更新管理
+- ✅ `fnl/gentlewind/modules/core/gentlewind.fnl` - 核心功能
+- ✅ `fnl/gentlewind/modules/core/nest.fnl` - 键绑定系统
+- ✅ `fnl/gentlewind/modules/core/treesitter.fnl` - 语法高亮
+- ✅ `fnl/gentlewind/modules/core/reloader.fnl` - 热重载
+- ✅ `fnl/gentlewind/modules/core/updater.fnl` - 更新管理
 
 ### 5. 功能模块 (100% 完成)
-- ✅ `fnl/doom/modules/features/lsp.fnl` - LSP 支持
-- ✅ `fnl/doom/modules/features/telescope.fnl` - 模糊搜索
-- ✅ `fnl/doom/modules/features/whichkey.fnl` - 键绑定提示
+- ✅ `fnl/gentlewind/modules/features/lsp.fnl` - LSP 支持
+- ✅ `fnl/gentlewind/modules/features/telescope.fnl` - 模糊搜索
+- ✅ `fnl/gentlewind/modules/features/whichkey.fnl` - 键绑定提示
 
 ### 6. 语言支持模块 (100% 完成)
 
@@ -72,8 +72,8 @@
 - ✅ Nix/Thrift
 
 ### 7. 工具和支持文件
-- ✅ `fnl/doom/utils.fnl` - 工具函数
-- ✅ `fnl/doom/modules/langs/utils.fnl` - 语言工具
+- ✅ `fnl/gentlewind/utils.fnl` - 工具函数
+- ✅ `fnl/gentlewind/modules/langs/utils.fnl` - 语言工具
 - ✅ `fnl/init.fnl` - 新的主入口文件
 - ✅ `fnl/user/config.fnl` - 用户配置示例
 - ✅ `fnl/user/modules.fnl` - 模块配置示例
@@ -89,7 +89,7 @@
 ### Fennel 代码结构
 ```
 fnl/
-├── doom/
+├── gentlewind/
 │   ├── core/           # 核心框架
 │   ├── modules/        # 模块系统
 │   │   ├── core/      # 核心模块
@@ -196,12 +196,12 @@ nvim
 ### Fennel 配置示例
 ```fennel
 ;; 用户配置
-(set! doom.colorscheme "doom-one")
-(set! doom.leader_key "<Space>")
+(set! gentlewind.colorscheme "gentlewind-one")
+(set! gentlewind.leader_key "<Space>")
 
-(doom.use_package "sainnhe/sonokai")
+(gentlewind.use_package "sainnhe/sonokai")
 
-(doom.use_keybind
+(gentlewind.use_keybind
   {:<leader>f {:name "+find"
                {:f (require :telescope.builtin).find_files
                 :g (require :telescope.builtin).live_grep}}})
@@ -217,7 +217,7 @@ nvim
    :lsp_name "pyright"
    :formatting_package "black"})
 
-(local langs_utils (require :doom.modules.langs.utils))
+(local langs_utils (require :gentlewind.modules.langs.utils))
 
 (python.autocmds
   [{:FileType :python
@@ -273,7 +273,7 @@ MIT License - 详见 LICENSE 文件
 
 ## 🎊 总结
 
-这个项目成功地将整个 Doom Nvim 配置框架从 Lua 重写为 Fennel，同时保持了：
+这个项目成功地将整个 Gentlewind Nvim 配置框架从 Lua 重写为 Fennel，同时保持了：
 
 - ✅ **功能完整性** - 所有原有功能都得到保留
 - ✅ **性能水平** - 启动时间和内存使用基本不变
@@ -281,6 +281,6 @@ MIT License - 详见 LICENSE 文件
 - ✅ **代码质量** - 通过函数式编程提高了代码质量
 - ✅ **可维护性** - 模块化设计和更好的抽象
 
-这次重写不仅是一次技术升级，更是对 Neovim 配置管理的一次创新尝试。Fennel 的函数式编程特性和 Lisp 的强大表达能力为 Doom Nvim 带来了新的可能性。
+这次重写不仅是一次技术升级，更是对 Neovim 配置管理的一次创新尝试。Fennel 的函数式编程特性和 Lisp 的强大表达能力为 Gentlewind Nvim 带来了新的可能性。
 
-**🚀 享受全新的 Fennel 驱动的 Doom Nvim 体验吧！**
+**🚀 享受全新的 Fennel 驱动的 Gentlewind Nvim 体验吧！**

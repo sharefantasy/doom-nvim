@@ -1,4 +1,4 @@
-;; Example Fennel-based modules.lua for Doom Nvim
+;; Example Fennel-based modules.lua for Gentlewind Nvim
 ;; This replaces the traditional Lua modules.lua
 
 {:features

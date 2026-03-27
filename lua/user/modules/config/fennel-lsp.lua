@@ -5,7 +5,7 @@ local M = {}
 
 M.setup = function()
   -- 配置Fennel LSP以增强Lua符号支持
-  if doom.langs.fennel and not doom.langs.fennel.settings.disable_lsp then
+  if gentlewind.langs.fennel and not gentlewind.langs.fennel.settings.disable_lsp then
     -- 增强的Fennel LSP配置
     local enhanced_fennel_config = {
       settings = {
@@ -20,7 +20,7 @@ M.setup = function()
               -- 项目路径
               [vim.fn.getcwd() .. "/lua"] = true,
               [vim.fn.getcwd() .. "/fnl"] = true,
-              -- Doom Nvim路径
+              -- Gentlewind Nvim路径
               [vim.fn.stdpath("config") .. "/lua"] = true,
               [vim.fn.stdpath("config") .. "/fnl"] = true,
             },
@@ -35,7 +35,7 @@ M.setup = function()
             enable = true,
             -- 全局变量
             globals = {
-              "vim", "doom", "_doom", "...",
+              "vim", "gentlewind", "_gentlewind", "...",
               -- Fennel特殊变量
               "require", "module", "fn", "let", "when", "if", "each", "for",
               "while", "do", "collect", "icollect", "accumulate", "values",
@@ -76,7 +76,7 @@ M.setup = function()
             pathStrict = true,
             special = {
               vim = "vim",
-              doom = "doom",
+              gentlewind = "gentlewind",
             },
           },
           -- 语义令牌配置
@@ -101,7 +101,7 @@ M.setup = function()
     }
     
     -- 合并到Fennel配置中
-    doom.langs.fennel.settings.lsp_config = enhanced_fennel_config
+    gentlewind.langs.fennel.settings.lsp_config = enhanced_fennel_config
   end
 
   -- 配置neodev以增强Fennel中的Lua符号访问
@@ -129,8 +129,8 @@ M.setup = function()
         options.library.vim_reg = true
       end
       
-      -- 为Doom Nvim配置启用完整支持
-      if string.find(root_dir, "doom%-nvim") or string.find(root_dir, "doom") then
+      -- 为Gentlewind Nvim配置启用完整支持
+      if string.find(root_dir, "gentlewind%-nvim") or string.find(root_dir, "gentlewind") then
         options.library.enabled = true
         options.library.plugins = true
         options.library.types = true

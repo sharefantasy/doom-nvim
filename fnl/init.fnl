@@ -1,13 +1,13 @@
-;; init.fnl - Main entry point for Aniseed-based Doom Nam
+;; init.fnl - Main entry point for Aniseed-based Gentlewind Nam
 ;; This replaces the original init.lua
 
-;; Check if user is running Doom in a supported Neovim version
+;; Check if user is running Gentlewind in a supported Neovim version
 (when (not= (vim.fn.has "nvim-0.7.0") 1)
   (local message (table.concat ["You are using an unsupported version of Neovim."
                                 ""
-                                "Doom nvim and many of its plugins require at least version 0.7.0 to work as expected."
+                                "Gentlewind nvim and many of its plugins require at least version 0.7.0 to work as expected."
                                 "Consider updating if you run into issues."
-                                "https://github.com/doom-neovim/doom-nvim/blob/main/docs/updating-neovim.md"] "\n"))
+                                "https://github.com/gentlewind-neovim/gentlewind-nvim/blob/main/docs/updating-neovim.md"] "\n"))
   (vim.notify message vim.log.levels.ERROR))
 
 ;; Configure Aniseed
@@ -17,7 +17,7 @@
    :fnl-path "fnl"})
 
 ;; Load the profiler
-(local profiler (require :doom.services.profiler))
+(local profiler (require :gentlewind.services.profiler))
 (profiler.start "framework|init.fnl")
 
 ;; Preload lazy.nvim
@@ -46,13 +46,13 @@
                                     (orig-create-augroup (sanitize-group-name name) opts)))
   (set vim.api.nvim_set_hl orig-set-hl))
 
-;; Load the doom-nvim framework
-(require :doom.core)
+;; Load the gentlewind-nvim framework
+(require :gentlewind.core)
 
 ;; Check for updates
 (vim.defer_fn (fn []
-                (when (and doom.check_updates doom.core.updater)
-                  (doom.core.updater.check_updates true)))
+                (when (and gentlewind.check_updates gentlewind.core.updater)
+                  (gentlewind.core.updater.check_updates true)))
               1)
 
 (profiler.stop "framework|init.fnl")

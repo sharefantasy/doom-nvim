@@ -3,7 +3,7 @@ local M = {}
 -- LSP增强插件配置
 M.setup = function()
   -- nvim-cmp - 代码补全
-  doom.use_package {
+  gentlewind.use_package {
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
     dependencies = {
@@ -52,7 +52,7 @@ M.setup = function()
   }
 
   -- lsp-lens.nvim - LSP透镜
-  doom.use_package {
+  gentlewind.use_package {
     "VidocqH/lsp-lens.nvim",
     config = function()
       local SymbolKind = vim.lsp.protocol.SymbolKind
@@ -77,13 +77,13 @@ M.setup = function()
   }
 
   -- Ionide-vim - F#支持 (暂时禁用，有兼容性问题)
-  -- doom.use_package "ionide/Ionide-vim"
+  -- gentlewind.use_package "ionide/Ionide-vim"
 
   -- vim-dadbod - 数据库支持
-  doom.use_package "tpope/vim-dadbod"
+  gentlewind.use_package "tpope/vim-dadbod"
 
   -- conform.nvim - 代码格式化
-  doom.use_package {
+  gentlewind.use_package {
     "stevearc/conform.nvim",
     opts = {},
     config = function()
@@ -106,7 +106,7 @@ M.setup = function()
   }
 
   -- other.nvim - 文件跳转
-  doom.use_package {
+  gentlewind.use_package {
     "rgroli/other.nvim",
     event = "VeryLazy",
     lazy = true,
