@@ -182,6 +182,28 @@ M.setup = function()
     end,
   }
 
+  -- AI 侧边栏
+  gentlewind.use_package {
+    "folke/sidekick.nvim",
+    event = "VeryLazy",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "zbirenbaum/copilot.lua",
+    },
+    config = function()
+      require("copilot").setup {}
+      require("sidekick").setup {
+        cli = {
+          tools = {
+            coco = {
+              cmd = { "coco" },
+            },
+          },
+        },
+      }
+    end,
+  }
+
   -- 消息管理
   gentlewind.use_package {
     "AckslD/messages.nvim",
