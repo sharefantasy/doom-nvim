@@ -2,7 +2,7 @@
 ;; Responsible for setting vim global defaults, managing gentlewind config options,
 ;; pre-configuring user modules from modules.lua, and running user's config.lua
 
-(local profiler (require :gentlewind.services.profiler))
+(local profiler (require :gentlewind.core.utils))
 (local utils (require :gentlewind.utils))
 
 (local config {})
@@ -12,6 +12,8 @@
 
 ;; Entry point to bootstrap gentlewind-nvim.
 (fn config.load []
+  (when (not gentlewind)
+    (set _G.gentlewind {}))
   ;; Set vim defaults on first load
   (set vim.opt.hidden true)
   (set vim.opt.updatetime 200)
@@ -46,10 +48,10 @@
   (set vim.opt.expandtab true)
   (set vim.opt.conceallevel 0)
   (set vim.opt.foldenable true)
-  (set vim.opt.foldtext ((require :gentlewind.core.functions).sugar_folds))
+  (set vim.opt.foldtext "v:lua.gentlewind_sugar_folds")
 
   ;; Combine enabled modules (modules.lua) with core modules
-  (local enabled_modules (: (require :gentlewind.core.modules) :enabled_modules))
+  (local enabled_modules (. (require :gentlewind.core.modules) :enabled_modules))
 
   (profiler.start "framework|import modules")
   ;; Iterate over each module and save it to the gentlewind global object
@@ -61,21 +63,27 @@
       (local search_paths [(.. "user.modules." section_name "." module_name)
                            (.. "gentlewind.modules." section_name "." module_name)])
 
-      (local log (require :gentlewind.utils.logging))
+      (local log (. (require :gentlewind.utils) :logging))
       (var ok nil)
       (var result nil)
       (var final-err nil)
+      (var done false)
       (each [_ path (ipairs search_paths)]
-        (when (not ok)
-          (local [success res] (pcall require path))
-          (set ok success)
-          (set result res)
-          (when (not ok)
-            (set final-err res))
-          (when ok (break))))
+        (when (and (not done) (not ok))
+          (let [packed [(pcall require path)]
+                success (. packed 1)
+                res (. packed 2)]
+            (set ok success)
+            (set result res)
+            (when (not ok)
+              (set final-err res))
+            (when ok (set done true)))))
       
       (if ok
-          (tset (. gentlewind section_name) module_name result)
+          (do
+            (when (not (. gentlewind section_name))
+              (tset gentlewind section_name {}))
+            (tset (. gentlewind section_name) module_name result))
           (log.error
            (string.format "There was an error loading module '%s.%s'. Traceback:\n%s"
                           section_name module_name (debug.traceback final-err))))
@@ -84,10 +92,12 @@
 
   (profiler.start "framework|config.lua (user)")
   ;; Execute user's `config.lua` so they can modify the gentlewind global object
-  (local [ok err] (xpcall dofile debug.traceback config.source))
-  (local log (require :gentlewind.utils.logging))
-  (when (and (not ok) err)
-    (log.error (.. "Error while running `config.lua. Traceback:\n" err)))
+  (let [packed [(xpcall dofile debug.traceback config.source)]
+        ok (. packed 1)
+        err (. packed 2)]
+    (local log (. (require :gentlewind.utils) :logging))
+    (when (and (not ok) err)
+      (log.error (.. "Error while running `config.lua. Traceback:\n" err))))
   (profiler.stop "framework|config.lua (user)")
 
   ;; Apply the necessary `gentlewind.field_name` options

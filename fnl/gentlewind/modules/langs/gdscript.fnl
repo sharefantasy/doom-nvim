@@ -3,7 +3,7 @@
 
 (local gdscript {})
 
-(gdscript.settings
+(set gdscript.settings
   {:disable_treesitter false
    :treesitter_grammars "gdscript"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider nil
    :formatting_config nil})
 
-(gdscript.packages {})
-(gdscript.configs {})
+(set gdscript.packages {})
+(set gdscript.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(gdscript.autocmds
+(set gdscript.autocmds
   [{:FileType :gdscript
     :callback (langs_utils.wrap_language_setup "gdscript" (fn []
                                                   (when (not gdscript.settings.disable_lsp)
@@ -28,8 +28,8 @@
                                                     (langs_utils.use_tree_sitter gdscript.settings.treesitter_grammars))))
     :once true}])
 
-(gdscript.cmds [])
-(gdscript.binds [])
+(set gdscript.cmds [])
+(set gdscript.binds [])
 
 {:packages gdscript.packages
  :configs gdscript.configs

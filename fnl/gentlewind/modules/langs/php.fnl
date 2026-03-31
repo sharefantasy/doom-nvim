@@ -3,7 +3,7 @@
 
 (local php {})
 
-(php.settings
+(set php.settings
   {:disable_treesitter false
    :treesitter_grammars "php"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.phpcsfixer"
    :formatting_config nil})
 
-(php.packages {})
-(php.configs {})
+(set php.packages {})
+(set php.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(php.autocmds
+(set php.autocmds
   [{:FileType :php
     :callback (langs_utils.wrap_language_setup "php" (fn []
                                             (when (not php.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                       php.settings.formatting_config))))
     :once true}])
 
-(php.cmds [])
-(php.binds [])
+(set php.cmds [])
+(set php.binds [])
 
 {:packages php.packages
  :configs php.configs

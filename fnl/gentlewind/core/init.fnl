@@ -21,7 +21,7 @@
 (set g.loaded_logiPat 1)
 (set g.loaded_rrhelper 1)
 
-(local profiler (require :gentlewind.services.profiler))
+(local profiler (require :gentlewind.core.utils))
 
 ;; Sets the `gentlewind` global object
 (profiler.start "framework|gentlewind.core.gentlewind_global")
@@ -35,7 +35,10 @@
 ;; Boostraps the gentlewind-nvim framework, runs the user's `config.lua` file.
 (profiler.start "framework|gentlewind.core.config (setup + user)")
 (local config (utils.safe_require :gentlewind.core.config))
-(config.load)
+(when config
+  (config.load))
+(when (not config)
+  (vim.notify "Failed to load gentlewind.core.config" vim.log.levels.ERROR))
 (profiler.stop "framework|gentlewind.core.config (setup + user)")
 
 (when (not (utils.is_module_enabled "features" "netrw"))
@@ -50,14 +53,17 @@
 (profiler.start "framework|gentlewind.core.modules")
 ;; Load Gentlewind modules.
 (local modules (utils.safe_require :gentlewind.core.modules))
-(profiler.start "framework|init enabled modules")
-(modules.load_modules)
-(profiler.stop "framework|init enabled modules")
-(profiler.start "framework|user settings")
-(modules.handle_user_config)
-(profiler.stop "framework|user settings")
-(modules.try_sync)
-(modules.handle_lazynvim)
+(when modules
+  (profiler.start "framework|init enabled modules")
+  (modules.load_modules)
+  (profiler.stop "framework|init enabled modules")
+  (profiler.start "framework|user settings")
+  (modules.handle_user_config)
+  (profiler.stop "framework|user settings")
+  (modules.try_sync)
+  (modules.handle_lazynvim))
+(when (not modules)
+  (vim.notify "Failed to load gentlewind.core.modules" vim.log.levels.ERROR))
 (profiler.stop "framework|gentlewind.core.modules")
 
 ;; Load the colourscheme

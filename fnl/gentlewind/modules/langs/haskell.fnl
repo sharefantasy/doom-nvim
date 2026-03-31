@@ -3,7 +3,7 @@
 
 (local haskell {})
 
-(haskell.settings
+(set haskell.settings
   {:disable_treesitter false
    :treesitter_grammars "haskell"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.fourmolu"
    :formatting_config nil})
 
-(haskell.packages {})
-(haskell.configs {})
+(set haskell.packages {})
+(set haskell.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(haskell.autocmds
+(set haskell.autocmds
   [{:FileType :haskell
     :callback (langs_utils.wrap_language_setup "haskell" (fn []
                                                 (when (not haskell.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                           haskell.settings.formatting_config))))
     :once true}])
 
-(haskell.cmds [])
-(haskell.binds [])
+(set haskell.cmds [])
+(set haskell.binds [])
 
 {:packages haskell.packages
  :configs haskell.configs

@@ -1,7 +1,7 @@
 ;; gentlewind.core.modules
 ;; Finds and returns user's modules.lua file. Later executes enabled modules.
 
-(local profiler (require :gentlewind.services.profiler))
+(local profiler (require :gentlewind.core.utils))
 (local utils (require :gentlewind.utils))
 (local filename "modules.lua")
 
@@ -15,16 +15,19 @@
 
 ;; Merge core modules (can't be disabled) with user enabled modules
 (local core_modules {:core ["gentlewind" "nest" "treesitter" "reloader" "updater"]})
-(set modules.enabled_modules
-      (vim.tbl_deep_extend "keep" core_modules (dofile modules.source)))
+(let [packed [(pcall require :user.modules)]
+      ok (. packed 1)
+      user_mods (. packed 2)]
+  (set modules.enabled_modules
+        (vim.tbl_deep_extend "keep" core_modules (if ok user_mods (dofile modules.source)))))
 
-(local keymaps_service (require :gentlewind.services.keymaps))
-(local commands_service (require :gentlewind.services.commands))
-(local autocmds_service (require :gentlewind.services.autocommands))
+(local keymaps_service (require :gentlewind.core.utils))
+(local commands_service (require :gentlewind.core.utils))
+(local autocmds_service (require :gentlewind.core.utils))
 
 ;; Applies commands, autocommands, packages from enabled modules (modules.lua)
 (fn modules.load_modules []
-  (local logger (require :gentlewind.utils.logging))
+  (local logger (. (require :gentlewind.utils) :logging))
   ;; Handle the Modules
   (each [section_name _ (pairs gentlewind.modules)]
     (each [module_name module (pairs (. gentlewind.modules section_name))]
@@ -83,11 +86,33 @@
                               (module.autocmds)
                               module.autocmds))
           (each [_ autocmd_spec (ipairs autocmds)]
-            (autocmds_service.set (unpack autocmd_spec))))
+            (if (. autocmd_spec 1)
+                (autocmds_service.set_autocmd (unpack autocmd_spec))
+                (do
+                  (var event nil)
+                  (var pattern nil)
+                  (local callback (. autocmd_spec :callback))
+                  (local opts {})
+                  (when (. autocmd_spec :once) (tset opts :once (. autocmd_spec :once)))
+                  (when (. autocmd_spec :group) (tset opts :group (. autocmd_spec :group)))
+                  (when (. autocmd_spec :desc) (tset opts :desc (. autocmd_spec :desc)))
+                  (when (. autocmd_spec :pattern) (set pattern (. autocmd_spec :pattern)))
+                  (when (not event)
+                    (each [k v (pairs autocmd_spec)]
+                      (when (and (not event)
+                                 (not= k :callback)
+                                 (not= k :once)
+                                 (not= k :group)
+                                 (not= k :desc)
+                                 (not= k :pattern))
+                        (set event k)
+                        (set pattern v))))
+                  (when (and event callback)
+                    (autocmds_service.set_autocmd event pattern callback opts))))))
 
         (when module.cmds
           (each [_ cmd_spec (ipairs module.cmds)]
-            (commands_service.set (unpack cmd_spec))))
+            (commands_service.set_command (unpack cmd_spec))))
 
         (when module.binds
           (keymaps_service.applyKeymaps
@@ -98,11 +123,11 @@
 (fn modules.handle_user_config []
   ;; Handle extra user cmds
   (each [_ cmd_spec (pairs gentlewind.cmds)]
-    (commands_service.set (unpack cmd_spec)))
+    (commands_service.set_command (unpack cmd_spec)))
 
   ;; Handle extra user autocmds
   (each [_ autocmd_spec (pairs gentlewind.autocmds)]
-    (autocmds_service.set (unpack autocmd_spec)))
+    (autocmds_service.set_autocmd (unpack autocmd_spec)))
 
   ;; Handle extra user keybinds
   (each [_ keybinds (ipairs gentlewind.binds)]
@@ -112,10 +137,10 @@
   (when modules._needs_sync
     (vim.api.nvim_create_autocmd "User" {:pattern "PackerComplete"
                                         :callback (fn []
-                                                    (local logger (require :gentlewind.utils.logging))
+                                                    (local logger (. (require :gentlewind.utils) :logging))
                                                     (logger.error "Gentlewind-nvim has been installed.  Please restart gentlewind-nvim."))})))
 
 (fn modules.handle_lazynvim []
-  ((require :lazy).setup gentlewind.packages))
+  ((. (require :lazy) :setup) gentlewind.packages))
 
 modules

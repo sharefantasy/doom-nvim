@@ -3,7 +3,7 @@
 
 (local fennel {})
 
-(fennel.settings
+(set fennel.settings
   {:disable_treesitter false
    :treesitter_grammars "fennel"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider nil
    :formatting_config nil})
 
-(fennel.packages
+(set fennel.packages
   {:conjure {:repo "Olical/conjure"
               :ft [:fennel]
               :dependencies [:cmp-conjure]
               :config (fn []
-                        ((require :conjure.main).main)
+                        ((. (require :conjure.main) :main))
                         ((. (require :conjure.mapping) "on-filetype")))}
    :cmp-conjure {:repo "PaterJason/cmp-conjure"
                   :config (fn []
@@ -29,11 +29,11 @@
                             (cmp.setup config))}
    :nfnl {:repo "Olical/nfnl" :ft :fennel}})
 
-(fennel.configs {})
+(set fennel.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(fennel.autocmds
+(set fennel.autocmds
   [{:FileType :fennel
     :callback (langs_utils.wrap_language_setup "fennel" (fn []
                                                         (when (not fennel.settings.disable_lsp)
@@ -43,8 +43,8 @@
                                                           (langs_utils.use_tree_sitter fennel.settings.treesitter_grammars))))
     :once true}])
 
-(fennel.cmds [])
-(fennel.binds [])
+(set fennel.cmds [])
+(set fennel.binds [])
 
 {:packages fennel.packages
  :configs fennel.configs

@@ -3,7 +3,7 @@
 
 (local kotlin {})
 
-(kotlin.settings
+(set kotlin.settings
   {:disable_treesitter false
    :treesitter_grammars "kotlin"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.ktlint"
    :formatting_config nil})
 
-(kotlin.packages {})
-(kotlin.configs {})
+(set kotlin.packages {})
+(set kotlin.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(kotlin.autocmds
+(set kotlin.autocmds
   [{:FileType :kotlin
     :callback (langs_utils.wrap_language_setup "kotlin" (fn []
                                             (when (not kotlin.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                       kotlin.settings.formatting_config))))
     :once true}])
 
-(kotlin.cmds [])
-(kotlin.binds [])
+(set kotlin.cmds [])
+(set kotlin.binds [])
 
 {:packages kotlin.packages
  :configs kotlin.configs

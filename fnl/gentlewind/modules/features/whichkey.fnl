@@ -3,7 +3,7 @@
 
 (local whichkey {})
 
-(whichkey.packages
+(set whichkey.packages
   {:which-key {:repo "folke/which-key.nvim"
                 :config (fn []
                           (local wk (require :which-key))
@@ -21,11 +21,11 @@
                                                           :registers false
                                                           :spelling false}}}))}})
 
-(whichkey.configs {})
-(whichkey.settings {})
-(whichkey.autocmds [])
-(whichkey.cmds [])
-(whichkey.binds [])
+(set whichkey.configs {})
+(set whichkey.settings {})
+(set whichkey.autocmds [])
+(set whichkey.cmds [])
+(set whichkey.binds [])
 
 {:packages whichkey.packages
  :configs whichkey.configs

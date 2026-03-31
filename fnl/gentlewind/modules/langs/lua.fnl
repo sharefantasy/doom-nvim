@@ -3,7 +3,7 @@
 
 (local lua_mod {})
 
-(lua_mod.settings
+(set lua_mod.settings
   {:disable_treesitter false
    :treesitter_grammars "lua"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.stylua"
    :formatting_config nil})
 
-(lua_mod.packages {})
-(lua_mod.configs {})
+(set lua_mod.packages {})
+(set lua_mod.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(lua_mod.autocmds
+(set lua_mod.autocmds
   [{:FileType :lua
     :callback (langs_utils.wrap_language_setup "lua" (fn []
                                               (when (not lua_mod.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                         lua_mod.settings.formatting_config))))
     :once true}])
 
-(lua_mod.cmds [])
-(lua_mod.binds [])
+(set lua_mod.cmds [])
+(set lua_mod.binds [])
 
 {:packages lua_mod.packages
  :configs lua_mod.configs

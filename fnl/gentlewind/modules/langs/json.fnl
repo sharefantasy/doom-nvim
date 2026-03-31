@@ -3,7 +3,7 @@
 
 (local json {})
 
-(json.settings
+(set json.settings
   {:disable_treesitter false
    :treesitter_grammars "json"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.prettier"
    :formatting_config nil})
 
-(json.packages {})
-(json.configs {})
+(set json.packages {})
+(set json.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(json.autocmds
+(set json.autocmds
   [{:FileType :json
     :callback (langs_utils.wrap_language_setup "json" (fn []
                                             (when (not json.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                       json.settings.formatting_config))))
     :once true}])
 
-(json.cmds [])
-(json.binds [])
+(set json.cmds [])
+(set json.binds [])
 
 {:packages json.packages
  :configs json.configs

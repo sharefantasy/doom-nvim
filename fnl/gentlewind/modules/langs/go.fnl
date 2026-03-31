@@ -3,7 +3,7 @@
 
 (local go {})
 
-(go.settings
+(set go.settings
   {:disable_treesitter false
    :treesitter_grammars "go"
    :disable_lsp false
@@ -13,21 +13,22 @@
    :formatting_provider "builtins.formatting.gofumpt"
    :formatting_config nil})
 
-(go.packages
+(set go.packages
   {:go-nvim {:repo "ray-x/go.nvim"
               :dependencies [:lspconfig]
               :config (fn []
-                        (require :go).setup {:lsp_cfg false  ;; Use mason-lspconfig instead
-                                             :lsp_gofumpt true
-                                             :lsp_on_attach (fn [client bufnr]
-                                                               ;; Custom on_attach
-                                                               )})}})
+                        ((. (require :go) :setup)
+                         {:lsp_cfg false  ;; Use mason-lspconfig instead
+                          :lsp_gofumpt true
+                          :lsp_on_attach (fn [client bufnr]
+                                            ;; Custom on_attach
+                                            )}))}})
 
-(go.configs {})
+(set go.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(go.autocmds
+(set go.autocmds
   [{:FileType :go
     :callback (langs_utils.wrap_language_setup "go" (fn []
                                             (when (not go.settings.disable_lsp)
@@ -42,8 +43,8 @@
                                                                       go.settings.formatting_config))))
     :once true}])
 
-(go.cmds [])
-(go.binds [])
+(set go.cmds [])
+(set go.binds [])
 
 {:packages go.packages
  :configs go.configs

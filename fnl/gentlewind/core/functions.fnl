@@ -10,4 +10,7 @@
     (local num-lines (.. (- vim.v.foldend vim.v.foldstart) " lines"))
     (.. start-line-str " " num-lines)))
 
+;; expose for foldtext = v:lua.gentlewind_sugar_folds
+(set _G.gentlewind_sugar_folds (functions.sugar_folds))
+
 {:sugar_folds functions.sugar_folds}

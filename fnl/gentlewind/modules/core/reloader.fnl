@@ -3,12 +3,12 @@
 
 (local reloader {})
 
-(reloader.packages {})
-(reloader.configs {})
-(reloader.settings {})
-(reloader.autocmds [])
-(reloader.cmds [])
-(reloader.binds [])
+(set reloader.packages {})
+(set reloader.configs {})
+(set reloader.settings {})
+(set reloader.autocmds [])
+(set reloader.cmds [])
+(set reloader.binds [])
 
 ;; Auto-reload configuration on save
 (table.insert reloader.autocmds

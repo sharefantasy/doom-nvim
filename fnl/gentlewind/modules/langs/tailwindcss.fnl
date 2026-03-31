@@ -3,7 +3,7 @@
 
 (local tailwindcss {})
 
-(tailwindcss.settings
+(set tailwindcss.settings
   {:disable_treesitter false
    :treesitter_grammars ["html" "css" "scss" "javascript" "typescript" "tsx"]
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.prettier"
    :formatting_config nil})
 
-(tailwindcss.packages {})
-(tailwindcss.configs {})
+(set tailwindcss.packages {})
+(set tailwindcss.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(tailwindcss.autocmds
+(set tailwindcss.autocmds
   [{:FileType [:html :css :scss :javascript :typescript :tsx :vue :svelte]
     :callback (langs_utils.wrap_language_setup "tailwindcss" (fn []
                                                       (when (not tailwindcss.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                                 tailwindcss.settings.formatting_config))))
     :once true}])
 
-(tailwindcss.cmds [])
-(tailwindcss.binds [])
+(set tailwindcss.cmds [])
+(set tailwindcss.binds [])
 
 {:packages tailwindcss.packages
  :configs tailwindcss.configs

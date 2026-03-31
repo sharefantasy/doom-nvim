@@ -3,7 +3,7 @@
 
 (local html {})
 
-(html.settings
+(set html.settings
   {:disable_treesitter false
    :treesitter_grammars ["html" "css" "scss"]
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.prettier"
    :formatting_config nil})
 
-(html.packages {})
-(html.configs {})
+(set html.packages {})
+(set html.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(html.autocmds
+(set html.autocmds
   [{:FileType [:html :css :scss]
     :callback (langs_utils.wrap_language_setup "html" (fn []
                                             (when (not html.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                       html.settings.formatting_config))))
     :once true}])
 
-(html.cmds [])
-(html.binds [])
+(set html.cmds [])
+(set html.binds [])
 
 {:packages html.packages
  :configs html.configs

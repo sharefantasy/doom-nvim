@@ -3,7 +3,7 @@
 
 (local yaml {})
 
-(yaml.settings
+(set yaml.settings
   {:disable_treesitter false
    :treesitter_grammars "yaml"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.prettier"
    :formatting_config nil})
 
-(yaml.packages {})
-(yaml.configs {})
+(set yaml.packages {})
+(set yaml.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(yaml.autocmds
+(set yaml.autocmds
   [{:FileType :yaml
     :callback (langs_utils.wrap_language_setup "yaml" (fn []
                                             (when (not yaml.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                       yaml.settings.formatting_config))))
     :once true}])
 
-(yaml.cmds [])
-(yaml.binds [])
+(set yaml.cmds [])
+(set yaml.binds [])
 
 {:packages yaml.packages
  :configs yaml.configs

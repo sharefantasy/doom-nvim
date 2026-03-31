@@ -3,7 +3,7 @@
 
 (local python {})
 
-(python.settings
+(set python.settings
   {:disable_treesitter false
    :treesitter_grammars "python"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.black"
    :formatting_config nil})
 
-(python.packages {})
-(python.configs {})
+(set python.packages {})
+(set python.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(python.autocmds
+(set python.autocmds
   [{:FileType :python
     :callback (langs_utils.wrap_language_setup "python" (fn []
                                                 (when (not python.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                           python.settings.formatting_config))))
     :once true}])
 
-(python.cmds [])
-(python.binds [])
+(set python.cmds [])
+(set python.binds [])
 
 {:packages python.packages
  :configs python.configs

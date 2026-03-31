@@ -3,7 +3,7 @@
 
 (local c_sharp {})
 
-(c_sharp.settings
+(set c_sharp.settings
   {:disable_treesitter false
    :treesitter_grammars "c_sharp"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.csharpier"
    :formatting_config nil})
 
-(c_sharp.packages {})
-(c_sharp.configs {})
+(set c_sharp.packages {})
+(set c_sharp.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(c_sharp.autocmds
+(set c_sharp.autocmds
   [{:FileType :cs
     :callback (langs_utils.wrap_language_setup "c_sharp" (fn []
                                                 (when (not c_sharp.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                           c_sharp.settings.formatting_config))))
     :once true}])
 
-(c_sharp.cmds [])
-(c_sharp.binds [])
+(set c_sharp.cmds [])
+(set c_sharp.binds [])
 
 {:packages c_sharp.packages
  :configs c_sharp.configs

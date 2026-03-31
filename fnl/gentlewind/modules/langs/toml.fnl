@@ -3,7 +3,7 @@
 
 (local toml {})
 
-(toml.settings
+(set toml.settings
   {:disable_treesitter false
    :treesitter_grammars "toml"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.taplo"
    :formatting_config nil})
 
-(toml.packages {})
-(toml.configs {})
+(set toml.packages {})
+(set toml.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(toml.autocmds
+(set toml.autocmds
   [{:FileType :toml
     :callback (langs_utils.wrap_language_setup "toml" (fn []
                                             (when (not toml.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                       toml.settings.formatting_config))))
     :once true}])
 
-(toml.cmds [])
-(toml.binds [])
+(set toml.cmds [])
+(set toml.binds [])
 
 {:packages toml.packages
  :configs toml.configs

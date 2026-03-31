@@ -244,12 +244,23 @@ return my_feature
 5. **💡 开发原则**: 新功能**必须**使用 Fennel 开发，禁止直接修改 Lua 文件
 6. **双文件维护**: 同时维护 `.fnl` 源文件和对应的 `.lua` 编译文件
 
+### 架构说明（2024 更新）
+**服务层内联**：原有的 `fnl/gentlewind/services/` 目录已移除，所有服务功能已内联到 `fnl/gentlewind/core/utils.fnl`。
+- **目的**：减少目录层级，简化引用路径
+- **影响**：模块引用从 `:gentlewind.services.*` 改为 `:gentlewind.core.utils`
+- **备份**：旧服务文件已删除，如需回滚请从 Git 恢复
+
+**配置集中化**：用户配置统一使用 Fennel 文件。
+- `fnl/user/config.fnl`：用户全局配置
+- `fnl/user/modules.fnl`：模块启用列表
+- 旧的 `lua/user/modules.lua` 已删除
+
 ## 故障排除
 
 ### 通用问题
 - **启动问题**: 检查 `gentlewind.log` 日志文件
 - **插件问题**: 运行 `:Lazy sync` 同步插件
-- **配置问题**: 验证 `config.lua` 和 `modules.lua` 语法
+- **配置问题**: 验证 `fnl/user/config.fnl` 和 `fnl/user/modules.fnl` 语法
 - **性能问题**: 使用内置 profiler 分析启动时间
 
 ### Fennel 相关问题
@@ -258,3 +269,4 @@ return my_feature
 - **📂 编译后无效**: 检查编译输出目录和文件权限
 - **🚫 混合语言问题**: 确保 Lua 和 Fennel 模块命名不冲突
 - **💥 修改不生效**: 确认是否忘记编译 Fennel 代码到 Lua
+- **🔁 服务引用错误**: 如遇到 `gentlewind.services.*` 找不到，请更新为 `gentlewind.core.utils`

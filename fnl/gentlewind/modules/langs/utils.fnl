@@ -6,9 +6,11 @@
 (fn utils.wrap_language_setup [lang callback]
   "Wrap language setup with proper error handling"
   (fn []
-    (local [ok err] (pcall callback))
-    (when (not ok)
-      (vim.notify (.. "Error setting up " lang " language support: " err) vim.log.levels.ERROR))))
+    (let [packed [(pcall callback)]
+          ok (. packed 1)
+          err (. packed 2)]
+      (when (not ok)
+        (vim.notify (.. "Error setting up " lang " language support: " err) vim.log.levels.ERROR)))))
 
 (fn utils.use_lsp_mason [server-name]
   "Use LSP server via Mason"
@@ -31,7 +33,7 @@
                                  (config sources)
                                  [sources])})))
 
-{:wrap_language_setup
- :use_lsp_mason
- :use_tree_sitter
- :use_null_ls}
+{:wrap_language_setup utils.wrap_language_setup
+ :use_lsp_mason utils.use_lsp_mason
+ :use_tree_sitter utils.use_tree_sitter
+ :use_null_ls utils.use_null_ls}

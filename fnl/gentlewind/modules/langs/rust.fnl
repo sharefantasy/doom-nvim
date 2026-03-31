@@ -3,7 +3,7 @@
 
 (local rust {})
 
-(rust.settings
+(set rust.settings
   {:disable_treesitter false
    :treesitter_grammars "rust"
    :disable_lsp false
@@ -13,7 +13,7 @@
    :formatting_provider "builtins.formatting.rustfmt"
    :formatting_config nil})
 
-(rust.packages
+(set rust.packages
   {:rust-tools {:repo "simrat39/rust-tools.nvim"
                  :dependencies [:lspconfig]
                 :config (fn []
@@ -23,11 +23,11 @@
                                           (rust-tools.inlay_hints.enable))}}))}
    :lspconfig {:repo "neovim/nvim-lspconfig"}})
 
-(rust.configs {})
+(set rust.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(rust.autocmds
+(set rust.autocmds
   [{:FileType :rust
     :callback (langs_utils.wrap_language_setup "rust" (fn []
                                               (when (not rust.settings.disable_lsp)
@@ -42,8 +42,8 @@
                                                                         rust.settings.formatting_config))))
     :once true}])
 
-(rust.cmds [])
-(rust.binds [])
+(set rust.cmds [])
+(set rust.binds [])
 
 {:packages rust.packages
  :configs rust.configs

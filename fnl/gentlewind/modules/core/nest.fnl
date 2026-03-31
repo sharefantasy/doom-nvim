@@ -3,19 +3,19 @@
 
 (local nest {})
 
-(nest.packages {:nest-nvim "connorgmeehan/nest.nvim"})
+(set nest.packages {:nest-nvim "connorgmeehan/nest.nvim"})
 
-(nest.configs
+(set nest.configs
   {:nest-nvim
    (fn []
      (local nest (require :nest))
      (nest.setup {:disable_keymaps_in_macro true
                   :disable_keymaps_in_operator_pending_mode true}))})
 
-(nest.settings {})
-(nest.autocmds [])
-(nest.cmds [])
-(nest.binds [])
+(set nest.settings {})
+(set nest.autocmds [])
+(set nest.cmds [])
+(set nest.binds [])
 
 {:packages nest.packages
  :configs nest.configs

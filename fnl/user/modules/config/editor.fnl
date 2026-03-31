@@ -7,7 +7,7 @@
   (gentlewind.use_package
     {:repo "nvim-focus/focus.nvim"
      :config (fn []
-               ((require :focus).setup
+               ((. (require :focus) :setup)
                  {:enable true
                   :commands true
                   :autoresize {:enable false
@@ -35,9 +35,9 @@
      :event "VeryLazy"
      :opts {}
      :keys
-     [["s" (fn [] ((require :flash).jump)) :mode ["n" "o" "x"] :desc "跳转"]
-      ["r" (fn [] ((require :flash).remote)) :mode "o" :desc "远跳"]
-      ["<c-s>" (fn [] ((require :flash).toggle)) :mode ["c"] :desc "开关"]]})
+     [["s" (fn [] ((. (require :flash) :jump))) :mode ["n" "o" "x"] :desc "跳转"]
+      ["r" (fn [] ((. (require :flash) :remote))) :mode "o" :desc "远跳"]
+      ["<c-s>" (fn [] ((. (require :flash) :toggle))) :mode ["c"] :desc "开关"]]})
 
   ;; 重复操作增强
   (gentlewind.use_package "tpope/vim-repeat")
@@ -46,7 +46,7 @@
   (gentlewind.use_package
     {:repo "ur4ltz/surround.nvim"
      :config (fn []
-               ((require :surround).setup {:mappings_style "sandwich"}))})
+               ((. (require :surround) :setup) {:mappings_style "sandwich"}))})
 
   ;; 文本对象增强
   (gentlewind.use_package
@@ -64,7 +64,7 @@
     {:repo "stevearc/conform.nvim"
      :opts {}
      :config (fn []
-               ((require :conform).setup
+               ((. (require :conform) :setup)
                  {:formatters_by_ft {:go ["goimports" "gofmt"]
                                      :lua ["stylua"]
                                      :python ["ruff"]

@@ -3,7 +3,7 @@
 
 (local cc {})
 
-(cc.settings
+(set cc.settings
   {:disable_treesitter false
    :treesitter_grammars ["c" "cpp"]
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.clang_format"
    :formatting_config nil})
 
-(cc.packages {})
-(cc.configs {})
+(set cc.packages {})
+(set cc.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(cc.autocmds
+(set cc.autocmds
   [{:FileType [:c :cpp]
     :callback (langs_utils.wrap_language_setup "cc" (fn []
                                            (when (not cc.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                      cc.settings.formatting_config))))
     :once true}])
 
-(cc.cmds [])
-(cc.binds [])
+(set cc.cmds [])
+(set cc.binds [])
 
 {:packages cc.packages
  :configs cc.configs

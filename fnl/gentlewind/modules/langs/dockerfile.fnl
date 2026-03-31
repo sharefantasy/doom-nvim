@@ -3,7 +3,7 @@
 
 (local dockerfile {})
 
-(dockerfile.settings
+(set dockerfile.settings
   {:disable_treesitter false
    :treesitter_grammars "dockerfile"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.dockerfile_tools"
    :formatting_config nil})
 
-(dockerfile.packages {})
-(dockerfile.configs {})
+(set dockerfile.packages {})
+(set dockerfile.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(dockerfile.autocmds
+(set dockerfile.autocmds
   [{:FileType :dockerfile
     :callback (langs_utils.wrap_language_setup "dockerfile" (fn []
                                                     (when (not dockerfile.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                               dockerfile.settings.formatting_config))))
     :once true}])
 
-(dockerfile.cmds [])
-(dockerfile.binds [])
+(set dockerfile.cmds [])
+(set dockerfile.binds [])
 
 {:packages dockerfile.packages
  :configs dockerfile.configs

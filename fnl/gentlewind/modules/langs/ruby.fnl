@@ -3,7 +3,7 @@
 
 (local ruby {})
 
-(ruby.settings
+(set ruby.settings
   {:disable_treesitter false
    :treesitter_grammars "ruby"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.rubocop"
    :formatting_config nil})
 
-(ruby.packages {})
-(ruby.configs {})
+(set ruby.packages {})
+(set ruby.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(ruby.autocmds
+(set ruby.autocmds
   [{:FileType :ruby
     :callback (langs_utils.wrap_language_setup "ruby" (fn []
                                             (when (not ruby.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                       ruby.settings.formatting_config))))
     :once true}])
 
-(ruby.cmds [])
-(ruby.binds [])
+(set ruby.cmds [])
+(set ruby.binds [])
 
 {:packages ruby.packages
  :configs ruby.configs

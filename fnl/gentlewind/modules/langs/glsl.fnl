@@ -3,7 +3,7 @@
 
 (local glsl {})
 
-(glsl.settings
+(set glsl.settings
   {:disable_treesitter false
    :treesitter_grammars "glsl"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider nil
    :formatting_config nil})
 
-(glsl.packages {})
-(glsl.configs {})
+(set glsl.packages {})
+(set glsl.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(glsl.autocmds
+(set glsl.autocmds
   [{:FileType :glsl
     :callback (langs_utils.wrap_language_setup "glsl" (fn []
                                               (when (not glsl.settings.disable_lsp)
@@ -28,8 +28,8 @@
                                                 (langs_utils.use_tree_sitter glsl.settings.treesitter_grammars))))
     :once true}])
 
-(glsl.cmds [])
-(glsl.binds [])
+(set glsl.cmds [])
+(set glsl.binds [])
 
 {:packages glsl.packages
  :configs glsl.configs

@@ -3,7 +3,7 @@
 
 (local clojure {})
 
-(clojure.settings
+(set clojure.settings
   {:disable_treesitter false
    :treesitter_grammars "clojure"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.cljfmt"
    :formatting_config nil})
 
-(clojure.packages
+(set clojure.packages
   {:conjure {:repo "Olical/conjure"
               :ft [:clojure]
               :dependencies [:cmp-conjure]
               :config (fn []
-                        ((require :conjure.main).main)
+                        ((. (require :conjure.main) :main))
                         ((. (require :conjure.mapping) "on-filetype")))}
    :cmp-conjure {:repo "PaterJason/cmp-conjure"
                   :config (fn []
@@ -28,11 +28,11 @@
                                                            :option {:sources [{:name :conjure}]}})
                             (cmp.setup config))}})
 
-(clojure.configs {})
+(set clojure.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(clojure.autocmds
+(set clojure.autocmds
   [{:FileType :clojure
     :callback (langs_utils.wrap_language_setup "clojure" (fn []
                                                 (when (not clojure.settings.disable_lsp)
@@ -47,8 +47,8 @@
                                                                           clojure.settings.formatting_config))))
     :once true}])
 
-(clojure.cmds [])
-(clojure.binds [])
+(set clojure.cmds [])
+(set clojure.binds [])
 
 {:packages clojure.packages
  :configs clojure.configs

@@ -5,6 +5,14 @@ pcall(function()
   end
 end)
 
+-- Add lua directory to package.path
+local root_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), " :p:h")
+local lua_dir = root_dir .. "/lua"
+if vim.fn.isdirectory(lua_dir) == 1 then
+  package.path = package.path .. ";" .. lua_dir .. "/?.lua;" .. lua_dir .. "/?/init.lua"
+  vim.opt.rtp:prepend(root_dir)
+end
+
 -- Sanitize group names (augroup / highlight) to avoid E5248 on invalid characters
 do
   local orig_create_augroup = vim.api.nvim_create_augroup
@@ -110,6 +118,22 @@ do
   })
 end
 
+local function gentlewind_preflight()
+  local function check(name)
+    local ok, err = pcall(require, name)
+    if not ok then
+      vim.notify("[gentlewind preflight] failed: " .. name .. "\n" .. tostring(err), vim.log.levels.ERROR)
+    end
+    return ok
+  end
+
+  check("gentlewind.core.gentlewind_global")
+  check("gentlewind.core.utils")
+  check("gentlewind.utils")
+  check("gentlewind.core.config")
+  check("gentlewind.core.modules")
+end
+
 -- Fastboot: 首屏只保证快捷键/基础交互，其余在事件循环开始后再加载
 -- 通过 `GENTLEWIND_FASTBOOT=0` 可关闭
 -- 为避免“先显示默认 UI → 再应用配置导致跳变”，当命令行带文件参数时默认自动关闭 fastboot
@@ -196,6 +220,8 @@ local function load_gentlewind()
     return
   end
   vim.g._gentlewind_framework_loaded = true
+
+  gentlewind_preflight()
 
   -- 恢复 fastboot 阶段关闭的选项，保证后续插件/状态正常
   if vim.g._gentlewind_saved_loadplugins ~= nil then

@@ -3,7 +3,7 @@
 
 (local fish {})
 
-(fish.settings
+(set fish.settings
   {:disable_treesitter false
    :treesitter_grammars "fish"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.fish_indent"
    :formatting_config nil})
 
-(fish.packages {})
-(fish.configs {})
+(set fish.packages {})
+(set fish.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(fish.autocmds
+(set fish.autocmds
   [{:FileType :fish
     :callback (langs_utils.wrap_language_setup "fish" (fn []
                                             (when (not fish.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                       fish.settings.formatting_config))))
     :once true}])
 
-(fish.cmds [])
-(fish.binds [])
+(set fish.cmds [])
+(set fish.binds [])
 
 {:packages fish.packages
  :configs fish.configs

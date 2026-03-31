@@ -3,11 +3,11 @@
 
 (local treesitter {})
 
-(treesitter.packages
+(set treesitter.packages
   {:nvim-treesitter {:repo "nvim-treesitter/nvim-treesitter"
                      :build ":TSUpdate"
                      :config (fn []
-                               ((require :nvim-treesitter.configs).setup
+                               ((. (require :nvim-treesitter.configs) :setup)
                                  {:highlight {:enable true
                                               :disable ["markdown"]}
                                   :indent {:enable true}
@@ -15,11 +15,11 @@
                                   :textobjects {:enable true
                                                 :select {:disable ["markdown"]}}}))}})
 
-(treesitter.configs {})
-(treesitter.settings {:show_compiler_warning_message false})
-(treesitter.autocmds [])
-(treesitter.cmds [])
-(treesitter.binds [])
+(set treesitter.configs {})
+(set treesitter.settings {:show_compiler_warning_message false})
+(set treesitter.autocmds [])
+(set treesitter.cmds [])
+(set treesitter.binds [])
 
 {:packages treesitter.packages
  :configs treesitter.configs

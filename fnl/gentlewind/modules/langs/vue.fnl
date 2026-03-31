@@ -3,7 +3,7 @@
 
 (local vue {})
 
-(vue.settings
+(set vue.settings
   {:disable_treesitter false
    :treesitter_grammars ["vue" "javascript" "typescript"]
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.prettier"
    :formatting_config nil})
 
-(vue.packages {})
-(vue.configs {})
+(set vue.packages {})
+(set vue.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(vue.autocmds
+(set vue.autocmds
   [{:FileType :vue
     :callback (langs_utils.wrap_language_setup "vue" (fn []
                                             (when (not vue.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                       vue.settings.formatting_config))))
     :once true}])
 
-(vue.cmds [])
-(vue.binds [])
+(set vue.cmds [])
+(set vue.binds [])
 
 {:packages vue.packages
  :configs vue.configs

@@ -3,7 +3,7 @@
 
 (local ocaml {})
 
-(ocaml.settings
+(set ocaml.settings
   {:disable_treesitter false
    :treesitter_grammars "ocaml"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.ocamlformat"
    :formatting_config nil})
 
-(ocaml.packages {})
-(ocaml.configs {})
+(set ocaml.packages {})
+(set ocaml.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(ocaml.autocmds
+(set ocaml.autocmds
   [{:FileType :ocaml
     :callback (langs_utils.wrap_language_setup "ocaml" (fn []
                                               (when (not ocaml.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                         ocaml.settings.formatting_config))))
     :once true}])
 
-(ocaml.cmds [])
-(ocaml.binds [])
+(set ocaml.cmds [])
+(set ocaml.binds [])
 
 {:packages ocaml.packages
  :configs ocaml.configs

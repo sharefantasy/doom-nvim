@@ -3,7 +3,7 @@
 
 (local sql {})
 
-(sql.settings
+(set sql.settings
   {:disable_treesitter false
    :treesitter_grammars "sql"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.sqlfmt"
    :formatting_config nil})
 
-(sql.packages {})
-(sql.configs {})
+(set sql.packages {})
+(set sql.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(sql.autocmds
+(set sql.autocmds
   [{:FileType :sql
     :callback (langs_utils.wrap_language_setup "sql" (fn []
                                             (when (not sql.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                       sql.settings.formatting_config))))
     :once true}])
 
-(sql.cmds [])
-(sql.binds [])
+(set sql.cmds [])
+(set sql.binds [])
 
 {:packages sql.packages
  :configs sql.configs

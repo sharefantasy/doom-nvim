@@ -3,7 +3,7 @@
 
 (local terraform {})
 
-(terraform.settings
+(set terraform.settings
   {:disable_treesitter false
    :treesitter_grammars "terraform"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.terraform_fmt"
    :formatting_config nil})
 
-(terraform.packages {})
-(terraform.configs {})
+(set terraform.packages {})
+(set terraform.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(terraform.autocmds
+(set terraform.autocmds
   [{:FileType :terraform
     :callback (langs_utils.wrap_language_setup "terraform" (fn []
                                                   (when (not terraform.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                             terraform.settings.formatting_config))))
     :once true}])
 
-(terraform.cmds [])
-(terraform.binds [])
+(set terraform.cmds [])
+(set terraform.binds [])
 
 {:packages terraform.packages
  :configs terraform.configs

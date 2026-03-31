@@ -3,7 +3,7 @@
 
 (local nix {})
 
-(nix.settings
+(set nix.settings
   {:disable_treesitter false
    :treesitter_grammars "nix"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.alejandra"
    :formatting_config nil})
 
-(nix.packages {})
-(nix.configs {})
+(set nix.packages {})
+(set nix.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(nix.autocmds
+(set nix.autocmds
   [{:FileType :nix
     :callback (langs_utils.wrap_language_setup "nix" (fn []
                                             (when (not nix.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                       nix.settings.formatting_config))))
     :once true}])
 
-(nix.cmds [])
-(nix.binds [])
+(set nix.cmds [])
+(set nix.binds [])
 
 {:packages nix.packages
  :configs nix.configs

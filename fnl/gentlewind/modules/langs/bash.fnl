@@ -3,7 +3,7 @@
 
 (local bash {})
 
-(bash.settings
+(set bash.settings
   {:disable_treesitter false
    :treesitter_grammars "bash"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.shfmt"
    :formatting_config nil})
 
-(bash.packages {})
-(bash.configs {})
+(set bash.packages {})
+(set bash.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(bash.autocmds
+(set bash.autocmds
   [{:FileType [:bash :sh]
     :callback (langs_utils.wrap_language_setup "bash" (fn []
                                             (when (not bash.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                       bash.settings.formatting_config))))
     :once true}])
 
-(bash.cmds [])
-(bash.binds [])
+(set bash.cmds [])
+(set bash.binds [])
 
 {:packages bash.packages
  :configs bash.configs

@@ -3,7 +3,7 @@
 
 (local typescript {})
 
-(typescript.settings
+(set typescript.settings
   {:disable_treesitter false
    :treesitter_grammars ["typescript" "tsx"]
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.prettier"
    :formatting_config nil})
 
-(typescript.packages {})
-(typescript.configs {})
+(set typescript.packages {})
+(set typescript.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(typescript.autocmds
+(set typescript.autocmds
   [{:FileType [:typescript :tsx]
     :callback (langs_utils.wrap_language_setup "typescript" (fn []
                                                     (when (not typescript.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                               typescript.settings.formatting_config))))
     :once true}])
 
-(typescript.cmds [])
-(typescript.binds [])
+(set typescript.cmds [])
+(set typescript.binds [])
 
 {:packages typescript.packages
  :configs typescript.configs

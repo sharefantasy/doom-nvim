@@ -8,7 +8,7 @@
     {:repo "aserowy/tmux.nvim"
      :event "VeryLazy"
      :config (fn []
-               ((require :tmux).setup
+               ((. (require :tmux) :setup)
                  {:copy_sync {:enable true
                               :sync_clipboard false
                               :sync_registers true}
@@ -20,7 +20,7 @@
      :dependencies ["nvim-lua/plenary.nvim" "nvim-treesitter/nvim-treesitter"]
      :cmd ["Refactor"]
      :config (fn []
-               ((require :refactoring).setup
+               ((. (require :refactoring) :setup)
                  {:prompt_func_return_type {:go true :python true :lua true}
                   :prompt_func_param_type {:go true :python true :lua true}
                   :printf_statements {:go true :python true :lua true}
@@ -43,7 +43,7 @@
     {:repo "p00f/godbolt.nvim"
      :cmd ["Godbolt" "GodboltCompiler"]
      :config (fn []
-               ((require :godbolt).setup
+               ((. (require :godbolt) :setup)
                  {:languages {:cpp {:compiler "g122" :options {}}
                               :c {:compiler "cg122" :options {}}
                               :rust {:compiler "r1650" :options {}}}
@@ -55,7 +55,7 @@
   (gentlewind.use_package
     {:repo "AckslD/messages.nvim"
      :cmd ["Messages"]
-     :config (fn [] ((require :messages).setup))})
+     :config (fn [] ((. (require :messages) :setup)))})
 
   ;; nvim-projector - 项目管理
   (gentlewind.use_package
@@ -67,7 +67,7 @@
      :cmd ["Projector"]
      :config (fn []
                (local projector_dbee (require :projector_dbee))
-               ((require :projector).setup
+               ((. (require :projector) :setup)
                  {:outputs [(:new projector_dbee.OutputBuilder)]}))})
 
   ;; nvim-dap-virtual-text - DAP虚拟文本
@@ -76,7 +76,7 @@
      :dependencies ["mfussenegger/nvim-dap" "nvim-treesitter/nvim-treesitter"]
      :event "VeryLazy"
      :config (fn []
-               ((require :nvim-dap-virtual-text).setup
+               ((. (require :nvim-dap-virtual-text) :setup)
                  {:enabled true
                   :enabled_commands true
                   :highlight_changed_variables true
@@ -99,7 +99,7 @@
   (gentlewind.use_package
     {:repo "nvim-pack/nvim-spectre"
      :cmd ["Spectre"]
-     :config (fn [] ((require :spectre).setup))})
+     :config (fn [] ((. (require :spectre) :setup)))})
 
   ;; hurl.nvim - HTTP客户端
   (gentlewind.use_package
@@ -126,7 +126,7 @@
      :dependencies ["/guihua.lua"]
      :cmd ["Npm" "Yarn" "Npx" "Node" "Pnpm" "StopJob"]
      :config (fn []
-               ((require :web-tools).setup
+               ((. (require :web-tools) :setup)
                  {:keymaps {:rename nil
                             :repeat_rename "."}}))})
 
@@ -142,6 +142,6 @@
     {:repo "ray-x/sad.nvim"
      :requires [{:repo "ray-x/guihua.lua" :run "cd lua/fzy && make"}]
      :cmd ["Sad"]
-     :config (fn [] ((require :sad).setup {}))}))
+     :config (fn [] ((. (require :sad) :setup) {}))}))
 
 M

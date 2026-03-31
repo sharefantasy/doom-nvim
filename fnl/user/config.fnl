@@ -7,35 +7,42 @@
 (set vim.g.loaded_netrwPlugin 1)
 (set vim.opt.colorcolumn "120")
 (set vim.g.skip_ts_context_commentstring_module true)
-(set! gentlewind.indent 2)
-(set! gentlewind.core.treesitter.settings.show_compiler_warning_message false)
-(set! gentlewind.core.reloader.settings.reload_on_save true)
-(set! gentlewind.colorscheme "gruvbox")
-(set! gentlewind.freeze_dependencies false)
+(set gentlewind.indent 2)
+(set gentlewind.core.treesitter.settings.show_compiler_warning_message false)
+(set gentlewind.core.reloader.settings.reload_on_save true)
+(set gentlewind.colorscheme "gruvbox")
+(set gentlewind.freeze_dependencies false)
 
 ;; 其他设置
-(set! gentlewind.logging "info")
-(set! gentlewind.guicolors true)
-(set! gentlewind.auto_comment true)
-(set! gentlewind.movement_wrap false)
-(set! gentlewind.global_statusline true)
-(set! gentlewind.clipboard true)
-(set! gentlewind.ignorecase true)
-(set! gentlewind.smartcase true)
-(set! gentlewind.max_columns 120)
-(set! gentlewind.disable_numbering false)
-(set! gentlewind.relative_num true)
-(set! gentlewind.leader_key "<Space>")
-(set! gentlewind.check_updates true)
+(set gentlewind.logging "info")
+(set gentlewind.guicolors true)
+(set gentlewind.auto_comment true)
+(set gentlewind.movement_wrap false)
+(set gentlewind.global_statusline true)
+(set gentlewind.clipboard true)
+(set gentlewind.ignorecase true)
+(set gentlewind.smartcase true)
+(set gentlewind.max_columns 120)
+(set gentlewind.disable_numbering false)
+(set gentlewind.relative_num true)
+(set gentlewind.leader_key "<Space>")
+(set gentlewind.check_updates true)
 
-;; Add custom packages
+;; 修复 sidekick.nvim 对 copilot 的依赖
 (gentlewind.use_package
-  "ellisonleao/gruvbox.nvim"
-  "sainnhe/sonokai"
-  "EdenEast/nightfox.nvim"
-  {:repo "rafcamlet/nvim-luapad"
-   :opt true
-   :cmd "Luapad"})
+  {:repo "folke/sidekick.nvim"
+   :event "VeryLazy"
+   :dependencies ["nvim-lua/plenary.nvim"] ; 移除 copilot.lua
+   :config (fn []
+             ((. (require :sidekick) :setup)
+              {:cli {:tools {:coco {:cmd ["coco"]}}}}))})
+
+;; 接入 agentic.nvim
+(gentlewind.use_package
+  {:repo "carlos-algms/agentic.nvim"
+   :dependencies ["hakonharnes/img-clip.nvim"]
+   :opts {:provider "coco"}})
+
 
 ;; Add custom keybinds
 (gentlewind.use_keybind
@@ -54,51 +61,69 @@
 
 ;; Override module settings
 (when gentlewind.features.whichkey
-  (set! gentlewind.features.whichkey.settings.window.height.max 5)
+  (when (not gentlewind.features.whichkey.settings)
+    (set gentlewind.features.whichkey.settings {}))
+  (when (not gentlewind.features.whichkey.settings.window)
+    (set gentlewind.features.whichkey.settings.window {}))
+  (when (not gentlewind.features.whichkey.settings.window.height)
+    (set gentlewind.features.whichkey.settings.window.height {}))
+  (set gentlewind.features.whichkey.settings.window.height.max 5)
   (table.insert gentlewind.features.whichkey.binds
                  {:<leader>u {:name "+user"
-                              :wr {:cmd (fn [] (require :which-key).reset)
+                              :wr {:cmd (fn [] ((. (require :which-key) :reset)))
                                    :name "Reset whichkey"
                                    :desc "重置键"}}}))
 
 ;; Configure Lua module
 (when gentlewind.langs.lua
-  (set! gentlewind.langs.lua.settings.dev.library.plugins false))
+  (when (not gentlewind.langs.lua.settings.dev)
+    (set gentlewind.langs.lua.settings.dev {}))
+  (when (not gentlewind.langs.lua.settings.dev.library)
+    (set gentlewind.langs.lua.settings.dev.library {}))
+  (set gentlewind.langs.lua.settings.dev.library.plugins false))
 
 ;; Set vim options
-(set! vim.opt.colorcolumn "120")
-(set! vim.opt.relativenumber true)
-(set! vim.opt.wrap false)
+(set vim.opt.colorcolumn "120")
+(set vim.opt.relativenumber true)
+(set vim.opt.wrap false)
 
 ;; 加载用户配置模块
-((require :user.modules.config.editor).setup)
-((require :user.modules.config.ui).setup)
-((require :user.modules.config.dev_tools).setup)
-((require :user.modules.config.lsp).setup)
-((require :user.modules.config.search).setup)
+(fn try_setup [module-name]
+  (let [packed [(pcall require module-name)]
+        ok (. packed 1)
+        mod (. packed 2)]
+    (if ok
+        (when (. mod :setup)
+          ((. mod :setup))))))
+
+(try_setup :user.modules.config.editor)
+(try_setup :user.modules.config.ui)
+(try_setup :user.modules.config.dev_tools)
+(try_setup :user.modules.config.lsp)
+(try_setup :user.modules.config.search)
 
 ;; 加载 Fennel LSP 增强配置
 (vim.api.nvim_create_autocmd "FileType"
   {:pattern "fennel"
    :once true
    :callback (fn []
-               ((require :user.modules.config.fennel-lsp).setup)
-               ((require :user.modules.config.fennel-neodev).setup)
-               ((require :user.modules.config.fennel-fix).setup)
-               ((require :user.modules.config.fennel-direct).setup))})
+              (try_setup :user.modules.config.fennel-lsp)
+              (try_setup :user.modules.config.fennel-neodev)
+              (try_setup :user.modules.config.fennel-fix)
+              (try_setup :user.modules.config.fennel-direct))})
 
 (vim.api.nvim_create_autocmd "User"
   {:pattern "VeryLazy"
    :once true
    :callback (fn []
-               ((require :user.modules.config.whichkey-fix).setup))})
+               (try_setup :user.modules.config.whichkey-fix))})
 
 ;; 加载 treesitter 重复安装修复配置
 (vim.api.nvim_create_autocmd "BufReadPre"
   {:pattern "*"
    :once true
    :callback (fn []
-               ((require :user.modules.config.treesitter-fix).setup))})
+               (try_setup :user.modules.config.treesitter-fix))})
 
 (gentlewind.use_package {:repo "Olical/nfnl" :ft "fennel"})
 (gentlewind.use_package "Olical/aniseed")

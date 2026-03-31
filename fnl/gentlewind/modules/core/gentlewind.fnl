@@ -3,12 +3,12 @@
 
 (local gentlewind {})
 
-(gentlewind.packages [])
-(gentlewind.configs {})
-(gentlewind.settings {})
-(gentlewind.autocmds [])
-(gentlewind.cmds [])
-(gentlewind.binds [])
+(set gentlewind.packages [])
+(set gentlewind.configs {})
+(set gentlewind.settings {})
+(set gentlewind.autocmds [])
+(set gentlewind.cmds [])
+(set gentlewind.binds [])
 
 ;; Core functionality is already handled by gentlewind.core modules
 ;; This module serves as a placeholder for future core-specific features

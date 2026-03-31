@@ -3,7 +3,7 @@
 
 (local svelte {})
 
-(svelte.settings
+(set svelte.settings
   {:disable_treesitter false
    :treesitter_grammars ["svelte" "javascript" "typescript"]
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.prettier"
    :formatting_config nil})
 
-(svelte.packages {})
-(svelte.configs {})
+(set svelte.packages {})
+(set svelte.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(svelte.autocmds
+(set svelte.autocmds
   [{:FileType :svelte
     :callback (langs_utils.wrap_language_setup "svelte" (fn []
                                                 (when (not svelte.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                           svelte.settings.formatting_config))))
     :once true}])
 
-(svelte.cmds [])
-(svelte.binds [])
+(set svelte.cmds [])
+(set svelte.binds [])
 
 {:packages svelte.packages
  :configs svelte.configs

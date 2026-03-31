@@ -3,7 +3,7 @@
 
 (local java {})
 
-(java.settings
+(set java.settings
   {:disable_treesitter false
    :treesitter_grammars "java"
    :disable_lsp false
@@ -13,12 +13,12 @@
    :formatting_provider "builtins.formatting.google_java_format"
    :formatting_config nil})
 
-(java.packages {})
-(java.configs {})
+(set java.packages {})
+(set java.configs {})
 
 (local langs_utils (require :gentlewind.modules.langs.utils))
 
-(java.autocmds
+(set java.autocmds
   [{:FileType :java
     :callback (langs_utils.wrap_language_setup "java" (fn []
                                             (when (not java.settings.disable_lsp)
@@ -33,8 +33,8 @@
                                                                       java.settings.formatting_config))))
     :once true}])
 
-(java.cmds [])
-(java.binds [])
+(set java.cmds [])
+(set java.binds [])
 
 {:packages java.packages
  :configs java.configs

@@ -3,7 +3,7 @@
 
 (local lsp {})
 
-(lsp.settings
+(set lsp.settings
   {:disable_lsp false
    :disable_formatting false
    :disable_diagnostics false
@@ -14,24 +14,24 @@
    :lsp_signs_hint "💡"
    :lsp_signs_information "ℹ"})
 
-(lsp.packages
-  {:mason {:repo "williamboman/mason.nvim" :config (fn [] (require :mason).setup)}
+(set lsp.packages
+  {:mason {:repo "williamboman/mason.nvim" :config (fn [] ((. (require :mason) :setup)))}
    :mason-lspconfig {:repo "williamboman/mason-lspconfig.nvim"
-                      :dependencies [:mason]
-                      :config (fn []
-                                ((require :mason-lspconfig).setup {:automatic_installation true}))}
+                     :dependencies [:mason]
+                     :config (fn []
+                                ((. (require :mason-lspconfig) :setup) {:automatic_installation true}))}
    :lspconfig {:repo "neovim/nvim-lspconfig"
                :dependencies [:mason-lspconfig]
                :config (fn []
                          (local lspconfig (require :lspconfig))
-                         (local capabilities ((require :cmp_nvim_lsp).default_capabilities))
+                         (local capabilities ((. (require :cmp_nvim_lsp) :default_capabilities)))
                          
                          ;; Setup default capabilities for all LSP servers
                          (fn setup-server [server-name]
                            ((. lspconfig server-name).setup {:capabilities capabilities}))
                          
                          ;; Auto-setup known servers
-                         (each [server ((require :mason-lspconfig).get_installed_servers)]
+                         (each [server ((. (require :mason-lspconfig) :get_installed_servers))]
                            (setup-server server)))}
    :cmp {:repo "hrsh7th/nvim-cmp"
          :dependencies [:cmp-buffer :cmp-path :cmp-nvim-lua :cmp-nvim-lsp]
@@ -53,10 +53,10 @@
    :cmp-nvim-lua {:repo "hrsh7th/cmp-nvim-lua"}
    :cmp-nvim-lsp {:repo "hrsh7th/cmp-nvim-lsp"}})
 
-(lsp.configs {})
-(lsp.autocmds [])
-(lsp.cmds [])
-(lsp.binds [])
+(set lsp.configs {})
+(set lsp.autocmds [])
+(set lsp.cmds [])
+(set lsp.binds [])
 
 {:packages lsp.packages
  :configs lsp.configs

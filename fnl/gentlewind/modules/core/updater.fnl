@@ -3,12 +3,12 @@
 
 (local updater {})
 
-(updater.packages {})
-(updater.configs {})
-(updater.settings {})
-(updater.autocmds [])
-(updater.cmds [])
-(updater.binds [])
+(set updater.packages {})
+(set updater.configs {})
+(set updater.settings {})
+(set updater.autocmds [])
+(set updater.cmds [])
+(set updater.binds [])
 
 (fn updater.check_updates [silent?]
   "Check for Gentlewind Nvim updates"

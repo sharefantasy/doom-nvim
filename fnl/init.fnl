@@ -17,7 +17,7 @@
    :fnl-path "fnl"})
 
 ;; Load the profiler
-(local profiler (require :gentlewind.services.profiler))
+(local profiler (require :gentlewind.core.utils))
 (profiler.start "framework|init.fnl")
 
 ;; Preload lazy.nvim
