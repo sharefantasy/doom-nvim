@@ -120,10 +120,15 @@
             ["<leader>tv" "<cmd>HurlVerbose<CR>" :desc "详输出"]
             ["<leader>th" ":HurlRunner<CR>" :desc "选区跑" :mode "v"]]})
 
+  ;; guihua.lua - UI library (required by multiple plugins)
+  (gentlewind.use_package
+    {:repo "ray-x/guihua.lua"
+     :build "cd lua/fzy && make"})
+
   ;; web-tools.nvim - Web开发工具
   (gentlewind.use_package
     {:repo "ray-x/web-tools.nvim"
-     :dependencies ["/guihua.lua"]
+     :dependencies ["ray-x/guihua.lua"]
      :cmd ["Npm" "Yarn" "Npx" "Node" "Pnpm" "StopJob"]
      :config (fn []
                ((. (require :web-tools) :setup)
@@ -133,14 +138,13 @@
   ;; navigator.lua - LSP导航
   (gentlewind.use_package
     {:repo "ray-x/navigator.lua"
-     :requires [{:repo "ray-x/guihua.lua" :run "cd lua/fzy && make"}
-                {:repo "neovim/nvim-lspconfig"}]
+     :dependencies ["ray-x/guihua.lua" "neovim/nvim-lspconfig"]
      :event "VeryLazy"})
 
   ;; sad.nvim - 搜索替换
   (gentlewind.use_package
     {:repo "ray-x/sad.nvim"
-     :requires [{:repo "ray-x/guihua.lua" :run "cd lua/fzy && make"}]
+     :dependencies ["ray-x/guihua.lua"]
      :cmd ["Sad"]
      :config (fn [] ((. (require :sad) :setup) {}))}))
 

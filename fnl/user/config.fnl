@@ -26,7 +26,10 @@
 (set gentlewind.disable_numbering false)
 (set gentlewind.relative_num true)
 (set gentlewind.leader_key "<Space>")
-(set gentlewind.check_updates true)
+(set gentlewind.check_updates false)
+
+;; 添加 gruvbox 颜色主题
+(gentlewind.use_package {:repo "ellisonleao/gruvbox.nvim" :priority 1000})
 
 ;; 修复 sidekick.nvim 对 copilot 的依赖
 (gentlewind.use_package
