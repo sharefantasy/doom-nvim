@@ -7,8 +7,8 @@
   {:which-key {:repo "folke/which-key.nvim"
                 :config (fn []
                           (local wk (require :which-key))
-                          (wk.setup {:window {:margin {1 0 1 0}
-                                             :padding {1 1 1 1}}
+                          (wk.setup {:window {:margin [1 0 1 0]
+                                             :padding [1 1 1 1]}
                                      :layout {:height {:min 4 :max 25}}
                                      :plugins {:presets {:operators false
                                                           :motions false
@@ -19,7 +19,10 @@
                                                           :g false
                                                           :marks false
                                                           :registers false
-                                                          :spelling false}}}))}})
+                                                          :spelling false}}
+                                     :notify true})
+                          ;; 注册 leader key 到 which-key
+                          (wk.register {:name "+leader"} {:prefix "<leader>"}))}})
 
 (set whichkey.configs {})
 (set whichkey.settings {})

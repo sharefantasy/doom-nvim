@@ -40,15 +40,14 @@
       (. (require :telescope.builtin) :builtin opts))
     {:desc "内置搜"}]])
 
-;; Key bindings - using new which-key format
+;; Key bindings - using which-key format
 (set telescope.binds
-  {:n {:keybinds
-        ["<leader>f" {:name "+搜索"}
-         "<leader>ff" {:desc "找文件" :cmd (fn [] (. (require :telescope.builtin) :find_files))}
-         "<leader>fr" {:desc "最近" :cmd (fn [] (. (require :telescope.builtin) :recent_files))}
-         "<leader>fg" {:desc "全文搜" :cmd (fn [] (. (require :telescope.builtin) :live_grep))}
-         "<leader>fb" {:desc "缓冲" :cmd (fn [] (. (require :telescope.builtin) :buffers))}
-         "<leader>fh" {:desc "帮助" :cmd (fn [] (. (require :telescope.builtin) :help_tags))}]}})
+  {:<leader>f {:name "+搜索"
+               :f {:desc "找文件" :cmd (fn [] (. (require :telescope.builtin) :find_files))}
+               :r {:desc "最近" :cmd (fn [] (. (require :telescope.builtin) :recent_files))}
+               :g {:desc "全文搜" :cmd (fn [] (. (require :telescope.builtin) :live_grep))}
+               :b {:desc "缓冲" :cmd (fn [] (. (require :telescope.builtin) :buffers))}
+               :h {:desc "帮助" :cmd (fn [] (. (require :telescope.builtin) :help_tags))}}})
 
 {"packages" telescope.packages
  "configs" telescope.configs

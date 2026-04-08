@@ -30,10 +30,9 @@
     {:desc "开预览"}]])
 
 (set markdown.binds
-  {:n {:keybinds
-        ["<leader>m" {:name "+文档"}
-         "<leader>mp" {:desc "开预览" :cmd (fn [] (_G.vim.fn ["mkdp#util#start_preview"]))}
-         "<leader>ms" {:desc "关预览" :cmd (fn [] (_G.vim.fn ["mkdp#util#stop_preview"]))}]}})
+  {:<leader>m {:name "+文档"
+               :p {:desc "开预览" :cmd (fn [] (_G.vim.fn ["mkdp#util#start_preview"]))}
+               :s {:desc "关预览" :cmd (fn [] (_G.vim.fn ["mkdp#util#stop_preview"]))}}})
 
 {"packages" markdown.packages
  "configs" markdown.configs

@@ -34,5 +34,6 @@
   "tmux.nvim": { "branch": "main", "commit": "2c1c3be0ef287073cef963f2aefa31a15c8b9cd8" },
   "urlview.nvim": { "branch": "main", "commit": "813736e6891b8dccca58aa3baaeabef032f44525" },
   "vim-repeat": { "branch": "master", "commit": "65846025c15494983dafe5e3b46c8f88ab2e9635" },
-  "web-tools.nvim": { "branch": "master", "commit": "2f895049d3b6e3a0b2cedfa18c8733b36fb6cbda" }
+  "web-tools.nvim": { "branch": "master", "commit": "2f895049d3b6e3a0b2cedfa18c8733b36fb6cbda" },
+  "which-key.nvim": { "branch": "main", "commit": "3aab2147e74890957785941f0c1ad87d0a44c15a" }
 }

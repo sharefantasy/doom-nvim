@@ -81,25 +81,49 @@
   (tset options :callback callback)
   (vim.api.nvim_create_autocmd event options))
 
+(fn process-cmd-field [keymap-table]
+  "处理键映射表中的 :cmd 字段，转换为 which-key 格式"
+  (when keymap-table
+    (each [key value (pairs keymap-table)]
+      (when (= (type value) :table)
+        (if (. value :cmd)
+          ;; 有 :cmd 字段，转换格式
+          (let [cmd (. value :cmd)
+                desc (or (. value :desc) (. value :name))
+                new-value (if desc {:desc desc} {})]
+            (if (= (type cmd) :string)
+              (tset new-value 1 cmd)
+              (tset new-value 1 cmd))
+            (tset keymap-table key new-value))
+          ;; 没有 :cmd，递归处理子表
+          (process-cmd-field value)))))
+  keymap-table)
+
 (fn utils.applyKeymaps [keymaps]
-  "应用键绑定（依赖 nest.nvim）"
-  (let [result [(pcall require :nest)]
-        ok (. result 1)
-        nest (. result 2)]
-    (if ok
-        ((. nest :applyKeymaps) keymaps)
-        (do
-          (local group (vim.api.nvim_create_augroup "GentlewindNestRetry" {:clear false}))
-          (local retry (fn []
-                         (let [result2 [(pcall require :nest)]
-                               ok2 (. result2 1)
-                               nest2 (. result2 2)]
-                           (when ok2
-                             ((. nest2 :applyKeymaps) keymaps)))))
-          (vim.api.nvim_create_autocmd "User"
-            {:pattern "LazyDone"
-             :group group
-             :once true
-             :callback retry})))))
+  "应用键绑定"
+  (when keymaps
+    (let [processed-keymaps (process-cmd-field (vim.deepcopy keymaps))
+          result [(pcall require :which-key)]
+          ok (. result 1)
+          wk (. result 2)]
+      (if ok
+          (let [(ok2 err) (pcall #((. wk :register) processed-keymaps))]
+            (when (not ok2)
+              (utils.log-error (.. "Failed to apply keymaps: " err))))
+          (do
+            (local group (vim.api.nvim_create_augroup "GentlewindWhichKeyRetry" {:clear false}))
+            (local retry (fn []
+                           (let [result2 [(pcall require :which-key)]
+                                 ok2 (. result2 1)
+                                 wk2 (. result2 2)]
+                             (when ok2
+                               (let [(ok3 err) (pcall #((. wk2 :register) processed-keymaps))]
+                                 (when (not ok3)
+                                   (utils.log-error (.. "Failed to apply keymaps: " err))))))))
+            (vim.api.nvim_create_autocmd "User"
+              {:pattern "LazyDone"
+               :group group
+               :once true
+               :callback retry}))))))
 
 utils

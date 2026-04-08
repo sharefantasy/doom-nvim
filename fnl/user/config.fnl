@@ -31,6 +31,8 @@
 ;; 添加 gruvbox 颜色主题
 (gentlewind.use_package {:repo "ellisonleao/gruvbox.nvim" :priority 1000})
 
+
+
 ;; 修复 sidekick.nvim 对 copilot 的依赖
 (gentlewind.use_package
   {:repo "folke/sidekick.nvim"
@@ -52,7 +54,10 @@
   {:<leader>u {:name "+user"
                :s {:cmd "<cmd>Telescope git_status<CR>"
                    :name "Git status"
-                   :desc "Git态"}}})
+                   :desc "Git态"}
+               :wr {:cmd (fn [] ((. (require :which-key) :reset)))
+                    :name "Reset whichkey"
+                    :desc "重置键"}}})
 
 ;; Add custom autocommands
 (gentlewind.use_autocmd
@@ -70,12 +75,7 @@
     (set gentlewind.features.whichkey.settings.window {}))
   (when (not gentlewind.features.whichkey.settings.window.height)
     (set gentlewind.features.whichkey.settings.window.height {}))
-  (set gentlewind.features.whichkey.settings.window.height.max 5)
-  (table.insert gentlewind.features.whichkey.binds
-                 {:<leader>u {:name "+user"
-                              :wr {:cmd (fn [] ((. (require :which-key) :reset)))
-                                   :name "Reset whichkey"
-                                   :desc "重置键"}}}))
+  (set gentlewind.features.whichkey.settings.window.height.max 5))
 
 ;; Configure Lua module
 (when gentlewind.langs.lua

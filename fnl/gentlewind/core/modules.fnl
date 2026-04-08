@@ -14,7 +14,7 @@
 (set modules.source (utils.find_config filename))
 
 ;; Merge core modules (can't be disabled) with user enabled modules
-(local core_modules {:core ["gentlewind" "nest" "treesitter" "reloader" "updater"]})
+(local core_modules {:core ["gentlewind" "treesitter" "reloader" "updater"]})
 (let [packed [(pcall require :user.modules)]
       ok (. packed 1)
       user_mods (. packed 2)]
