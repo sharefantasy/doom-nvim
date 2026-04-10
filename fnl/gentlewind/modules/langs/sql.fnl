@@ -26,11 +26,7 @@
                                             
                                             (when (not sql.settings.disable_treesitter)
                                               (langs_utils.use_tree_sitter sql.settings.treesitter_grammars))
-                                            
-                                            (when (not sql.settings.disable_formatting)
-                                              (langs_utils.use_null_ls sql.settings.formatting_package
-                                                                      sql.settings.formatting_provider
-                                                                      sql.settings.formatting_config))))
+                                            ))
     :once true}])
 
 (set sql.cmds [])

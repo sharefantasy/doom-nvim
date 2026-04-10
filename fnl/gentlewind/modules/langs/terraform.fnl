@@ -26,11 +26,7 @@
                                                   
                                                   (when (not terraform.settings.disable_treesitter)
                                                     (langs_utils.use_tree_sitter terraform.settings.treesitter_grammars))
-                                                  
-                                                  (when (not terraform.settings.disable_formatting)
-                                                    (langs_utils.use_null_ls terraform.settings.formatting_package
-                                                                            terraform.settings.formatting_provider
-                                                                            terraform.settings.formatting_config))))
+                                                  ))
     :once true}])
 
 (set terraform.cmds [])

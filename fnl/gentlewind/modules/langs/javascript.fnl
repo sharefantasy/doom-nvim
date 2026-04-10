@@ -26,11 +26,7 @@
                                                     
                                                     (when (not javascript.settings.disable_treesitter)
                                                       (langs_utils.use_tree_sitter javascript.settings.treesitter_grammars))
-                                                    
-                                                    (when (not javascript.settings.disable_formatting)
-                                                      (langs_utils.use_null_ls javascript.settings.formatting_package
-                                                                              javascript.settings.formatting_provider
-                                                                              javascript.settings.formatting_config))))
+                                                    ))
     :once true}])
 
 (set javascript.cmds [])

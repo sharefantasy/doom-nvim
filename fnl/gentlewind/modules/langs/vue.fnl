@@ -24,13 +24,9 @@
                                             (when (not vue.settings.disable_lsp)
                                               (langs_utils.use_lsp_mason vue.settings.lsp_name))
                                             
-                                            (when (not vue.settings.disable_treesitter)
-                                              (langs_utils.use_tree_sitter vue.settings.treesitter_grammars))
-                                            
-                                            (when (not vue.settings.disable_formatting)
-                                              (langs_utils.use_null_ls vue.settings.formatting_package
-                                                                      vue.settings.formatting_provider
-                                                                      vue.settings.formatting_config))))
+                                              (when (not vue.settings.disable_treesitter)
+                                                (langs_utils.use_tree_sitter vue.settings.treesitter_grammars))
+                                              ))
     :once true}])
 
 (set vue.cmds [])

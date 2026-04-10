@@ -26,11 +26,7 @@
                                                       
                                                       (when (not tailwindcss.settings.disable_treesitter)
                                                         (langs_utils.use_tree_sitter tailwindcss.settings.treesitter_grammars))
-                                                      
-                                                      (when (not tailwindcss.settings.disable_formatting)
-                                                        (langs_utils.use_null_ls tailwindcss.settings.formatting_package
-                                                                                tailwindcss.settings.formatting_provider
-                                                                                tailwindcss.settings.formatting_config))))
+                                                      ))
     :once true}])
 
 (set tailwindcss.cmds [])

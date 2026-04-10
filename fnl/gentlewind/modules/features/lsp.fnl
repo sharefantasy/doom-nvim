@@ -16,25 +16,39 @@
 
 (set lsp.packages
   {:mason {:repo "williamboman/mason.nvim" :config (fn [] ((. (require :mason) :setup)))}
+   :mason-tool-installer {:repo "WhoIsSethDaniel/mason-tool-installer.nvim"
+                          :dependencies ["williamboman/mason.nvim"]
+                          :config (fn []
+                                    ((. (require :mason-tool-installer) :setup)
+                                     {:ensure_installed [
+                                                         ;; formatters (used by conform.nvim)
+                                                         "stylua"
+                                                         "goimports"
+                                                         "prettierd"
+                                                         {1 "ruff" :version "0.15.7"}]
+                                      :auto_update false
+                                      :run_on_start true}))}
    :mason-lspconfig {:repo "williamboman/mason-lspconfig.nvim"
-                     :dependencies [:mason]
+                     :dependencies ["williamboman/mason.nvim"]
                      :config (fn []
                                 ((. (require :mason-lspconfig) :setup) {:automatic_installation true}))}
    :lspconfig {:repo "neovim/nvim-lspconfig"
-               :dependencies [:mason-lspconfig]
+               :dependencies ["williamboman/mason-lspconfig.nvim"]
                :config (fn []
                          (local lspconfig (require :lspconfig))
                          (local capabilities ((. (require :cmp_nvim_lsp) :default_capabilities)))
                          
-                         ;; Setup default capabilities for all LSP servers
-                         (fn setup-server [server-name]
-                           ((. lspconfig server-name).setup {:capabilities capabilities}))
-                         
-                         ;; Auto-setup known servers
-                         (each [server ((. (require :mason-lspconfig) :get_installed_servers))]
-                           (setup-server server)))}
+                         ;; Auto-setup installed LSP servers.
+                         ;; Avoid indexing unknown configs (it emits warnings like "config 'stylua' not found").
+                         (let [known (require :lspconfig.configs)]
+                           (each [_ server (ipairs ((. (require :mason-lspconfig) :get_installed_servers)))]
+                             (when (. known server)
+                               ((. (. lspconfig server) :setup) {:capabilities capabilities}))))) }
    :cmp {:repo "hrsh7th/nvim-cmp"
-         :dependencies [:cmp-buffer :cmp-path :cmp-nvim-lua :cmp-nvim-lsp]
+         :dependencies ["hrsh7th/cmp-buffer"
+                        "hrsh7th/cmp-path"
+                        "hrsh7th/cmp-nvim-lua"
+                        "hrsh7th/cmp-nvim-lsp"]
          :config (fn []
                    (local cmp (require :cmp))
                    (local sources [{:name :nvim_lsp}

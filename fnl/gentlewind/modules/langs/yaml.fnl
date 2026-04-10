@@ -26,11 +26,7 @@
                                             
                                             (when (not yaml.settings.disable_treesitter)
                                               (langs_utils.use_tree_sitter yaml.settings.treesitter_grammars))
-                                            
-                                            (when (not yaml.settings.disable_formatting)
-                                              (langs_utils.use_null_ls yaml.settings.formatting_package
-                                                                      yaml.settings.formatting_provider
-                                                                      yaml.settings.formatting_config))))
+                                            ))
     :once true}])
 
 (set yaml.cmds [])

@@ -14,26 +14,15 @@
 
 (fn utils.use_lsp_mason [server-name]
   "Use LSP server via Mason"
-  (when (not utils.settings.disable_lsp)
-    (local mason_lspconfig (require :mason-lspconfig))
-    (mason_lspconfig.setup {:ensure_installed [server-name]})))
+  (local mason_lspconfig (require :mason-lspconfig))
+  (mason_lspconfig.setup {:ensure_installed [server-name]}))
 
 (fn utils.use_tree_sitter [grammars]
   "Use tree-sitter grammar"
-  (when (not utils.settings.disable_treesitter)
-    (local ts (require :nvim-treesitter.configs))
-    (ts.setup {:ensure_installed grammars})))
-
-(fn utils.use_null_ls [package provider config]
-  "Use null-ls for formatting/linting"
-  (when (not utils.settings.disable_formatting)
-    (local null_ls (require :null-ls))
-    (local sources (require provider))
-    (null_ls.setup {:sources (if config
-                                 (config sources)
-                                 [sources])})))
+  (local ts (require :nvim-treesitter.configs))
+  (ts.setup {:ensure_installed grammars}))
 
 {:wrap_language_setup utils.wrap_language_setup
  :use_lsp_mason utils.use_lsp_mason
  :use_tree_sitter utils.use_tree_sitter
- :use_null_ls utils.use_null_ls}
+ }

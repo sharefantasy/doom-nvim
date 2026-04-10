@@ -26,11 +26,7 @@
                                             
                                             (when (not nix.settings.disable_treesitter)
                                               (langs_utils.use_tree_sitter nix.settings.treesitter_grammars))
-                                            
-                                            (when (not nix.settings.disable_formatting)
-                                              (langs_utils.use_null_ls nix.settings.formatting_package
-                                                                      nix.settings.formatting_provider
-                                                                      nix.settings.formatting_config))))
+                                            ))
     :once true}])
 
 (set nix.cmds [])

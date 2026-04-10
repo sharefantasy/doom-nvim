@@ -26,11 +26,7 @@
                                             
                                             (when (not php.settings.disable_treesitter)
                                               (langs_utils.use_tree_sitter php.settings.treesitter_grammars))
-                                            
-                                            (when (not php.settings.disable_formatting)
-                                              (langs_utils.use_null_ls php.settings.formatting_package
-                                                                      php.settings.formatting_provider
-                                                                      php.settings.formatting_config))))
+                                            ))
     :once true}])
 
 (set php.cmds [])

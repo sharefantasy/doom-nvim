@@ -26,11 +26,7 @@
                                             
                                             (when (not toml.settings.disable_treesitter)
                                               (langs_utils.use_tree_sitter toml.settings.treesitter_grammars))
-                                            
-                                            (when (not toml.settings.disable_formatting)
-                                              (langs_utils.use_null_ls toml.settings.formatting_package
-                                                                      toml.settings.formatting_provider
-                                                                      toml.settings.formatting_config))))
+                                            ))
     :once true}])
 
 (set toml.cmds [])

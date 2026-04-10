@@ -26,11 +26,7 @@
                                                 
                                                 (when (not python.settings.disable_treesitter)
                                                   (langs_utils.use_tree_sitter python.settings.treesitter_grammars))
-                                                
-                                                (when (not python.settings.disable_formatting)
-                                                  (langs_utils.use_null_ls python.settings.formatting_package
-                                                                          python.settings.formatting_provider
-                                                                          python.settings.formatting_config))))
+                                                ))
     :once true}])
 
 (set python.cmds [])

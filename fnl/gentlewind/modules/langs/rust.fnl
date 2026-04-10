@@ -15,7 +15,8 @@
 
 (set rust.packages
   {:rust-tools {:repo "simrat39/rust-tools.nvim"
-                 :dependencies [:lspconfig]
+                 :dependencies ["neovim/nvim-lspconfig"]
+                 :ft ["rust"]
                 :config (fn []
                           (local rust-tools (require :rust-tools))
                           (rust-tools.setup {:server {:on_attach (fn [client bufnr]
@@ -35,11 +36,7 @@
                                               
                                               (when (not rust.settings.disable_treesitter)
                                                 (langs_utils.use_tree_sitter rust.settings.treesitter_grammars))
-                                              
-                                              (when (not rust.settings.disable_formatting)
-                                                (langs_utils.use_null_ls rust.settings.formatting_package
-                                                                        rust.settings.formatting_provider
-                                                                        rust.settings.formatting_config))))
+                                              ))
     :once true}])
 
 (set rust.cmds [])

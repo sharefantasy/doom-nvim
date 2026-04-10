@@ -24,13 +24,9 @@
                                            (when (not cc.settings.disable_lsp)
                                              (langs_utils.use_lsp_mason cc.settings.lsp_name))
                                            
-                                           (when (not cc.settings.disable_treesitter)
-                                             (langs_utils.use_tree_sitter cc.settings.treesitter_grammars))
-                                           
-                                           (when (not cc.settings.disable_formatting)
-                                             (langs_utils.use_null_ls cc.settings.formatting_package
-                                                                     cc.settings.formatting_provider
-                                                                     cc.settings.formatting_config))))
+                                          (when (not cc.settings.disable_treesitter)
+                                            (langs_utils.use_tree_sitter cc.settings.treesitter_grammars))
+                                          ))
     :once true}])
 
 (set cc.cmds [])

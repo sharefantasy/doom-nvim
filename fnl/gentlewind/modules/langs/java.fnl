@@ -26,11 +26,7 @@
                                             
                                             (when (not java.settings.disable_treesitter)
                                               (langs_utils.use_tree_sitter java.settings.treesitter_grammars))
-                                            
-                                            (when (not java.settings.disable_formatting)
-                                              (langs_utils.use_null_ls java.settings.formatting_package
-                                                                      java.settings.formatting_provider
-                                                                      java.settings.formatting_config))))
+                                            ))
     :once true}])
 
 (set java.cmds [])

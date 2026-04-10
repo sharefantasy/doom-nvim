@@ -3,13 +3,34 @@
 
 ;; Configure Gentlewind settings
 ;; 基础配置
+(when vim.api.nvim_create_augroup
+  ;; Ensure augroup exists early to avoid E216 when Neovim triggers `:doautoall nvim.lsp.enable FileType`.
+  (vim.api.nvim_create_augroup "nvim.lsp.enable" {:clear false}))
+
+(when (and vim.cmd vim.cmd.doautoall)
+  ;; Workaround for Neovim 0.12: `vim.lsp.enable()` calls `vim.cmd.doautoall('group event')`.
+  ;; In this config, augroup names containing `.` can make `:doautoall` error with E216.
+  ;; Implement a compatible doautoall wrapper using `nvim_exec_autocmds`.
+  (let [orig vim.cmd.doautoall]
+    (set vim.cmd.doautoall
+      (fn [arg]
+        (if (and (= (type arg) "string") (string.find arg " "))
+            (let [parts (vim.split arg " " {:trimempty true})
+                  group-name (. parts 1)
+                  event-name (. parts 2)
+                  group-id (. [(pcall vim.api.nvim_create_augroup group-name {:clear false})] 2)]
+              (each [_ buf (ipairs (vim.api.nvim_list_bufs))]
+                (pcall vim.api.nvim_exec_autocmds event-name {:group group-id :buffer buf}))
+              nil)
+            (orig arg))))))
+
 (set vim.g.loaded_netrw 1)
 (set vim.g.loaded_netrwPlugin 1)
 (set vim.opt.colorcolumn "120")
 (set vim.g.skip_ts_context_commentstring_module true)
 (set gentlewind.indent 2)
-(set gentlewind.core.treesitter.settings.show_compiler_warning_message false)
-(set gentlewind.core.reloader.settings.reload_on_save true)
+(set gentlewind.modules.core.treesitter.settings.show_compiler_warning_message false)
+(set gentlewind.modules.core.reloader.settings.reload_on_save true)
 (set gentlewind.colorscheme "gruvbox")
 (set gentlewind.freeze_dependencies false)
 
@@ -68,22 +89,22 @@
   ["Test" (fn [] (print "test"))])
 
 ;; Override module settings
-(when gentlewind.features.whichkey
-  (when (not gentlewind.features.whichkey.settings)
-    (set gentlewind.features.whichkey.settings {}))
-  (when (not gentlewind.features.whichkey.settings.window)
-    (set gentlewind.features.whichkey.settings.window {}))
-  (when (not gentlewind.features.whichkey.settings.window.height)
-    (set gentlewind.features.whichkey.settings.window.height {}))
-  (set gentlewind.features.whichkey.settings.window.height.max 5))
+(when gentlewind.modules.features.whichkey
+  (when (not gentlewind.modules.features.whichkey.settings)
+    (set gentlewind.modules.features.whichkey.settings {}))
+  (when (not gentlewind.modules.features.whichkey.settings.window)
+    (set gentlewind.modules.features.whichkey.settings.window {}))
+  (when (not gentlewind.modules.features.whichkey.settings.window.height)
+    (set gentlewind.modules.features.whichkey.settings.window.height {}))
+  (set gentlewind.modules.features.whichkey.settings.window.height.max 5))
 
 ;; Configure Lua module
-(when gentlewind.langs.lua
-  (when (not gentlewind.langs.lua.settings.dev)
-    (set gentlewind.langs.lua.settings.dev {}))
-  (when (not gentlewind.langs.lua.settings.dev.library)
-    (set gentlewind.langs.lua.settings.dev.library {}))
-  (set gentlewind.langs.lua.settings.dev.library.plugins false))
+(when gentlewind.modules.langs.lua
+  (when (not gentlewind.modules.langs.lua.settings.dev)
+    (set gentlewind.modules.langs.lua.settings.dev {}))
+  (when (not gentlewind.modules.langs.lua.settings.dev.library)
+    (set gentlewind.modules.langs.lua.settings.dev.library {}))
+  (set gentlewind.modules.langs.lua.settings.dev.library.plugins false))
 
 ;; Set vim options
 (set vim.opt.colorcolumn "120")

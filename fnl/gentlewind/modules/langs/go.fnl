@@ -15,7 +15,8 @@
 
 (set go.packages
   {:go-nvim {:repo "ray-x/go.nvim"
-              :dependencies [:lspconfig]
+              :dependencies ["neovim/nvim-lspconfig"]
+              :ft ["go" "gomod" "gosum" "gowork" "gotmpl"]
               :config (fn []
                         ((. (require :go) :setup)
                          {:lsp_cfg false  ;; Use mason-lspconfig instead
@@ -35,12 +36,7 @@
                                               (langs_utils.use_lsp_mason go.settings.lsp_name))
                                             
                                             (when (not go.settings.disable_treesitter)
-                                              (langs_utils.use_tree_sitter go.settings.treesitter_grammars))
-                                            
-                                            (when (not go.settings.disable_formatting)
-                                              (langs_utils.use_null_ls go.settings.formatting_package
-                                                                      go.settings.formatting_provider
-                                                                      go.settings.formatting_config))))
+                                              (langs_utils.use_tree_sitter go.settings.treesitter_grammars))))
     :once true}])
 
 (set go.cmds [])

@@ -5,15 +5,10 @@
 
 (set treesitter.packages
   {:nvim-treesitter {:repo "nvim-treesitter/nvim-treesitter"
+                     :branch "main"
                      :build ":TSUpdate"
                      :config (fn []
-                               ((. (require :nvim-treesitter.configs) :setup)
-                                 {:highlight {:enable true
-                                              :disable ["markdown"]}
-                                  :indent {:enable true}
-                                  :incremental_selection {:enable true}
-                                  :textobjects {:enable true
-                                                :select {:disable ["markdown"]}}}))}})
+                               ((. (require :nvim-treesitter) :setup) {}))}})
 
 (set treesitter.configs {})
 (set treesitter.settings {:show_compiler_warning_message false})

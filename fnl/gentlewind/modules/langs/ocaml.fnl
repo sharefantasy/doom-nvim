@@ -26,11 +26,7 @@
                                               
                                               (when (not ocaml.settings.disable_treesitter)
                                                 (langs_utils.use_tree_sitter ocaml.settings.treesitter_grammars))
-                                              
-                                              (when (not ocaml.settings.disable_formatting)
-                                                (langs_utils.use_null_ls ocaml.settings.formatting_package
-                                                                        ocaml.settings.formatting_provider
-                                                                        ocaml.settings.formatting_config))))
+                                              ))
     :once true}])
 
 (set ocaml.cmds [])

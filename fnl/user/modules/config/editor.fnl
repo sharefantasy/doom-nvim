@@ -64,18 +64,27 @@
     {:repo "stevearc/conform.nvim"
      :opts {}
      :config (fn []
-               ((. (require :conform) :setup)
-                 {:formatters_by_ft {:go ["goimports" "gofmt"]
-                                     :lua ["stylua"]
-                                     :python ["ruff"]
-                                     :javascript ["prettierd"]
-                                     :typescript ["prettierd"]
-                                     :json ["prettierd"]
-                                     :yaml ["prettierd"]
-                                     :html ["prettierd"]
-                                     :css ["prettierd"]
-                                     :markdown ["prettierd"]}
-                  :format_on_save {:timeout_ms 500
-                                   :lsp_fallback true}}))}))
+              (let [mason-bin (.. (vim.fn.stdpath :data) "/mason/bin")
+                    bin (fn [name] (.. mason-bin "/" name))]
+                ((. (require :conform) :setup)
+                  {:formatters_by_ft {:go ["goimports" "gofmt"]
+                                      :lua ["stylua"]
+                                      :python ["ruff_format"]
+                                      :javascript ["prettierd"]
+                                      :typescript ["prettierd"]
+                                      :json ["prettierd"]
+                                      :yaml ["prettierd"]
+                                      :html ["prettierd"]
+                                      :css ["prettierd"]
+                                      :markdown ["prettierd"]}
+                   ;; align external tool paths: prefer Mason-installed binaries
+                   :formatters {:stylua {:command (bin "stylua")}
+                                :goimports {:command (bin "goimports")}
+                                :prettierd {:command (bin "prettierd")}
+                                :ruff_format {:command (bin "ruff")}}
+                   :format_on_save {:timeout_ms 500
+                                    :lsp_fallback false}})))})
+
+  )
 
 M

@@ -25,12 +25,7 @@
                                                 (langs_utils.use_lsp_mason lua_mod.settings.lsp_name))
                                               
                                               (when (not lua_mod.settings.disable_treesitter)
-                                                (langs_utils.use_tree_sitter lua_mod.settings.treesitter_grammars))
-                                              
-                                              (when (not lua_mod.settings.disable_formatting)
-                                                (langs_utils.use_null_ls lua_mod.settings.formatting_package
-                                                                        lua_mod.settings.formatting_provider
-                                                                        lua_mod.settings.formatting_config))))
+                                                (langs_utils.use_tree_sitter lua_mod.settings.treesitter_grammars))))
     :once true}])
 
 (set lua_mod.cmds [])

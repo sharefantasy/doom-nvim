@@ -26,11 +26,7 @@
                                             
                                             (when (not ruby.settings.disable_treesitter)
                                               (langs_utils.use_tree_sitter ruby.settings.treesitter_grammars))
-                                            
-                                            (when (not ruby.settings.disable_formatting)
-                                              (langs_utils.use_null_ls ruby.settings.formatting_package
-                                                                      ruby.settings.formatting_provider
-                                                                      ruby.settings.formatting_config))))
+                                            ))
     :once true}])
 
 (set ruby.cmds [])

@@ -26,11 +26,7 @@
                                                 
                                                 (when (not svelte.settings.disable_treesitter)
                                                   (langs_utils.use_tree_sitter svelte.settings.treesitter_grammars))
-                                                
-                                                (when (not svelte.settings.disable_formatting)
-                                                  (langs_utils.use_null_ls svelte.settings.formatting_package
-                                                                          svelte.settings.formatting_provider
-                                                                          svelte.settings.formatting_config))))
+                                                ))
     :once true}])
 
 (set svelte.cmds [])

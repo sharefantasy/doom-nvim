@@ -26,11 +26,7 @@
                                             
                                             (when (not bash.settings.disable_treesitter)
                                               (langs_utils.use_tree_sitter bash.settings.treesitter_grammars))
-                                            
-                                            (when (not bash.settings.disable_formatting)
-                                              (langs_utils.use_null_ls bash.settings.formatting_package
-                                                                      bash.settings.formatting_provider
-                                                                      bash.settings.formatting_config))))
+                                            ))
     :once true}])
 
 (set bash.cmds [])

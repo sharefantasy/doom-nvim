@@ -26,11 +26,7 @@
                                                 
                                                 (when (not haskell.settings.disable_treesitter)
                                                   (langs_utils.use_tree_sitter haskell.settings.treesitter_grammars))
-                                                
-                                                (when (not haskell.settings.disable_formatting)
-                                                  (langs_utils.use_null_ls haskell.settings.formatting_package
-                                                                          haskell.settings.formatting_provider
-                                                                          haskell.settings.formatting_config))))
+                                                ))
     :once true}])
 
 (set haskell.cmds [])

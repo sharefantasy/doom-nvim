@@ -26,11 +26,7 @@
                                             
                                             (when (not json.settings.disable_treesitter)
                                               (langs_utils.use_tree_sitter json.settings.treesitter_grammars))
-                                            
-                                            (when (not json.settings.disable_formatting)
-                                              (langs_utils.use_null_ls json.settings.formatting_package
-                                                                      json.settings.formatting_provider
-                                                                      json.settings.formatting_config))))
+                                            ))
     :once true}])
 
 (set json.cmds [])

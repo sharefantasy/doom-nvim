@@ -26,11 +26,7 @@
                                             
                                             (when (not kotlin.settings.disable_treesitter)
                                               (langs_utils.use_tree_sitter kotlin.settings.treesitter_grammars))
-                                            
-                                            (when (not kotlin.settings.disable_formatting)
-                                              (langs_utils.use_null_ls kotlin.settings.formatting_package
-                                                                      kotlin.settings.formatting_provider
-                                                                      kotlin.settings.formatting_config))))
+                                            ))
     :once true}])
 
 (set kotlin.cmds [])

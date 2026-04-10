@@ -26,11 +26,7 @@
                                             
                                             (when (not fish.settings.disable_treesitter)
                                               (langs_utils.use_tree_sitter fish.settings.treesitter_grammars))
-                                            
-                                            (when (not fish.settings.disable_formatting)
-                                              (langs_utils.use_null_ls fish.settings.formatting_package
-                                                                      fish.settings.formatting_provider
-                                                                      fish.settings.formatting_config))))
+                                            ))
     :once true}])
 
 (set fish.cmds [])

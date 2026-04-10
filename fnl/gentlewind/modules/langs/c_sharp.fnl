@@ -26,11 +26,7 @@
                                                 
                                                 (when (not c_sharp.settings.disable_treesitter)
                                                   (langs_utils.use_tree_sitter c_sharp.settings.treesitter_grammars))
-                                                
-                                                (when (not c_sharp.settings.disable_formatting)
-                                                  (langs_utils.use_null_ls c_sharp.settings.formatting_package
-                                                                          c_sharp.settings.formatting_provider
-                                                                          c_sharp.settings.formatting_config))))
+                                                ))
     :once true}])
 
 (set c_sharp.cmds [])

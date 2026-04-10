@@ -26,11 +26,7 @@
                                             
                                             (when (not html.settings.disable_treesitter)
                                               (langs_utils.use_tree_sitter html.settings.treesitter_grammars))
-                                            
-                                            (when (not html.settings.disable_formatting)
-                                              (langs_utils.use_null_ls html.settings.formatting_package
-                                                                      html.settings.formatting_provider
-                                                                      html.settings.formatting_config))))
+                                            ))
     :once true}])
 
 (set html.cmds [])

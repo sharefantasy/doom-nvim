@@ -26,11 +26,7 @@
                                                     
                                                     (when (not dockerfile.settings.disable_treesitter)
                                                       (langs_utils.use_tree_sitter dockerfile.settings.treesitter_grammars))
-                                                    
-                                                    (when (not dockerfile.settings.disable_formatting)
-                                                      (langs_utils.use_null_ls dockerfile.settings.formatting_package
-                                                                              dockerfile.settings.formatting_provider
-                                                                              dockerfile.settings.formatting_config))))
+                                                    ))
     :once true}])
 
 (set dockerfile.cmds [])

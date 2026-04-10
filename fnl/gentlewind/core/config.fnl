@@ -81,9 +81,9 @@
       
       (if ok
           (do
-            (when (not (. gentlewind section_name))
-              (tset gentlewind section_name {}))
-            (tset (. gentlewind section_name) module_name result))
+            (when (not (. (. gentlewind :modules) section_name))
+              (tset (. gentlewind :modules) section_name {}))
+            (tset (. (. gentlewind :modules) section_name) module_name result))
           (log.error
            (string.format "There was an error loading module '%s.%s'. Traceback:\n%s"
                           section_name module_name (debug.traceback final-err))))

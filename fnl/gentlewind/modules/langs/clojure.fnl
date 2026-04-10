@@ -40,11 +40,7 @@
                                                 
                                                 (when (not clojure.settings.disable_treesitter)
                                                   (langs_utils.use_tree_sitter clojure.settings.treesitter_grammars))
-                                                
-                                                (when (not clojure.settings.disable_formatting)
-                                                  (langs_utils.use_null_ls clojure.settings.formatting_package
-                                                                          clojure.settings.formatting_provider
-                                                                          clojure.settings.formatting_config))))
+                                                ))
     :once true}])
 
 (set clojure.cmds [])
