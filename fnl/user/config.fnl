@@ -69,6 +69,52 @@
    :dependencies ["hakonharnes/img-clip.nvim"]
    :opts {:provider "coco"}})
 
+;; gruvbox + Tree-sitter 的 Markdown 语义高亮默认较“灰”，这里做一次仅针对 markdown 的覆写。
+(vim.api.nvim_create_autocmd "ColorScheme"
+  {:pattern "gruvbox"
+   :callback (fn []
+               (local sethl vim.api.nvim_set_hl)
+               (local gethl vim.api.nvim_get_hl)
+
+               ;; focus.nvim 的 winhighlight 会把 Normal 映射到 FocusedWindow；默认它竟然 link 到 VertSplit，导致正文发灰。
+               ;; 这里把 FocusedWindow 修正回 Normal，并把 UnfocusedWindow 映射到 NormalNC。
+               (sethl 0 "FocusedWindow" {:link "Normal"})
+               (sethl 0 "UnfocusedWindow" {:link "NormalNC"})
+
+               (fn fg-of [name fallback]
+                 (let [(ok hl) (pcall gethl 0 {:name name :link true})]
+                   (if (and ok hl (. hl :fg)) (. hl :fg) fallback)))
+
+               (local fg-yellow (fg-of "GruvboxYellow" nil))
+               (local fg-orange (fg-of "GruvboxOrange" nil))
+               (local fg-aqua (fg-of "GruvboxAqua" nil))
+               (local fg-blue (fg-of "GruvboxBlue" nil))
+               (local fg-green (fg-of "GruvboxGreen" nil))
+
+               ;; list markers
+               (sethl 0 "@markup.list.markdown" {:fg fg-orange})
+
+               ;; emphasis
+               (sethl 0 "@markup.strong.markdown_inline" {:link "GruvboxYellowBold"})
+               (sethl 0 "@markup.italic.markdown_inline" {:fg fg-aqua :italic true})
+
+               ;; code span / code block
+               (sethl 0 "@markup.raw.markdown_inline" {:fg fg-green})
+               (sethl 0 "@markup.raw.block.markdown" {:fg fg-green})
+
+               ;; headings
+               (sethl 0 "@markup.heading.1.markdown" {:link "GruvboxYellowBold"})
+               (sethl 0 "@markup.heading.2.markdown" {:link "GruvboxOrangeBold"})
+               (sethl 0 "@markup.heading.3.markdown" {:link "GruvboxAquaBold"})
+
+               ;; links
+               (sethl 0 "@markup.link.label.markdown_inline" {:fg fg-blue :underline true})
+               (sethl 0 "@markup.link.url.markdown_inline" {:fg fg-aqua :underline true})
+
+               ;; 兼容部分主题未定义的组
+               (when fg-yellow
+                 (sethl 0 "@markup.heading.markdown" {:fg fg-yellow :bold true})))})
+
 ;; img-clip 会覆写 vim.paste；在不可编辑 buffer 触发时会报 E21。
 ;; 这里加一层保护：不可编辑时直接忽略 paste。
 (vim.api.nvim_create_autocmd "User"
@@ -83,6 +129,13 @@
                                         (vim.notify "当前缓冲区不可编辑，已忽略 paste（img-clip）" vim.log.levels.WARN))
                                       nil)
                                     (old lines phase)))))} )
+
+;; which-key overlap: gc vs gcc（注释插件的 operator + line）。如果你更想要“无 warning”，这里保留 gcc，移除 n 模式 gc。
+(vim.api.nvim_create_autocmd "User"
+  {:pattern "LazyDone"
+   :once true
+   :callback (fn []
+               (pcall (fn [] (vim.api.nvim_del_keymap "n" "gc"))))})
 
 
 ;; Add custom keybinds

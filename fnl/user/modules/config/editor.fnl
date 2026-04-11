@@ -35,7 +35,7 @@
      :event "VeryLazy"
      :opts {}
      :keys
-     [["s" (fn [] ((. (require :flash) :jump))) :mode ["n" "o" "x"] :desc "跳转"]
+     [["gs" (fn [] ((. (require :flash) :jump))) :mode ["n" "o" "x"] :desc "跳转"]
       ["r" (fn [] ((. (require :flash) :remote))) :mode "o" :desc "远跳"]
       ["<c-s>" (fn [] ((. (require :flash) :toggle))) :mode ["c"] :desc "开关"]]})
 
@@ -46,7 +46,11 @@
   (gentlewind.use_package
     {:repo "ur4ltz/surround.nvim"
      :config (fn []
-               ((. (require :surround) :setup) {:mappings_style "sandwich"}))})
+              ((. (require :surround) :setup)
+                {:mappings_style "sandwich"
+                 ;; 关闭 insert-mode 的 <C-s><char> / <C-s><char><space> / <C-s><char><C-s> 这组映射
+                 ;; 可消除 which-key 的大量 overlap warning
+                 :map_insert_mode false}))})
 
   ;; 文本对象增强
   (gentlewind.use_package
