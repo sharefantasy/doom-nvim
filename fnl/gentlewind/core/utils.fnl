@@ -81,49 +81,104 @@
   (tset options :callback callback)
   (vim.api.nvim_create_autocmd event options))
 
-(fn process-cmd-field [keymap-table]
-  "处理键映射表中的 :cmd 字段，转换为 which-key 格式"
-  (when keymap-table
-    (each [key value (pairs keymap-table)]
-      (when (= (type value) :table)
-        (if (. value :cmd)
-          ;; 有 :cmd 字段，转换格式
-          (let [cmd (. value :cmd)
-                desc (or (. value :desc) (. value :name))
-                new-value (if desc {:desc desc} {})]
-            (if (= (type cmd) :string)
-              (tset new-value 1 cmd)
-              (tset new-value 1 cmd))
-            (tset keymap-table key new-value))
-          ;; 没有 :cmd，递归处理子表
-          (process-cmd-field value)))))
-  keymap-table)
+(fn keymaps-to-wk-spec [tree]
+  "把 Gentlewind 的树形 binds 转成 which-key v3 (spec v2) 列表"
+  (local out [])
+
+  (fn abs-key? [k]
+    (and (= (type k) :string) (= (string.sub k 1 1) "<")))
+
+  (fn join-keys [prefix k]
+    (if (abs-key? k)
+        k
+        (if (or (not prefix) (= prefix ""))
+            k
+            (.. prefix k))))
+
+  (fn add-group [lhs v]
+    (local rhs (or (. v :cmd) (. v 1)))
+    ;; 有 rhs 的节点不要再生成 group，否则会和真实映射重复
+    (when (not rhs)
+      (var has-children false)
+      (each [kk vv (pairs v)]
+        (when (and (not has-children)
+                   (= (type kk) :string)
+                   (not= kk "cmd")
+                   (not= kk "desc")
+                   (not= kk "name")
+                   (not= kk "group")
+                   (= (type vv) :table))
+          (set has-children true)))
+
+      (when has-children
+        (local name (or (. v :name) (. v :group)))
+        (when (and name (= (type name) :string) (not= name ""))
+          (local spec [lhs])
+          (tset spec :group name)
+          (table.insert out spec)))))
+
+  (fn add-leaf [lhs v]
+    (local rhs (or (. v :cmd) (. v 1)))
+    (local desc (or (. v :desc) (. v :name)))
+    (when rhs
+      (local spec [lhs rhs])
+      (when (and desc (= (type desc) :string) (not= desc ""))
+        (tset spec :desc desc))
+      (table.insert out spec)))
+
+  (fn rec [prefix tbl]
+    (when (= (type tbl) :table)
+      (each [k v (pairs tbl)]
+        (when (= (type k) :string)
+          (local lhs (join-keys prefix k))
+          (when (= (type v) :table)
+            (add-group lhs v)
+            (add-leaf lhs v)
+            (rec lhs v))))))
+
+  (rec "" tree)
+  out)
 
 (fn utils.applyKeymaps [keymaps]
   "应用键绑定"
   (when keymaps
-    (let [processed-keymaps (process-cmd-field (vim.deepcopy keymaps))
-          result [(pcall require :which-key)]
+    (fn compute-spec []
+      (if
+        ;; single mapping spec
+        (and (= (type keymaps) :table) (= (type (. keymaps 1)) :string))
+        [keymaps]
+
+        ;; list of mapping specs
+        (and (= (type keymaps) :table)
+             (= (type (. keymaps 1)) :table)
+             (= (type (. (. keymaps 1) 1)) :string))
+        keymaps
+
+        ;; tree binds
+        (keymaps-to-wk-spec (vim.deepcopy keymaps))))
+
+    (fn apply-to-wk [wk]
+      (let [spec (compute-spec)
+            (ok err) (pcall #((. wk :add) spec))]
+        (when (not ok)
+          (utils.log-error (.. "Failed to apply keymaps: " err)))))
+
+    (let [result [(pcall require :which-key)]
           ok (. result 1)
           wk (. result 2)]
       (if ok
-          (let [(ok2 err) (pcall #((. wk :register) processed-keymaps))]
-            (when (not ok2)
-              (utils.log-error (.. "Failed to apply keymaps: " err))))
+          (apply-to-wk wk)
           (do
             (local group (vim.api.nvim_create_augroup "GentlewindWhichKeyRetry" {:clear false}))
-            (local retry (fn []
-                           (let [result2 [(pcall require :which-key)]
-                                 ok2 (. result2 1)
-                                 wk2 (. result2 2)]
-                             (when ok2
-                               (let [(ok3 err) (pcall #((. wk2 :register) processed-keymaps))]
-                                 (when (not ok3)
-                                   (utils.log-error (.. "Failed to apply keymaps: " err))))))))
             (vim.api.nvim_create_autocmd "User"
               {:pattern "LazyDone"
                :group group
                :once true
-               :callback retry}))))))
+               :callback (fn []
+                           (let [result2 [(pcall require :which-key)]
+                                 ok2 (. result2 1)
+                                 wk2 (. result2 2)]
+                             (when ok2
+                               (apply-to-wk wk2))))}))))))
 
 utils

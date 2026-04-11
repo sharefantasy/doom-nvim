@@ -5,10 +5,12 @@
 
 (set whichkey.packages
   {:which-key {:repo "folke/which-key.nvim"
+                :dependencies ["echasnovski/mini.icons"]
                 :config (fn []
                           (local wk (require :which-key))
-                          (wk.setup {:window {:margin [1 0 1 0]
-                                             :padding [1 1 1 1]}
+                          ;; opts.window 已废弃，使用 opts.win
+                          (wk.setup {:win {:margin [1 0 1 0]
+                                          :padding [1 1 1 1]}
                                      :layout {:height {:min 4 :max 25}}
                                      :plugins {:presets {:operators false
                                                           :motions false
@@ -21,8 +23,14 @@
                                                           :registers false
                                                           :spelling false}}
                                      :notify true})
-                          ;; 注册 leader key 到 which-key
-                          (wk.register {:name "+leader"} {:prefix "<leader>"}))}})
+
+                          ;; 可选：初始化 mini.icons，提升 keymap icon 质量
+                          (pcall (fn []
+                                   ((. (require :mini.icons) :setup) {})))
+                          ;; which-key v3 uses wk.add() for the new spec
+                          (local leader ["<leader>"])
+                          (tset leader :group "+leader")
+                          (wk.add [leader]))}})
 
 (set whichkey.configs {})
 (set whichkey.settings {})

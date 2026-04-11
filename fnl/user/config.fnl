@@ -69,6 +69,21 @@
    :dependencies ["hakonharnes/img-clip.nvim"]
    :opts {:provider "coco"}})
 
+;; img-clip 会覆写 vim.paste；在不可编辑 buffer 触发时会报 E21。
+;; 这里加一层保护：不可编辑时直接忽略 paste。
+(vim.api.nvim_create_autocmd "User"
+  {:pattern "LazyDone"
+   :once true
+   :callback (fn []
+               (local old vim.paste)
+               (set vim.paste (fn [lines phase]
+                                (if (or (not vim.bo.modifiable) vim.bo.readonly)
+                                    (do
+                                      (when (or (= phase -1) (= phase 3))
+                                        (vim.notify "当前缓冲区不可编辑，已忽略 paste（img-clip）" vim.log.levels.WARN))
+                                      nil)
+                                    (old lines phase)))))} )
+
 
 ;; Add custom keybinds
 (gentlewind.use_keybind

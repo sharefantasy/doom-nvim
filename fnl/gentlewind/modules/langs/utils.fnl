@@ -19,8 +19,15 @@
 
 (fn utils.use_tree_sitter [grammars]
   "Use tree-sitter grammar"
-  (local ts (require :nvim-treesitter.configs))
-  (ts.setup {:ensure_installed grammars}))
+  (when (not gentlewind._ts_grammars)
+    (tset gentlewind :_ts_grammars {}))
+  (local list (if (= (type grammars) :string)
+                 [grammars]
+                 grammars))
+  (when (= (type list) :table)
+    (each [_ g (ipairs list)]
+      (when (and g (not= g ""))
+        (tset gentlewind._ts_grammars g true)))))
 
 {:wrap_language_setup utils.wrap_language_setup
  :use_lsp_mason utils.use_lsp_mason
