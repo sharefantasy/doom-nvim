@@ -16,17 +16,9 @@
 (set fennel.packages
   {:conjure {:repo "Olical/conjure"
               :ft [:fennel]
-              :dependencies [:cmp-conjure]
               :config (fn []
                         ((. (require :conjure.main) :main))
                         ((. (require :conjure.mapping) "on-filetype")))}
-   :cmp-conjure {:repo "PaterJason/cmp-conjure"
-                  :config (fn []
-                            (local cmp (require :cmp))
-                            (local config (cmp.get_config))
-                            (table.insert config.sources {:name :buffer
-                                                           :option {:sources [{:name :conjure}]}})
-                            (cmp.setup config))}
    :nfnl {:repo "Olical/nfnl" :ft :fennel}})
 
 (set fennel.configs {})

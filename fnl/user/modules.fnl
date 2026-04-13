@@ -3,6 +3,7 @@
 
 {:features
  [;; Core features
+ :coq
  :lsp
   :picker
   :whichkey

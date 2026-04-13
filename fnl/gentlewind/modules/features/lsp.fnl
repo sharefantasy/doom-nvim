@@ -44,7 +44,10 @@
                :dependencies ["williamboman/mason-lspconfig.nvim"]
                :config (fn []
                          ;; 使用 Neovim 0.11+ 原生 LSP config API，避免 require('lspconfig') 的弃用堆栈。
-                         (local capabilities ((. (require :cmp_nvim_lsp) :default_capabilities)))
+                         (var capabilities (vim.lsp.protocol.make_client_capabilities))
+                         (let [(ok coq) (pcall require :coq)]
+                           (when ok
+                             (set capabilities ((. coq :lsp_ensure_capabilities) capabilities))))
                          (vim.lsp.config "*" {:capabilities capabilities})
 
                          (local servers ((. (require :mason-lspconfig) :get_installed_servers)))
@@ -88,28 +91,7 @@
 
                          ;; 启用自动 attach
                          (vim.lsp.enable enabled))}
-   :cmp {:repo "hrsh7th/nvim-cmp"
-         :dependencies ["hrsh7th/cmp-buffer"
-                        "hrsh7th/cmp-path"
-                        "hrsh7th/cmp-nvim-lua"
-                        "hrsh7th/cmp-nvim-lsp"]
-         :config (fn []
-                   (local cmp (require :cmp))
-                   (local sources [{:name :nvim_lsp}
-                                   {:name :buffer}
-                                   {:name :path}])
-                   (cmp.setup
-                     {:mapping (cmp.mapping.preset.insert
-                                  {"<C-b>" (cmp.mapping.scroll_docs -4)
-                                   "<C-f>" (cmp.mapping.scroll_docs 4)
-                                   "<C-Space>" (cmp.mapping.complete)
-                                   "<C-e>" (cmp.mapping.abort)
-                                   "<CR>" (cmp.mapping.confirm {:select true})})
-                      :sources (cmp.config.sources sources)}))}
-   :cmp-buffer {:repo "hrsh7th/cmp-buffer"}
-   :cmp-path {:repo "hrsh7th/cmp-path"}
-   :cmp-nvim-lua {:repo "hrsh7th/cmp-nvim-lua"}
-   :cmp-nvim-lsp {:repo "hrsh7th/cmp-nvim-lsp"}})
+   })
 
 (set lsp.configs {})
 (set lsp.autocmds
