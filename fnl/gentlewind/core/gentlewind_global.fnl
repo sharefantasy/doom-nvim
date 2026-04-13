@@ -17,7 +17,8 @@
        :max_columns nil
        :disable_numbering false
        :relative_num false
-       :leader_key "<Space>"
+       ;; 注意：这里要用真实空格，不要用 "<Space>" 字符串，否则 <leader> 会展开成字面量 "<Space>"
+       :leader_key " "
        :check_updates true
        :colorscheme "gentlewind-one"
        :packages []

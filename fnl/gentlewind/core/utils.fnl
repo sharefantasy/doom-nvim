@@ -142,43 +142,94 @@
 (fn utils.applyKeymaps [keymaps]
   "应用键绑定"
   (when keymaps
-    (fn compute-spec []
-      (if
-        ;; single mapping spec
-        (and (= (type keymaps) :table) (= (type (. keymaps 1)) :string))
-        [keymaps]
+    (local meta [])
 
-        ;; list of mapping specs
-        (and (= (type keymaps) :table)
-             (= (type (. keymaps 1)) :table)
-             (= (type (. (. keymaps 1) 1)) :string))
-        keymaps
+    (fn meta-desc [lhs desc mode]
+      (when (and desc (= (type desc) :string) (not= desc ""))
+        (local spec [lhs])
+        (tset spec :desc desc)
+        (when mode (tset spec :mode mode))
+        (table.insert meta spec)))
 
-        ;; tree binds
-        (keymaps-to-wk-spec (vim.deepcopy keymaps))))
+    (fn meta-group [lhs name mode]
+      (when (and name (= (type name) :string) (not= name ""))
+        (local spec [lhs])
+        (tset spec :group name)
+        (when mode (tset spec :mode mode))
+        (table.insert meta spec)))
 
-    (fn apply-to-wk [wk]
-      (let [spec (compute-spec)
-            (ok err) (pcall #((. wk :add) spec))]
-        (when (not ok)
-          (utils.log-error (.. "Failed to apply keymaps: " err)))))
+    (fn apply-one [spec]
+      (when (= (type spec) :table)
+        (local lhs (. spec 1))
+        (local rhs (. spec 2))
+        (when (= (type lhs) :string)
+          (local mode (or (. spec :mode) "n"))
+          (local opts {:silent (if (nil? (. spec :silent)) true (. spec :silent))
+                       :noremap (if (nil? (. spec :noremap)) true (. spec :noremap))})
+          (when (not (nil? (. spec :expr))) (tset opts :expr (. spec :expr)))
+          (when (not (nil? (. spec :nowait))) (tset opts :nowait (. spec :nowait)))
+          (when (not (nil? (. spec :remap))) (tset opts :remap (. spec :remap)))
+          (when (not (nil? (. spec :buffer))) (tset opts :buffer (. spec :buffer)))
+          (when (not (nil? (. spec :unique))) (tset opts :unique (. spec :unique)))
+          (when (not (nil? (. spec :desc))) (tset opts :desc (. spec :desc)))
 
-    (let [result [(pcall require :which-key)]
-          ok (. result 1)
-          wk (. result 2)]
-      (if ok
-          (apply-to-wk wk)
-          (do
-            (local group (vim.api.nvim_create_augroup "GentlewindWhichKeyRetry" {:clear false}))
-            (vim.api.nvim_create_autocmd "User"
-              {:pattern "LazyDone"
-               :group group
-               :once true
-               :callback (fn []
-                           (let [result2 [(pcall require :which-key)]
-                                 ok2 (. result2 1)
-                                 wk2 (. result2 2)]
-                             (when ok2
-                               (apply-to-wk wk2))))}))))))
+          (when rhs
+            (vim.keymap.set mode lhs rhs opts))
+
+          (meta-desc lhs (. spec :desc) mode))))
+
+    (fn apply-tree [tree]
+      (local wk (keymaps-to-wk-spec (vim.deepcopy tree)))
+      (each [_ s (ipairs wk)]
+        (local lhs (. s 1))
+        (when (= (type lhs) :string)
+          (when (. s :group)
+            (meta-group lhs (. s :group) "n"))
+          (when (. s :desc)
+            (meta-desc lhs (. s :desc) "n"))))
+
+      ;; 同时把 tree 里的叶子节点设置成真实 keymap（默认 n 模式）
+      (fn rec [prefix tbl]
+        (when (= (type tbl) :table)
+          (each [k v (pairs tbl)]
+            (when (= (type k) :string)
+              (local lhs (if (and (= (type k) :string) (= (string.sub k 1 1) "<"))
+                             k
+                             (if (= prefix "") k (.. prefix k))))
+              (when (= (type v) :table)
+                (local rhs (or (. v :cmd) (. v 1)))
+                (local desc (or (. v :desc) (. v :name)))
+                (when rhs
+                  (vim.keymap.set "n" lhs rhs {:silent true :noremap true :desc desc}))
+                (rec lhs v))))))
+      (rec "" tree))
+
+    ;; 先设置真实 vim keymap
+    (if (and (= (type keymaps) :table) (= (type (. keymaps 1)) :table) (= (type (. (. keymaps 1) 1)) :string))
+        (each [_ s (ipairs keymaps)]
+          (apply-one s))
+        (if (and (= (type keymaps) :table) (= (type (. keymaps 1)) :string))
+            (apply-one keymaps)
+            (apply-tree keymaps)))
+
+    ;; 再注册到 which-key（仅元数据，不重复创建 keymap）
+    (when (> (# meta) 0)
+      (let [result [(pcall require :which-key)]
+            ok (. result 1)
+            wk (. result 2)]
+        (if ok
+            (pcall #((. wk :add) meta))
+            (do
+              (local group (vim.api.nvim_create_augroup "GentlewindWhichKeyRetry" {:clear false}))
+              (vim.api.nvim_create_autocmd "User"
+                {:pattern "LazyDone"
+                 :group group
+                 :once true
+                 :callback (fn []
+                             (let [result2 [(pcall require :which-key)]
+                                   ok2 (. result2 1)
+                                   wk2 (. result2 2)]
+                               (when ok2
+                                 (pcall #((. wk2 :add) meta)))))})))))))
 
 utils

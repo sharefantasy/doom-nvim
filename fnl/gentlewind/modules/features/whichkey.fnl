@@ -5,24 +5,30 @@
 
 (set whichkey.packages
   {:which-key {:repo "folke/which-key.nvim"
-                :dependencies ["echasnovski/mini.icons"]
+                :dependencies ["echasnovski/mini.icons"
+                               "nvim-tree/nvim-web-devicons"]
                 :config (fn []
                           (local wk (require :which-key))
                           ;; opts.window 已废弃，使用 opts.win
-                          (wk.setup {:win {:margin [1 0 1 0]
-                                          :padding [1 1 1 1]}
+                          (local t-leader ["<leader>"])
+                          (tset t-leader :mode "nxso")
+                          (local t-g ["g"])
+                          (tset t-g :mode "n")
+                          (wk.setup {:win {:padding [1 1 1 1]}
                                      :layout {:height {:min 4 :max 25}}
+                                     ;; 显式设置触发键：<leader>(Space) 与 g
+                                     :triggers [t-leader t-g]
                                      :plugins {:presets {:operators false
                                                           :motions false
                                                           :text_objects false
                                                           :windows false
                                                           :nav false
                                                           :z false
-                                                          :g false
+                                                          :g true
                                                           :marks false
                                                           :registers false
                                                           :spelling false}}
-                                     :notify true})
+                                      :notify true})
 
                           ;; 可选：初始化 mini.icons，提升 keymap icon 质量
                           (pcall (fn []

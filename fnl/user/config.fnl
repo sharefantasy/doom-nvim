@@ -46,7 +46,7 @@
 (set gentlewind.max_columns 120)
 (set gentlewind.disable_numbering false)
 (set gentlewind.relative_num true)
-(set gentlewind.leader_key "<Space>")
+(set gentlewind.leader_key " ")
 (set gentlewind.check_updates false)
 
 ;; 添加 gruvbox 颜色主题
