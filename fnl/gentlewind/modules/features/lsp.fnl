@@ -15,7 +15,9 @@
    :lsp_signs_information "ℹ"})
 
 (set lsp.packages
-  {:mason {:repo "williamboman/mason.nvim" :config (fn [] ((. (require :mason) :setup)))}
+  {:mason {:repo "williamboman/mason.nvim"
+           :lazy false
+           :config (fn [] ((. (require :mason) :setup)))}
    :fidget {:repo "j-hui/fidget.nvim"
             :event "LspAttach"
             :config (fn []
@@ -29,6 +31,10 @@
                           :config (fn []
                                     ((. (require :mason-tool-installer) :setup)
                                      {:ensure_installed [
+                                                         ;; LSP servers
+                                                         "pyright"
+                                                         "gopls"
+
                                                          ;; formatters (used by conform.nvim)
                                                          "stylua"
                                                          "goimports"
@@ -37,10 +43,12 @@
                                       :auto_update false
                                       :run_on_start true}))}
    :mason-lspconfig {:repo "williamboman/mason-lspconfig.nvim"
+                     :lazy false
                      :dependencies ["williamboman/mason.nvim"]
                      :config (fn []
                                 ((. (require :mason-lspconfig) :setup) {:automatic_installation true}))}
    :lspconfig {:repo "neovim/nvim-lspconfig"
+               :lazy false
                :dependencies ["williamboman/mason-lspconfig.nvim"]
                :config (fn []
                          ;; 使用 Neovim 0.11+ 原生 LSP config API，避免 require('lspconfig') 的弃用堆栈。
@@ -89,8 +97,29 @@
                                                            :library library}
                                                :telemetry {:enable false}}}}))
 
+                         ;; 注册每个 server 的默认配置（nvim-lspconfig 在 runtime/lsp/*.lua 提供）。
+                         ;; 没有显式 config 的 server，vim.lsp.enable 不会 attach。
+                         (each [_ server (ipairs enabled)]
+                           (pcall vim.lsp.config server {}))
+
                          ;; 启用自动 attach
-                         (vim.lsp.enable enabled))}
+                         (vim.lsp.enable enabled)
+
+                         ;; 补回 :LspInfo（nvim-lspconfig 会提供；若没加载/被禁用则提供最小实现）
+                         (when (= (vim.fn.exists ":LspInfo") 0)
+                           (vim.api.nvim_create_user_command
+                             "LspInfo"
+                             (fn []
+                               (local clients (vim.lsp.get_clients {:bufnr 0}))
+                               (if (= (length clients) 0)
+                                   (vim.notify "当前 buffer 无 LSP client" vim.log.levels.WARN)
+                                   (vim.notify
+                                     (.. "LSP clients: "
+                                         (table.concat
+                                           (vim.tbl_map (fn [c] c.name) clients)
+                                           ", "))
+                                     vim.log.levels.INFO)))
+                             {:desc "Show attached LSP clients"}))) }
    })
 
 (set lsp.configs {})
