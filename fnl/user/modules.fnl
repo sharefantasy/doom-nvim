@@ -3,8 +3,8 @@
 
 {:features
  [;; Core features
-  :lsp
-  :telescope
+ :lsp
+  :picker
   :whichkey
   
   ;; Optional features (uncomment to enable)

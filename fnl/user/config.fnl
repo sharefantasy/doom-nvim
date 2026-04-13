@@ -141,12 +141,19 @@
 ;; Add custom keybinds
 (gentlewind.use_keybind
   {:<leader>u {:name "+user"
-               :s {:cmd "<cmd>Telescope git_status<CR>"
-                   :name "Git status"
-                   :desc "Git态"}
                :wr {:cmd (fn [] ((. (require :which-key) :reset)))
                     :name "Reset whichkey"
                     :desc "重置键"}}})
+
+;; Spacemacs 风格：Git / Debug / Tools(Hurl) 入口
+(gentlewind.use_keybind
+  {:<leader>g {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_git_hydra)))
+               :desc "Git 菜单"}
+   :<leader>d {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_debug_hydra)))
+               :desc "Debug 菜单"}
+   :<leader>t {:name "+tools"
+               :h {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_hurl_hydra)))
+                   :desc "Hurl 菜单"}}})
 
 ;; Add custom autocommands
 (gentlewind.use_autocmd
