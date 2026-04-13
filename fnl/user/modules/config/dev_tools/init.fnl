@@ -8,6 +8,7 @@
 (var _git_hydra nil)
 (var _debug_hydra nil)
 (var _hurl_hydra nil)
+(var _conflict_hydra nil)
 
 (fn notify-missing [what]
   (vim.notify (.. "未启用/未安装：" what) vim.log.levels.WARN))
@@ -114,6 +115,44 @@
                    ["<Enter>" (fn [] (pcall vim.cmd "Neogit")) {:exit true :desc "Neogit"}]
                    ["q" nil {:exit true :nowait true :desc "Quit"}]]})))))
   _git_hydra)
+
+(fn ensure-conflict-hydra []
+  (when (not _conflict_hydra)
+    (local Hydra (safe-require :hydra))
+    (if (not Hydra)
+        (notify-missing "anuvyklack/hydra.nvim")
+        (let [hint (table.concat
+                     [" Git Conflict"
+                      ""
+                      " Block:  _o_ ours   _t_ theirs   _b_ both   _n_ none"
+                      "  All :  _O_ ours   _T_ theirs   _B_ both   _N_ none"
+                      "  Nav :  _j_ next   _k_ prev     _q_ quit"
+                      ""
+                      " <leader>g c q  Quickfix"]
+                     "\n")]
+          (set _conflict_hydra
+               (Hydra
+                 {:name "Git Conflict"
+                  :mode "n"
+                  :hint hint
+                  :config {:color "amaranth"
+                           :invoke_on_body true
+                           :hint {:border "rounded" :position "bottom"}}
+                  :heads
+                  [["o" (fn [] (pcall vim.cmd "ConfluxOurs")) {:desc "Ours"}]
+                   ["t" (fn [] (pcall vim.cmd "ConfluxTheirs")) {:desc "Theirs"}]
+                   ["b" (fn [] (pcall vim.cmd "ConfluxBoth")) {:desc "Both"}]
+                   ["n" (fn [] (pcall vim.cmd "ConfluxNone")) {:desc "None"}]
+
+                   ["O" (fn [] (pcall vim.cmd "ConfluxAllOurs")) {:desc "All ours"}]
+                   ["T" (fn [] (pcall vim.cmd "ConfluxAllTheirs")) {:desc "All theirs"}]
+                   ["B" (fn [] (pcall vim.cmd "ConfluxAllBoth")) {:desc "All both"}]
+                   ["N" (fn [] (pcall vim.cmd "ConfluxAllNone")) {:desc "All none"}]
+
+                   ["j" (fn [] (pcall vim.cmd "ConfluxNext")) {:desc "Next"}]
+                   ["k" (fn [] (pcall vim.cmd "ConfluxPrev")) {:desc "Prev"}]
+                   ["q" nil {:exit true :nowait true :desc "Quit"}]]})))))
+  _conflict_hydra)
 
 (fn ensure-debug-hydra []
   (when (not _debug_hydra)
@@ -228,6 +267,11 @@
     (when h
       ((. h :activate)))))
 
+(fn M.activate_conflict_hydra []
+  (let [h (ensure-conflict-hydra)]
+    (when h
+      ((. h :activate)))))
+
 ;; 开发工具插件配置
 (fn M.setup []
   ;; tmux.nvim - tmux集成
@@ -318,6 +362,42 @@
 
   ;; hydra.nvim - 子模态/Transient
   (gentlewind.use_package {:repo "anuvyklack/hydra.nvim" :event "VeryLazy"})
+
+  ;; conflux.nvim - 合并冲突解决（VSCode 风格）
+  (gentlewind.use_package
+    {:repo "muleyuck/conflux.nvim"
+     :event ["BufReadPost" "BufWritePost"]
+     :config (fn []
+               (pcall (fn []
+                        ((. (require :conflux) :setup)
+                         {:default_mappings false
+                          :show_keymap_hints false
+                          ;; 禁用全局 cq，避免污染全局键位；统一用 <leader>g c q
+                          :quickfix_keymaps {:open false}
+                          ;; 走 Diff* link，主题一致（gruvbox 也更协调）
+                          :highlights {:ours {:link "DiffAdd"}
+                                       :theirs {:link "DiffDelete"}
+                                       :base {:link "DiffText"}
+                                       :cursor {:link "CursorLine"}}}))))})
+
+  ;; 自动弹出冲突 Hydra：只在当前 buffer 有冲突时触发一次，且不打断 Insert/命令行模式
+  (vim.api.nvim_create_autocmd
+    ["BufEnter" "BufWinEnter"]
+    {:callback (fn []
+                 (let [mode (. (vim.api.nvim_get_mode) :mode)]
+                   ;; conflux.nvim 目前没有公开的 has_conflicts API，直接用 marker 快速检测。
+                   ;; 只要命中任意一个 marker，就弹一次冲突 Hydra。
+                   (when (and (not vim.b._conflux_hydra_shown)
+                              ;; headless 场景不弹出 Hydra（避免 schedule/浮窗相关报错）
+                              (> (# (vim.api.nvim_list_uis)) 0)
+                              (not (or (= mode "c")
+                                       (= mode "R")
+                                       (vim.startswith mode "i")))
+                              (or (> (vim.fn.search "^<<<<<<<" "nw") 0)
+                                  (> (vim.fn.search "^=======" "nw") 0)
+                                  (> (vim.fn.search "^>>>>>>>" "nw") 0)))
+                     (set vim.b._conflux_hydra_shown true)
+                     (vim.schedule M.activate_conflict_hydra))))})
 
   ;; Git - gitsigns + neogit（供 Git Hydra 使用）
   (gentlewind.use_package

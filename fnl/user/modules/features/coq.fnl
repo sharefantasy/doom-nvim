@@ -46,8 +46,9 @@
                      {:src "builtin/c"}
                      {:src "builtin/xml"}
 
-                     ;; 集成：nvim-dap
-                     {:src "dap"}]))))}})
+                     ;; 集成：nvim-dap（需要 nvim-dap 先加载，否则 coq.thirdparty 会 require('dap.repl') 报错）
+                     ;; 如需 dap 补全，可在后续把该源改为在 dap 可用时再注册。
+                     ]))))}})
 
 (set M.configs {})
 (set M.settings {})

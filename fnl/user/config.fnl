@@ -147,8 +147,15 @@
 
 ;; Spacemacs 风格：Git / Debug / Tools(Hurl) 入口
 (gentlewind.use_keybind
-  {:<leader>g {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_git_hydra)))
-               :desc "Git 菜单"}
+  {:<leader>g {:name "+git"
+               :g {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_git_hydra)))
+                   :desc "Git 菜单"}
+               :c {:name "+conflict"
+                   :c {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_conflict_hydra)))
+                       :desc "Conflict 菜单"}
+                   :q {:cmd "<cmd>ConfluxQuickfix<CR>" :desc "冲突列表"}
+                   :n {:cmd "<cmd>ConfluxNext<CR>" :desc "下一个冲突"}
+                   :p {:cmd "<cmd>ConfluxPrev<CR>" :desc "上一个冲突"}}}
    :<leader>d {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_debug_hydra)))
                :desc "Debug 菜单"}
    :<leader>t {:name "+tools"
