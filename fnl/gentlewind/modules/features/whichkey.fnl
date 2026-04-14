@@ -12,12 +12,14 @@
                           ;; opts.window 已废弃，使用 opts.win
                           (local t-leader ["<leader>"])
                           (tset t-leader :mode "nxso")
+                          (local t-local [","])
+                          (tset t-local :mode "nxso")
                           (local t-g ["g"])
                           (tset t-g :mode "n")
                           (wk.setup {:win {:padding [1 1 1 1]}
                                      :layout {:height {:min 4 :max 25}}
                                      ;; 显式设置触发键：<leader>(Space) 与 g
-                                     :triggers [t-leader t-g]
+                                     :triggers [t-leader t-local t-g]
                                      :plugins {:presets {:operators false
                                                           :motions false
                                                           :text_objects false

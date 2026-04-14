@@ -40,6 +40,12 @@
   ;; 重复操作增强
   (gentlewind.use_package "tpope/vim-repeat")
 
+  ;; Markdown 预览
+  (gentlewind.use_package
+    {:repo "iamcco/markdown-preview.nvim"
+     :ft ["markdown"]
+     :cmd ["MarkdownPreview" "MarkdownPreviewStop" "MarkdownPreviewToggle"]})
+
   ;; 包围操作
   (gentlewind.use_package
     {:repo "ur4ltz/surround.nvim"
@@ -55,6 +61,19 @@
     {:repo "chrisgrieser/nvim-various-textobjs"
      :lazy false
      :opts {:keymaps {:useDefaults true}}})
+
+  ;; 代码大纲（Symbols/Outline）
+  (gentlewind.use_package
+    {:repo "stevearc/aerial.nvim"
+     :cmd ["AerialToggle" "AerialOpen" "AerialClose" "AerialNavToggle"]
+     :dependencies ["nvim-tree/nvim-web-devicons"]
+     :config (fn []
+               (pcall (fn []
+                        (local aerial (require :aerial))
+                        ((. aerial :setup)
+                         {:backends ["lsp" "treesitter"]
+                          :layout {:min_width 30}
+                          :attach_mode "global"}))))})
 
   ;; 书签管理
   (gentlewind.use_package

@@ -124,8 +124,22 @@
                                          (table.concat
                                            (vim.tbl_map (fn [c] c.name) clients)
                                            ", "))
-                                     vim.log.levels.INFO)))
+                                   vim.log.levels.INFO)))
                              {:desc "Show attached LSP clients"}))) }
+   :actions-preview {:repo "aznhe21/actions-preview.nvim"
+                     :event "LspAttach"
+                     :config (fn []
+                               (pcall (fn []
+                                        (local ap (require :actions-preview))
+                                        ((. ap :setup) {}))))}
+   :inc-rename {:repo "smjonas/inc-rename.nvim"
+                :cmd ["IncRename"]
+                :event "LspAttach"
+                :config (fn []
+                          (pcall (fn []
+                                   (local ir (require :inc_rename))
+                                   ;; 复用 snacks 的 input 体验（已在 picker 模块启用）
+                                   ((. ir :setup) {:input_buffer_type "snacks"}))))}
    })
 
 (set lsp.configs {})
@@ -134,6 +148,14 @@
     :desc "Set LSP keymaps on attach"
     :callback (fn [args]
                 (local bufnr args.buf)
+
+                (local ensure-plugin
+                  (fn [name]
+                    (let [packed [(pcall require :lazy)]
+                          ok (. packed 1)
+                          lazy (. packed 2)]
+                      (when ok
+                        (pcall (fn [] ((. lazy :load) {:plugins [name]})))))))
 
                 (local map (fn [mode lhs rhs desc]
                              (vim.keymap.set mode lhs rhs {:buffer bufnr
@@ -154,8 +176,39 @@
                 (map "n" "gy" vim.lsp.buf.type_definition "跳转类型")
 
                 ;; actions
-                (map "n" "<leader>rn" vim.lsp.buf.rename "重命名")
-                (map "n" "<leader>ca" vim.lsp.buf.code_action "代码操作")
+                ;; 重命名：优先 inc-rename（fallback 原生 rename）
+                (vim.keymap.set
+                  "n"
+                  "<leader>rn"
+                  (fn []
+                    ;; 可能尚未加载：按需 load
+                    (ensure-plugin "inc-rename.nvim")
+                    (let [packed [(pcall require :inc_rename)]]
+                      (if (. packed 1)
+                          (.. ":IncRename " (vim.fn.expand "<cword>"))
+                          (do
+                            (vim.lsp.buf.rename)
+                            ""))))
+                  {:buffer bufnr
+                   :silent true
+                   :noremap true
+                   :expr true
+                   :desc "重命名（IncRename）"})
+
+                ;; Code action：优先 actions-preview（fallback 原生 code_action）
+                (vim.keymap.set
+                  "n"
+                  "<leader>ca"
+                  (fn []
+                    (ensure-plugin "actions-preview.nvim")
+                    (let [packed [(pcall require :actions-preview)]]
+                      (if (. packed 1)
+                          ((. (. packed 2) :code_actions))
+                          (vim.lsp.buf.code_action))))
+                  {:buffer bufnr
+                   :silent true
+                   :noremap true
+                   :desc "代码操作（Preview）"})
                 (map "n" "<leader>f" (fn [] (vim.lsp.buf.format {:async true})) "格式化")
 
                 ;; diagnostics

@@ -582,6 +582,34 @@
                         ((. diffview :setup)
                          {:view {:merge_tool {:layout "diff3_horizontal"}}}))))})
 
+  ;; trouble.nvim - 统一列表面板（diagnostics/quickfix/loclist 等）
+  (gentlewind.use_package
+    {:repo "folke/trouble.nvim"
+     :cmd ["Trouble"]
+     :dependencies ["nvim-tree/nvim-web-devicons"]
+     :config (fn []
+               (pcall (fn []
+                        (local trouble (require :trouble))
+                        ((. trouble :setup) {}))))})
+
+  ;; nvim-bqf - Quickfix 增强（仅在 qf 窗口生效）
+  (gentlewind.use_package
+    {:repo "kevinhwang91/nvim-bqf"
+     :ft ["qf"]
+     :config (fn []
+               (pcall (fn []
+                        (local bqf (require :bqf))
+                        ((. bqf :setup) {}))))})
+
+  ;; persistence.nvim - Session 恢复（手动 restore；不强制自动恢复）
+  (gentlewind.use_package
+    {:repo "folke/persistence.nvim"
+     :event "VimEnter"
+     :config (fn []
+               (pcall (fn []
+                        (local persistence (require :persistence))
+                        ((. persistence :setup) {}))))})
+
   ;; 自动弹出冲突 Hydra：只在当前 buffer 有冲突时触发一次，且不打断 Insert/命令行模式
   (vim.api.nvim_create_autocmd
     ["BufEnter" "BufWinEnter"]
@@ -623,7 +651,19 @@
      :config (fn [] (pcall (fn [] ((. (require :neogit) :setup) {}))))})
 
   ;; Debug - nvim-dap + debugmaster.nvim（不要与 dap-ui 混用）
-  (gentlewind.use_package {:repo "mfussenegger/nvim-dap" :event "VeryLazy"})
+  (gentlewind.use_package
+    {:repo "mfussenegger/nvim-dap"
+     ;; 通过 cmd 触发 lazy 加载，配合 localleader debug minor-mode
+     :cmd ["DapContinue"
+           "DapToggleBreakpoint"
+           "DapStepOver"
+           "DapStepInto"
+           "DapStepOut"
+           "DapTerminate"
+           "DapToggleRepl"
+           "DapEval"
+           "DapRestartFrame"]
+     :event "VeryLazy"})
   (gentlewind.use_package {:repo "jbyuki/one-small-step-for-vimkind" :event "VeryLazy"})
   (gentlewind.use_package
     {:repo "MironPascalCaseFan/debugmaster.nvim"

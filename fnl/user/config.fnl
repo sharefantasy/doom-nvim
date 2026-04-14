@@ -47,6 +47,7 @@
 (set gentlewind.disable_numbering false)
 (set gentlewind.relative_num true)
 (set gentlewind.leader_key " ")
+(set vim.g.maplocalleader ",")
 (set gentlewind.check_updates false)
 
 ;; 添加 gruvbox 颜色主题
@@ -255,6 +256,147 @@
    :once true
    :callback (fn []
                (pcall (fn [] (vim.api.nvim_del_keymap "n" "gc"))))})
+
+;; =============================
+;; Keymaps: global + minor-mode
+;; =============================
+
+(fn ensure-plugin [name]
+  (let [packed [(pcall require :lazy)]
+        ok (. packed 1)
+        lazy (. packed 2)]
+    (when ok
+      (pcall (fn [] ((. lazy :load) {:plugins [name]}))))))
+
+(fn project-root [markers]
+  (let [packed [(pcall (fn [] (vim.fs.root 0 markers)))]
+        ok (. packed 1)
+        root (. packed 2)]
+    (if (and ok root (not= root "")) root (vim.fn.getcwd))))
+
+(fn run-in-term [cmd cwd]
+  (let [prev (vim.fn.getcwd)]
+    (when (and cwd (not= cwd ""))
+      (pcall vim.api.nvim_set_current_dir cwd))
+    (pcall (fn [] (vim.cmd (.. "botright split | terminal " cmd))))
+    (pcall vim.api.nvim_set_current_dir prev)
+    (pcall vim.cmd "startinsert")))
+
+;; 全局高频：Lists(Trouble) / Symbols(Aerial) / Sessions(Persistence)
+(vim.api.nvim_create_autocmd "User"
+  {:pattern "LazyDone"
+   :once true
+   :callback (fn []
+               ;; Lists: Trouble
+               (vim.keymap.set "n" "<leader>l" (fn [] (pcall vim.cmd "Trouble diagnostics toggle"))
+                             {:silent true :noremap true :desc "Lists: Diagnostics (Trouble)"})
+               (vim.keymap.set "n" "<leader>ld" (fn [] (pcall vim.cmd "Trouble diagnostics toggle"))
+                             {:silent true :noremap true :desc "Lists: Diagnostics (Trouble)"})
+               (vim.keymap.set "n" "<leader>lq" (fn [] (pcall vim.cmd "Trouble qflist toggle"))
+                             {:silent true :noremap true :desc "Lists: Quickfix (Trouble)"})
+               (vim.keymap.set "n" "<leader>ll" (fn [] (pcall vim.cmd "Trouble loclist toggle"))
+                             {:silent true :noremap true :desc "Lists: Loclist (Trouble)"})
+
+               ;; Symbols: Aerial
+               (vim.keymap.set "n" "<leader>s" (fn [] (pcall vim.cmd "AerialToggle"))
+                             {:silent true :noremap true :desc "Symbols: Aerial"})
+
+               ;; Sessions: Persistence（放到 <leader>p 下，但避免与现有 picker 冲突）
+               (vim.keymap.set "n" "<leader>pR"
+                             (fn []
+                               (ensure-plugin "persistence.nvim")
+                               (let [packed [(pcall require :persistence)]]
+                                 (when (. packed 1)
+                                   ((. (. packed 2) :load)))))
+                             {:silent true :noremap true :desc "Session: Restore"})
+               (vim.keymap.set "n" "<leader>pL"
+                             (fn []
+                               (ensure-plugin "persistence.nvim")
+                               (let [packed [(pcall require :persistence)]]
+                                 (when (. packed 1)
+                                   ((. (. packed 2) :load) {:last true}))))
+                             {:silent true :noremap true :desc "Session: Restore last"})
+               (vim.keymap.set "n" "<leader>pS"
+                             (fn []
+                               (ensure-plugin "persistence.nvim")
+                               (let [packed [(pcall require :persistence)]]
+                                 (when (. packed 1)
+                                   ((. (. packed 2) :stop)))))
+                             {:silent true :noremap true :desc "Session: Stop"})
+               )})
+
+;; 语言 minor-mode（localleader=","，buffer-local）
+(vim.api.nvim_create_autocmd "FileType"
+  {:pattern "markdown"
+   :callback (fn [args]
+               (local bufnr args.buf)
+               (vim.keymap.set "n" ",p" (fn [] (pcall vim.cmd "MarkdownPreviewToggle"))
+                             {:buffer bufnr :silent true :noremap true :desc "Markdown: Preview"}))})
+
+(vim.api.nvim_create_autocmd "FileType"
+  {:pattern "python"
+   :callback (fn [args]
+               (local bufnr args.buf)
+               (local root (project-root ["pyproject.toml" "setup.py" "requirements.txt" ".git"]))
+               (vim.keymap.set "n" ",t" (fn [] (run-in-term "pytest -q" root))
+                             {:buffer bufnr :silent true :noremap true :desc "Python: Test (pytest)"})
+               (vim.keymap.set "n" ",r"
+                             (fn []
+                               (local file (vim.fn.shellescape (vim.fn.expand "%:p")))
+                               (run-in-term (.. "python3 " file) root))
+                             {:buffer bufnr :silent true :noremap true :desc "Python: Run file"})
+               )})
+
+(vim.api.nvim_create_autocmd "FileType"
+  {:pattern "go"
+   :callback (fn [args]
+               (local bufnr args.buf)
+               (local root (project-root ["go.mod" ".git"]))
+               (vim.keymap.set "n" ",t" (fn [] (run-in-term "go test ./..." root))
+                             {:buffer bufnr :silent true :noremap true :desc "Go: Test ./..."})
+               (vim.keymap.set "n" ",r"
+                             (fn []
+                               (local file (vim.fn.shellescape (vim.fn.expand "%:p")))
+                               (run-in-term (.. "go run " file) root))
+                             {:buffer bufnr :silent true :noremap true :desc "Go: Run file"})
+               (vim.keymap.set "n" ",m" (fn [] (run-in-term "go mod tidy" root))
+                             {:buffer bufnr :silent true :noremap true :desc "Go: Mod tidy"})
+               )})
+
+;; Debug minor-mode（localleader=","，buffer-local）
+;; - 只在可调试语言 buffer 启用
+;; - 按需加载 nvim-dap，避免启动期开销
+(vim.api.nvim_create_autocmd "FileType"
+  {:pattern ["python" "go" "lua" "rust" "javascript" "typescript"]
+   :callback (fn [args]
+               (local bufnr args.buf)
+               (local dap-call
+                 (fn [f]
+                   (ensure-plugin "nvim-dap")
+                   (let [packed [(pcall require :dap)]]
+                     (when (. packed 1)
+                       (pcall (fn [] (f (. packed 2))))))))
+
+               (vim.keymap.set "n" ",d" (fn [] (dap-call (fn [dap] (dap.continue))))
+                             {:buffer bufnr :silent true :noremap true :desc "Debug: Continue"})
+               (vim.keymap.set "n" ",b" (fn [] (dap-call (fn [dap] (dap.toggle_breakpoint))))
+                             {:buffer bufnr :silent true :noremap true :desc "Debug: Toggle breakpoint"})
+               (vim.keymap.set "n" ",n" (fn [] (dap-call (fn [dap] (dap.step_over))))
+                             {:buffer bufnr :silent true :noremap true :desc "Debug: Step over"})
+               (vim.keymap.set "n" ",i" (fn [] (dap-call (fn [dap] (dap.step_into))))
+                             {:buffer bufnr :silent true :noremap true :desc "Debug: Step into"})
+               (vim.keymap.set "n" ",o" (fn [] (dap-call (fn [dap] (dap.step_out))))
+                             {:buffer bufnr :silent true :noremap true :desc "Debug: Step out"})
+               (vim.keymap.set "n" ",c" (fn [] (dap-call (fn [dap] (dap.run_to_cursor))))
+                             {:buffer bufnr :silent true :noremap true :desc "Debug: Run to cursor"})
+               (vim.keymap.set "n" ",q"
+                             (fn []
+                               (dap-call
+                                 (fn [dap]
+                                   (pcall (fn [] (dap.terminate)))
+                                   (pcall (fn [] (dap.close))))))
+                             {:buffer bufnr :silent true :noremap true :desc "Debug: Stop"})
+               )})
 
 
 ;; Add custom keybinds
