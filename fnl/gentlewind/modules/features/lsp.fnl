@@ -102,6 +102,12 @@
                          (each [_ server (ipairs enabled)]
                            (pcall vim.lsp.config server {}))
 
+                         ;; 强制 gopls 使用 trae-gopls（若系统无该可执行文件则回退 gopls 并提示）
+                         (if (= (vim.fn.executable "trae-gopls") 1)
+                             (pcall vim.lsp.config "gopls" {:cmd ["trae-gopls"]})
+                             (vim.notify "未找到 trae-gopls，可继续使用 gopls（如需强制请先安装 trae-gopls 并保证在 PATH 中）"
+                                         vim.log.levels.WARN))
+
                          ;; 启用自动 attach
                          (vim.lsp.enable enabled)
 

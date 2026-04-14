@@ -9,7 +9,7 @@
 (var _debug_hydra nil)
 (var _hurl_hydra nil)
 (var _conflict_hydra nil)
-
+(var _agentic_hydra nil)
 (fn notify-missing [what]
   (vim.notify (.. "未启用/未安装：" what) vim.log.levels.WARN))
 
@@ -18,6 +18,94 @@
         ok (. packed 1)
         res (. packed 2)]
     (if ok res nil)))
+
+;; conflict view: "conflux" | "diffview"
+(fn get-conflict-view []
+  (or vim.g.gentlewind_conflict_view "conflux"))
+
+(fn set-conflict-view [v]
+  (set vim.g.gentlewind_conflict_view v))
+
+(fn ensure-diffview-actions []
+  ;; diffview 可能尚未加载：先尝试打开一次 DiffviewOpen 触发 lazy 加载。
+  (let [actions (safe-require :diffview.actions)]
+    (if actions
+        actions
+        (do
+          (pcall vim.cmd "DiffviewOpen")
+          (safe-require :diffview.actions)))))
+
+(fn diffview-open []
+  (pcall vim.cmd "DiffviewOpen"))
+
+(fn diffview-close []
+  (pcall vim.cmd "DiffviewClose"))
+
+(fn diffview-focus-files []
+  (pcall vim.cmd "DiffviewFocusFiles"))
+
+(fn diffview-refresh []
+  (pcall vim.cmd "DiffviewRefresh"))
+
+(fn conflict-choose [scope choice]
+  ;; scope: :block | :all
+  (case (get-conflict-view)
+    "diffview"
+    (let [actions (ensure-diffview-actions)]
+      (if (not actions)
+          (notify-missing "sindrets/diffview.nvim")
+          (pcall (fn []
+                   (if (= scope :all)
+                       (((. actions :conflict_choose_all) choice))
+                       (((. actions :conflict_choose) choice)))))))
+
+    _
+    (pcall (fn []
+             (case scope
+               :all
+               (case choice
+                 "ours" (vim.cmd "ConfluxAllOurs")
+                 "theirs" (vim.cmd "ConfluxAllTheirs")
+                 "all" (vim.cmd "ConfluxAllBoth")
+                 "none" (vim.cmd "ConfluxAllNone")
+                 _ nil)
+               :block
+               (case choice
+                 "ours" (vim.cmd "ConfluxOurs")
+                 "theirs" (vim.cmd "ConfluxTheirs")
+                 "all" (vim.cmd "ConfluxBoth")
+                 "none" (vim.cmd "ConfluxNone")
+                 _ nil)
+               _ nil)))))
+
+(fn conflict-next []
+  (case (get-conflict-view)
+    "diffview"
+    (let [actions (ensure-diffview-actions)]
+      (if (not actions)
+          (notify-missing "sindrets/diffview.nvim")
+          (pcall (fn [] ((. actions :next_conflict))))))
+    _
+    (pcall vim.cmd "ConfluxNext")))
+
+(fn conflict-prev []
+  (case (get-conflict-view)
+    "diffview"
+    (let [actions (ensure-diffview-actions)]
+      (if (not actions)
+          (notify-missing "sindrets/diffview.nvim")
+          (pcall (fn [] ((. actions :prev_conflict))))))
+    _
+    (pcall vim.cmd "ConfluxPrev")))
+
+(fn conflict-list []
+  (case (get-conflict-view)
+    "diffview" (do
+                  ;; 优先聚焦文件面板；若 diffview 尚未打开则再打开。
+                  (when (not (pcall diffview-focus-files))
+                    (diffview-open)
+                    (diffview-focus-files)))
+    _ (pcall vim.cmd "ConfluxQuickfix")))
 
 (fn ensure-git-hydra []
   (when (not _git_hydra)
@@ -39,7 +127,10 @@
                  {:name "Git"
                   :mode ["n" "x"]
                   :hint hint
-                  :config {:color "pink"
+                  ;; NOTE: nvim 0.12 下，hydra.nvim 的 "pink" 会走 Layer 路径，
+                  ;; Layer 内部对 getfenv()/vim.* 的兼容处理会触发 `vim.startswith` 参数校验错误。
+                  ;; 这里改成 teal，规避 Layer 逻辑（方案 A）。
+                  :config {:color "teal"
                            :invoke_on_body true
                            :hint {:border "rounded" :position "middle"}}
                   :heads
@@ -125,10 +216,10 @@
                      [" Git Conflict"
                       ""
                       " Block:  _o_ ours   _t_ theirs   _b_ both   _n_ none"
-                      "  All :  _O_ ours   _T_ theirs   _B_ both   _N_ none"
-                      "  Nav :  _j_ next   _k_ prev     _q_ quit"
-                      ""
-                      " <leader>g c q  Quickfix"]
+                     "  All :  _O_ ours   _T_ theirs   _B_ both   _N_ none"
+                     "  Nav :  _j_ next   _k_ prev     _v_ view   _q_ quit"
+                     ""
+                     " <leader>g c q  Quickfix"]
                      "\n")]
           (set _conflict_hydra
                (Hydra
@@ -139,18 +230,31 @@
                            :invoke_on_body true
                            :hint {:border "rounded" :position "bottom"}}
                   :heads
-                  [["o" (fn [] (pcall vim.cmd "ConfluxOurs")) {:desc "Ours"}]
-                   ["t" (fn [] (pcall vim.cmd "ConfluxTheirs")) {:desc "Theirs"}]
-                   ["b" (fn [] (pcall vim.cmd "ConfluxBoth")) {:desc "Both"}]
-                   ["n" (fn [] (pcall vim.cmd "ConfluxNone")) {:desc "None"}]
+                  [["o" (fn [] (conflict-choose :block "ours")) {:desc "Ours"}]
+                   ["t" (fn [] (conflict-choose :block "theirs")) {:desc "Theirs"}]
+                   ["b" (fn [] (conflict-choose :block "all")) {:desc "Both"}]
+                   ["n" (fn [] (conflict-choose :block "none")) {:desc "None"}]
 
-                   ["O" (fn [] (pcall vim.cmd "ConfluxAllOurs")) {:desc "All ours"}]
-                   ["T" (fn [] (pcall vim.cmd "ConfluxAllTheirs")) {:desc "All theirs"}]
-                   ["B" (fn [] (pcall vim.cmd "ConfluxAllBoth")) {:desc "All both"}]
-                   ["N" (fn [] (pcall vim.cmd "ConfluxAllNone")) {:desc "All none"}]
+                   ["O" (fn [] (conflict-choose :all "ours")) {:desc "All ours"}]
+                   ["T" (fn [] (conflict-choose :all "theirs")) {:desc "All theirs"}]
+                   ["B" (fn [] (conflict-choose :all "all")) {:desc "All both"}]
+                   ["N" (fn [] (conflict-choose :all "none")) {:desc "All none"}]
 
-                   ["j" (fn [] (pcall vim.cmd "ConfluxNext")) {:desc "Next"}]
-                   ["k" (fn [] (pcall vim.cmd "ConfluxPrev")) {:desc "Prev"}]
+                   ["j" (fn [] (conflict-next)) {:desc "Next"}]
+                   ["k" (fn [] (conflict-prev)) {:desc "Prev"}]
+                   ["v"
+                    (fn []
+                      (if (= (get-conflict-view) "conflux")
+                          (do
+                            (set-conflict-view "diffview")
+                            (diffview-open)
+                            (diffview-focus-files)
+                            (vim.notify "Conflict 视图：diffview"))
+                          (do
+                            (set-conflict-view "conflux")
+                            (diffview-close)
+                            (vim.notify "Conflict 视图：conflux"))))
+                    {:desc "Toggle view" :nowait true}]
                    ["q" nil {:exit true :nowait true :desc "Quit"}]]})))))
   _conflict_hydra)
 
@@ -160,14 +264,20 @@
     (if (not Hydra)
         (notify-missing "anuvyklack/hydra.nvim")
         (let [hint (table.concat
-                     [" Debug"
+                     [" Debug (debugmaster)"
                       ""
-                      " _c_: continue    _n_: next    _i_: into    _o_: out"
-                      " _b_: breakpoint  _B_: cond bp"
-                      " _u_: dap-ui      _r_: repl    _t_: terminate"
+                      " _c_: continue/start   _o_: step over   _m_: step into   _q_: step out"
+                      " _r_: run to cursor    _t_: toggle bp"
+                      " _u_: sidebar          _U_: float UI     _H_: help"
+                      " _d_: exit debug mode  _<Esc>_: hide hint"
                       ""
-                      " _q_: quit"]
-                     "\n")]
+                      "（提示层：其他键会透传给 debugmaster，不会退出）"]
+                     "\n")
+              feed (fn [k]
+                     (vim.api.nvim_feedkeys
+                       (vim.api.nvim_replace_termcodes k true false true)
+                       "n"
+                       false))]
           (set _debug_hydra
                (Hydra
                  {:name "Debug"
@@ -175,47 +285,20 @@
                   :hint hint
                   :config {:color "amaranth"
                            :invoke_on_body true
-                           :hint {:border "rounded" :position "middle"}}
-                  :heads
-                  [["c" (fn []
-                          (local dap (safe-require :dap))
-                          (if dap (dap.continue) (notify-missing "mfussenegger/nvim-dap")))
-                    {:desc "Continue"}]
-                   ["n" (fn []
-                          (local dap (safe-require :dap))
-                          (if dap (dap.step_over) (notify-missing "mfussenegger/nvim-dap")))
-                    {:desc "Step over"}]
-                   ["i" (fn []
-                          (local dap (safe-require :dap))
-                          (if dap (dap.step_into) (notify-missing "mfussenegger/nvim-dap")))
-                    {:desc "Step into"}]
-                   ["o" (fn []
-                          (local dap (safe-require :dap))
-                          (if dap (dap.step_out) (notify-missing "mfussenegger/nvim-dap")))
-                    {:desc "Step out"}]
-                   ["b" (fn []
-                          (local dap (safe-require :dap))
-                          (if dap (dap.toggle_breakpoint) (notify-missing "mfussenegger/nvim-dap")))
-                    {:desc "Toggle BP"}]
-                   ["B" (fn []
-                          (local dap (safe-require :dap))
-                          (if dap
-                              (dap.set_breakpoint (vim.fn.input "Breakpoint condition: "))
-                              (notify-missing "mfussenegger/nvim-dap")))
-                    {:desc "Conditional BP"}]
-                   ["u" (fn []
-                          (local dapui (safe-require :dapui))
-                          (if dapui (dapui.toggle) (notify-missing "rcarriga/nvim-dap-ui")))
-                    {:desc "Toggle UI"}]
-                   ["r" (fn []
-                          (local dap (safe-require :dap))
-                          (if dap (dap.repl.toggle) (notify-missing "mfussenegger/nvim-dap")))
-                    {:desc "REPL"}]
-                   ["t" (fn []
-                          (local dap (safe-require :dap))
-                          (if dap (dap.terminate) (notify-missing "mfussenegger/nvim-dap")))
-                    {:desc "Terminate"}]
-                   ["q" nil {:exit true :nowait true :desc "Quit"}]]})))))
+                           :timeout 5000
+                           :foreign_keys "run"
+                           :hint {:border "rounded" :position "bottom"}}
+                  :heads [["c" (fn [] (feed "c")) {:desc "continue/start"}]
+                          ["o" (fn [] (feed "o")) {:desc "step over"}]
+                          ["m" (fn [] (feed "m")) {:desc "step into"}]
+                          ["q" (fn [] (feed "q")) {:desc "step out"}]
+                          ["r" (fn [] (feed "r")) {:desc "run to cursor"}]
+                          ["t" (fn [] (feed "t")) {:desc "toggle breakpoint"}]
+                          ["u" (fn [] (feed "u")) {:desc "toggle sidebar"}]
+                          ["U" (fn [] (feed "U")) {:desc "toggle float UI"}]
+                          ["H" (fn [] (feed "H")) {:desc "help"}]
+                          ["d" (fn [] (feed "d")) {:exit true :nowait true :desc "exit debug mode"}]
+                          ["<Esc>" nil {:exit true :nowait true :desc "hide"}]]})))))
   _debug_hydra)
 
 (fn ensure-hurl-hydra []
@@ -252,25 +335,133 @@
                    ["q" nil {:exit true :nowait true :desc "Quit"}]]})))))
   _hurl_hydra)
 
+;; Agentic.nvim（ACP / coco）
+(fn ensure-agentic-hydra []
+  (when (not _agentic_hydra)
+    (local Hydra (safe-require :hydra))
+    (if (not Hydra)
+        (notify-missing "anuvyklack/hydra.nvim")
+        (let [Agentic (safe-require :agentic)
+              SessionRegistry (safe-require :agentic.session_registry)]
+          (if (or (not Agentic) (not SessionRegistry))
+              (notify-missing "carlos-algms/agentic.nvim")
+              (let [hint (table.concat
+                           [" Agentic (coco)"
+                            ""
+                            " _o_: toggle chat     _n_: new session    _r_: restore session"
+                            " _x_: stop generation"
+                            ""
+                            " _a_: add selection/file   _f_: add file   _s_: add selection"
+                            " _d_: diag(line)          _D_: diag(buffer)"
+                            ""
+                            " _m_: model   _M_: mode    _l_: rotate layout"
+                            ""
+                            " _q_: quit"
+                            ""
+                            "（提示：provider 已固定为 coco；如需切换 provider 请先在配置里放开 switch_provider）"]
+                           "\n")
+                    with-session
+                    (fn [f]
+                      ((. SessionRegistry :get_session_for_tab_page)
+                       nil
+                       (fn [session]
+                         (when session (f session)))))
+                    show-model
+                    (fn []
+                      (with-session
+                        (fn [session]
+                          (let [cfg (. session :config_options)]
+                            (when cfg
+                              (: cfg :show_model_selector
+                                 (fn [model-id is-legacy]
+                                   (: session :_handle_model_change model-id is-legacy))))))))
+                    show-mode
+                    (fn []
+                      (with-session
+                        (fn [session]
+                          (let [cfg (. session :config_options)]
+                            (when cfg
+                              (: cfg :show_mode_selector
+                                 (fn [mode-id is-legacy]
+                                   (: session :_handle_mode_change mode-id is-legacy))))))))]
+                (set _agentic_hydra
+                     (Hydra
+                       {:name "Agentic"
+                        :mode ["n" "x"]
+                        :hint hint
+                        :config {:color "teal"
+                                 :invoke_on_body true
+                                 :hint {:border "rounded" :position "middle"}}
+                        :heads
+                        [["o" (fn [] ((. Agentic :toggle))) {:desc "Toggle chat"}]
+                         ["n" (fn [] ((. Agentic :new_session))) {:exit true :desc "New session"}]
+                         ["r" (fn [] ((. Agentic :restore_session))) {:exit true :desc "Restore session"}]
+                         ["x" (fn [] ((. Agentic :stop_generation))) {:desc "Stop generation" :nowait true}]
+
+                         ["a" (fn [] ((. Agentic :add_selection_or_file_to_context))) {:desc "Add sel/file"}]
+                         ["f" (fn [] ((. Agentic :add_file))) {:exit true :desc "Add file"}]
+                         ["s" (fn [] ((. Agentic :add_selection))) {:exit true :desc "Add selection"}]
+                         ["d" (fn [] ((. Agentic :add_current_line_diagnostics))) {:exit true :desc "Diagnostics (line)"}]
+                         ["D" (fn [] ((. Agentic :add_buffer_diagnostics))) {:exit true :desc "Diagnostics (buffer)"}]
+
+                         ["m" show-model {:exit true :desc "Select model"}]
+                         ["M" show-mode {:exit true :desc "Select mode"}]
+                         ["l" (fn [] ((. Agentic :rotate_layout) ["right" "bottom" "left"])) {:desc "Rotate layout"}]
+
+                         ["q" nil {:exit true :nowait true :desc "Quit"}]]})))))))
+  _agentic_hydra)
+
 (fn M.activate_git_hydra []
   (let [h (ensure-git-hydra)]
     (when h
-      ((. h :activate)))))
+      (: h :activate))))
 
-(fn M.activate_debug_hydra []
-  (let [h (ensure-debug-hydra)]
-    (when h
-      ((. h :activate)))))
+(fn M.toggle_debug_hydra []
+  (let [packed [(pcall require :debugmaster)]
+        ok (. packed 1)
+        dm (. packed 2)]
+    (if (not ok)
+        (notify-missing "MironPascalCaseFan/debugmaster.nvim")
+        (do
+          (pcall (fn [] ((. dm.mode :toggle))))
+          ;; headless 不弹出 hint（避免浮窗/按键相关报错）
+          (when (> (# (vim.api.nvim_list_uis)) 0)
+            (let [h (ensure-debug-hydra)]
+              (when h
+                (pcall (fn [] (: h :activate))))))))))
 
 (fn M.activate_hurl_hydra []
   (let [h (ensure-hurl-hydra)]
     (when h
-      ((. h :activate)))))
+      (: h :activate))))
 
 (fn M.activate_conflict_hydra []
   (let [h (ensure-conflict-hydra)]
     (when h
-      ((. h :activate)))))
+      (: h :activate))))
+
+(fn M.toggle_conflict_view []
+  (if (= (get-conflict-view) "conflux")
+      (do
+        (set-conflict-view "diffview")
+        (diffview-open)
+        (diffview-focus-files)
+        (vim.notify "Conflict 视图：diffview"))
+      (do
+        (set-conflict-view "conflux")
+        (diffview-close)
+        (vim.notify "Conflict 视图：conflux"))))
+
+(fn M.conflict_quickfix [] (conflict-list))
+(fn M.conflict_next [] (conflict-next))
+(fn M.conflict_prev [] (conflict-prev))
+
+(fn M.activate_agentic_hydra []
+  (let [h (ensure-agentic-hydra)]
+    (when h
+      ;; headless 不弹出 Hydra（避免浮窗/按键相关报错）
+      (when (> (# (vim.api.nvim_list_uis)) 0)
+        (: h :activate)))))
 
 ;; 开发工具插件配置
 (fn M.setup []
@@ -380,6 +571,17 @@
                                        :base {:link "DiffText"}
                                        :cursor {:link "CursorLine"}}}))))})
 
+  ;; diffview.nvim - Git diff 视图（支持 merge/rebase 的 3-way diff）
+  (gentlewind.use_package
+    {:repo "sindrets/diffview.nvim"
+     :event "VeryLazy"
+     :dependencies ["nvim-lua/plenary.nvim" "nvim-tree/nvim-web-devicons"]
+     :config (fn []
+               (pcall (fn []
+                        (local diffview (require :diffview))
+                        ((. diffview :setup)
+                         {:view {:merge_tool {:layout "diff3_horizontal"}}}))))})
+
   ;; 自动弹出冲突 Hydra：只在当前 buffer 有冲突时触发一次，且不打断 Insert/命令行模式
   (vim.api.nvim_create_autocmd
     ["BufEnter" "BufWinEnter"]
@@ -387,17 +589,25 @@
                  (let [mode (. (vim.api.nvim_get_mode) :mode)]
                    ;; conflux.nvim 目前没有公开的 has_conflicts API，直接用 marker 快速检测。
                    ;; 只要命中任意一个 marker，就弹一次冲突 Hydra。
-                   (when (and (not vim.b._conflux_hydra_shown)
+                  (when (and (not vim.b._conflict_hydra_shown)
                               ;; headless 场景不弹出 Hydra（避免 schedule/浮窗相关报错）
                               (> (# (vim.api.nvim_list_uis)) 0)
+                              ;; diffview 面板/视图 buffer 不触发自动弹出（避免循环打断）
+                              (or (not vim.bo.filetype)
+                                  (not (vim.startswith vim.bo.filetype "Diffview")))
                               (not (or (= mode "c")
                                        (= mode "R")
                                        (vim.startswith mode "i")))
                               (or (> (vim.fn.search "^<<<<<<<" "nw") 0)
                                   (> (vim.fn.search "^=======" "nw") 0)
                                   (> (vim.fn.search "^>>>>>>>" "nw") 0)))
-                     (set vim.b._conflux_hydra_shown true)
-                     (vim.schedule M.activate_conflict_hydra))))})
+                    (set vim.b._conflict_hydra_shown true)
+                    (vim.schedule
+                      (fn []
+                        (when (= (get-conflict-view) "diffview")
+                          (diffview-open)
+                          (diffview-focus-files))
+                        (M.activate_conflict_hydra))))))})
 
   ;; Git - gitsigns + neogit（供 Git Hydra 使用）
   (gentlewind.use_package
@@ -412,14 +622,18 @@
      :dependencies ["nvim-lua/plenary.nvim"]
      :config (fn [] (pcall (fn [] ((. (require :neogit) :setup) {}))))})
 
-  ;; Debug - nvim-dap + dap-ui（供 Debug Hydra 使用）
+  ;; Debug - nvim-dap + debugmaster.nvim（不要与 dap-ui 混用）
   (gentlewind.use_package {:repo "mfussenegger/nvim-dap" :event "VeryLazy"})
-  (gentlewind.use_package {:repo "nvim-neotest/nvim-nio" :event "VeryLazy"})
+  (gentlewind.use_package {:repo "jbyuki/one-small-step-for-vimkind" :event "VeryLazy"})
   (gentlewind.use_package
-    {:repo "rcarriga/nvim-dap-ui"
+    {:repo "MironPascalCaseFan/debugmaster.nvim"
      :event "VeryLazy"
-     :dependencies ["mfussenegger/nvim-dap" "nvim-neotest/nvim-nio"]
-     :config (fn [] (pcall (fn [] ((. (require :dapui) :setup) {}))))})
+     :dependencies ["mfussenegger/nvim-dap" "jbyuki/one-small-step-for-vimkind"]
+     :config (fn []
+               (pcall (fn []
+                        (local dm (require :debugmaster))
+                        ;; 可按需调整：OSV（调试 Neovim Lua）默认开启
+                        (set dm.plugins.osv_integration.enabled true))))})
 
   ;; spectre.nvim - 搜索替换工具
   (gentlewind.use_package

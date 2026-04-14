@@ -15,7 +15,13 @@
               ;; 必须在 require('coq') 之前设置
               (set vim.g.coq_settings
                    {:auto_start true
-                    :keymap {:recommended true}
+                    ;; 注意：<CR> 已用于确认补全（recommended keymap），不建议同时作为 placeholder 跳转键。
+                    ;; 这里把 jump_to_mark 设为 <C-l>，避免与确认键语义冲突。
+                    :keymap {:recommended true
+                             :jump_to_mark "<C-l>"}
+                    ;; 更贴近直觉：更积极地用候选替换你已输入的前缀
+                    :completion {:replace_prefix_threshold 1
+                                 :replace_suffix_threshold 1}
                     ;; 常用体验选项（可后续再调）
                     :display {:pum {:fast_close false}}})
               (pcall require :coq)

@@ -67,7 +67,104 @@
 (gentlewind.use_package
   {:repo "carlos-algms/agentic.nvim"
    :dependencies ["hakonharnes/img-clip.nvim"]
-   :opts {:provider "coco"}})
+   ;; 仅使用本地 `coco/trae-cli` 作为 ACP provider（不会去启动/探测其它 provider 的进程）
+   ;; coco 的 ACP server 启动方式：`coco acp serve`
+   :opts {:provider "coco"
+          :acp_providers {:coco {:name "Coco ACP"
+                                :command "coco"
+                                :args ["acp" "serve"]
+                                :env {}}}
+
+          ;; 让 Agentic 的 UI 更“像聊天”：
+          ;; - 分隔线更明显：WinSeparator -> AgenticWinSeparator
+          ;; - 输入框更有区分度：Normal -> AgenticInputNormal
+          :windows {:chat {:win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
+                    :code {:win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
+                    :files {:win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
+                    :diagnostics {:win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
+                    :todos {:win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
+                    :input {:height 8
+                            :win_opts {:wrap true
+                                       :linebreak true
+                                       :cursorline true
+                                       :winhighlight "Normal:AgenticInputNormal,NormalNC:AgenticInputNormal,SignColumn:AgenticInputNormal,EndOfBuffer:AgenticInputNormal,WinSeparator:AgenticWinSeparator"}}}
+
+          ;; 禁用 UI 内的 provider 切换键（避免误触去选其它 provider）
+          ;; 同时把提交改为 Shift-Enter（保留 Ctrl-s 作为终端兼容兜底）
+          :keymaps {:widget {:switch_provider []}
+                   ;; NOTE: agentic.nvim 的 keymaps 期望：字符串 / 字符串数组 / KeymapEntry
+                   ;; KeymapEntry 形如：{ [1] = "<key>", mode = {"i","n","v"} }
+                   ;; 这里用 {1 "<key>" :mode [...]} 来确保编译后是正确结构，避免 lhs 变成 table。
+                   :prompt {:submit [{1 "<S-CR>" :mode ["i" "n" "v"]}
+                                     {1 "<C-s>" :mode ["i" "n" "v"]}]}}}})
+
+;; 让 AgenticChat 的 markdown 更“可读”（富渲染）
+;; NOTE: 只对 AgenticChat 启用，避免影响你日常编辑 markdown 文件。
+(gentlewind.use_package
+  {:repo "MeanderingProgrammer/render-markdown.nvim"
+   ;; 不用 ft 懒加载：render-markdown.nvim 在 lazy(ft) 下会默认跳过“当前 buffer” attach，
+   ;; 而它的 FileType autocmd 又是在插件加载后才注册，导致第一次打开 AgenticChat 不渲染。
+   ;; 用 VeryLazy 提前加载，确保后续 AgenticChat 打开时能正常 attach。
+   :event "VeryLazy"
+   :dependencies ["nvim-treesitter/nvim-treesitter" "nvim-tree/nvim-web-devicons"]
+   ;; IMPORTANT:
+   ;; render-markdown.nvim 在 `plugin/render-markdown.lua` 里会调用：
+   ;; `require('render-markdown').setup(vim.g.render_markdown_config)`。
+   ;; 因此配置必须通过全局变量在插件加载前写入（`init` 阶段）。
+   :init (fn []
+           ;; 确保 AgenticChat 用 markdown parser（避免依赖 agentic.nvim 自己的 register 时序）
+           (pcall vim.treesitter.language.register "markdown" "AgenticChat")
+
+           ;; 让 render-markdown 同时覆盖普通 markdown 和 AgenticChat。
+           ;; `RenderMarkdown get` 不会 echo 输出（该命令只调用函数），但渲染会生效。
+           (set vim.g.render_markdown_config
+             {:enabled true
+              :preset "obsidian"
+              :file_types ["markdown" "AgenticChat"]
+              ;; 在 insert 也保持渲染（Agentic 常驻输入时仍希望 chat 区是渲染态）
+              :render_modes ["n" "i" "c" "t"]
+              ;; 避免首次加载后遗留高亮状态
+              :restart_highlighter true}))})
+
+;; 兜底：AgenticChat 的 filetype 是通过 `nvim_set_option_value(filetype=...)` 写入的，
+;; 这条路径不会可靠触发 `FileType` autocmd。
+;; 因此改用 BufEnter/BufWinEnter：只要窗口真正进入 AgenticChat buffer，就 attach + render。
+(local agentic_render_markdown_group
+  (vim.api.nvim_create_augroup "AgenticRenderMarkdown" {:clear true}))
+
+(local ensure-agentic-render-markdown
+  (fn [buf]
+    (when (and (vim.api.nvim_buf_is_valid buf)
+               (= (. (. vim.bo buf) :filetype) "AgenticChat"))
+      ;; 确保 markdown parser / TS 高亮
+      (pcall vim.treesitter.start buf "markdown")
+
+      ;; 确保 render-markdown 已加载
+      (let [(ok-lazy lazy) (pcall require :lazy)]
+        (when ok-lazy
+          (pcall (. lazy :load) {:plugins ["render-markdown.nvim"]})))
+
+      (pcall
+        (fn []
+          (local mgr (require :render-markdown.core.manager))
+          ((. mgr :attach) buf)
+
+          ;; 对所有显示该 buffer 的窗口强制渲染一次
+          (local wins (vim.fn.win_findbuf buf))
+          (when (and wins (> (# wins) 0))
+            (local ui (require :render-markdown.core.ui))
+            (each [_ win (ipairs wins)]
+              (pcall vim.api.nvim_set_option_value "conceallevel" 2 {:scope "local" :win win})
+              (pcall vim.api.nvim_set_option_value "concealcursor" "nc" {:scope "local" :win win})
+              ((. ui :update) buf win "AgenticChat" true)))))))
+    )
+
+(vim.api.nvim_create_autocmd ["BufWinEnter" "BufEnter" "WinEnter"]
+  {:group agentic_render_markdown_group
+   :pattern "*"
+   :callback (fn [args]
+               (local buf (or (and args args.buf) (vim.api.nvim_get_current_buf)))
+               (ensure-agentic-render-markdown buf))})
 
 ;; gruvbox + Tree-sitter 的 Markdown 语义高亮默认较“灰”，这里做一次仅针对 markdown 的覆写。
 (vim.api.nvim_create_autocmd "ColorScheme"
@@ -115,6 +212,28 @@
                (when fg-yellow
                  (sethl 0 "@markup.heading.markdown" {:fg fg-yellow :bold true})))})
 
+;; Agentic UI 覆写：
+;; - 输入框底色：用 Pmenu（更容易区分输入区）
+;; - 分隔线颜色：尽量取 GruvboxBlue 的前景色
+(vim.api.nvim_create_autocmd "ColorScheme"
+  {:pattern "gruvbox"
+   :callback (fn []
+               (local sethl vim.api.nvim_set_hl)
+               (local gethl vim.api.nvim_get_hl)
+
+               (fn fg-of [name fallback]
+                 (let [(ok hl) (pcall gethl 0 {:name name :link true})]
+                   (if (and ok hl (. hl :fg)) (. hl :fg) fallback)))
+
+               ;; 输入区底色
+               (sethl 0 "AgenticInputNormal" {:link "Pmenu"})
+
+               ;; 分隔线
+               (let [fg-blue (fg-of "GruvboxBlue" nil)]
+                 (if fg-blue
+                     (sethl 0 "AgenticWinSeparator" {:fg fg-blue :bold true})
+                     (sethl 0 "AgenticWinSeparator" {:link "WinSeparator"}))))})
+
 ;; img-clip 会覆写 vim.paste；在不可编辑 buffer 触发时会报 E21。
 ;; 这里加一层保护：不可编辑时直接忽略 paste。
 (vim.api.nvim_create_autocmd "User"
@@ -153,11 +272,18 @@
                :c {:name "+conflict"
                    :c {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_conflict_hydra)))
                        :desc "Conflict 菜单"}
-                   :q {:cmd "<cmd>ConfluxQuickfix<CR>" :desc "冲突列表"}
-                   :n {:cmd "<cmd>ConfluxNext<CR>" :desc "下一个冲突"}
-                   :p {:cmd "<cmd>ConfluxPrev<CR>" :desc "上一个冲突"}}}
-   :<leader>d {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_debug_hydra)))
+                   :q {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :conflict_quickfix)))
+                       :desc "冲突列表"}
+                   :n {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :conflict_next)))
+                       :desc "下一个冲突"}
+                   :p {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :conflict_prev)))
+                       :desc "上一个冲突"}
+                   :v {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :toggle_conflict_view)))
+                       :desc "切换视图"}}}
+   :<leader>d {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :toggle_debug_hydra)))
                :desc "Debug 菜单"}
+   :<leader>a {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_agentic_hydra)))
+               :desc "AI 菜单"}
    :<leader>t {:name "+tools"
                :h {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_hurl_hydra)))
                    :desc "Hurl 菜单"}}})
