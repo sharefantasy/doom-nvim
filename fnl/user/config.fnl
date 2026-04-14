@@ -305,7 +305,7 @@
          (map "<C-h>" "ZellijNavigateLeftTab" "Pane: Left / Prev tab")
          (map "<C-j>" "ZellijNavigateDown" "Pane: Down")
          (map "<C-k>" "ZellijNavigateUp" "Pane: Up")
-         (map "<C-l>" "ZellijNavigateRightTab" "Pane: Right / Next tab")))))})
+        (map "<C-l>" "ZellijNavigateRightTab" "Pane: Right / Next tab"))))})
 
 ;; 全局高频：Lists(Trouble) / Symbols(Aerial) / Sessions(Persistence)
 (vim.api.nvim_create_autocmd "User"

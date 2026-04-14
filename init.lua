@@ -193,8 +193,9 @@ local function load_gentlewind()
 
   vim.defer_fn(function()
     -- Check for updates
-    if gentlewind.check_updates and gentlewind.core.updater then
-      gentlewind.core.updater.check_updates(true)
+    local ok, updater = pcall(require, "gentlewind.modules.core.updater")
+    if gentlewind and gentlewind.check_updates and ok and updater and updater.check_updates then
+      updater.check_updates(true)
     end
   end, 1)
 end
