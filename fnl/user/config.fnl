@@ -50,6 +50,9 @@
 (set vim.g.maplocalleader ",")
 (set gentlewind.check_updates false)
 
+;; 统一 Neovim & Zellij pane/tab 导航的开关（true 启用，false 关闭所有 zellij-nav 键位）
+(set vim.g.gentlewind_zellij_nav_enabled true)
+
 ;; 添加 gruvbox 颜色主题
 (gentlewind.use_package {:repo "ellisonleao/gruvbox.nvim" :priority 1000})
 
@@ -281,6 +284,28 @@
     (pcall (fn [] (vim.cmd (.. "botright split | terminal " cmd))))
     (pcall vim.api.nvim_set_current_dir prev)
     (pcall vim.cmd "startinsert")))
+
+;; 统一 pane/tab 导航键位：<C-h/j/k/l>
+;; - 在 Neovim 内先走 window 移动
+;; - 到达边缘时由 zellij-nav.nvim 切换 Zellij pane/tab
+(vim.api.nvim_create_autocmd
+  "User"
+  {:pattern "LazyDone"
+   :once true
+   :callback
+   (fn []
+     (when (or (not vim.g.gentlewind_zellij_nav_enabled)
+               (= vim.g.gentlewind_zellij_nav_enabled true))
+       (let [map (fn [lhs cmd desc]
+                   (vim.keymap.set
+                     "n"
+                     lhs
+                     (fn [] (pcall vim.cmd cmd))
+                     {:silent true :noremap true :desc desc}))]
+         (map "<C-h>" "ZellijNavigateLeftTab" "Pane: Left / Prev tab")
+         (map "<C-j>" "ZellijNavigateDown" "Pane: Down")
+         (map "<C-k>" "ZellijNavigateUp" "Pane: Up")
+         (map "<C-l>" "ZellijNavigateRightTab" "Pane: Right / Next tab")))))})
 
 ;; 全局高频：Lists(Trouble) / Symbols(Aerial) / Sessions(Persistence)
 (vim.api.nvim_create_autocmd "User"

@@ -675,6 +675,18 @@
                         ;; 可按需调整：OSV（调试 Neovim Lua）默认开启
                         (set dm.plugins.osv_integration.enabled true))))})
 
+  ;; zellij-nav.nvim - 统一 Neovim & Zellij pane/tab 导航
+  ;; 通过全局开关 vim.g.gentlewind_zellij_nav_enabled 控制是否启用键位（默认 true）
+  (gentlewind.use_package
+    {:repo "swaits/zellij-nav.nvim"
+     :event "VeryLazy"
+     :opts {}
+     :config (fn []
+               (when (or (not vim.g.gentlewind_zellij_nav_enabled)
+                         (= vim.g.gentlewind_zellij_nav_enabled true))
+                 ;; 保持零配置，键位由 user/config.fnl 统一管理
+                 nil))})
+
   ;; spectre.nvim - 搜索替换工具
   (gentlewind.use_package
     {:repo "nvim-pack/nvim-spectre"
