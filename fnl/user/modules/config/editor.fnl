@@ -35,9 +35,7 @@
      :event "VeryLazy"
      :opts {}
      :keys
-     [["gs" (fn [] ((. (require :flash) :jump))) :mode ["n" "o" "x"] :desc "跳转"]
-      ["r" (fn [] ((. (require :flash) :remote))) :mode "o" :desc "远跳"]
-      ["<c-s>" (fn [] ((. (require :flash) :toggle))) :mode ["c"] :desc "开关"]]})
+     [["gs" (fn [] ((. (require :flash) :jump))) :mode ["n" "o" "x"] :desc "跳转"]]})
 
   ;; 重复操作增强
   (gentlewind.use_package "tpope/vim-repeat")
