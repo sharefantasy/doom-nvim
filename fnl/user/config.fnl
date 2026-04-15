@@ -352,6 +352,159 @@
 
 ;; 语言 minor-mode（localleader=","，buffer-local）
 (vim.api.nvim_create_autocmd "FileType"
+  {:pattern ["http" "rest"]
+   :callback (fn [args]
+               (local bufnr args.buf)
+               ;; Kulala 的 request buffer 如果没有高亮，优先确保 TS parser（http）可用
+               ;; 这里注册 ts grammar，让 core/treesitter 在 GentlewindStarted 时自动补齐。
+               (pcall (fn []
+                        (when (and gentlewind gentlewind.register_ts_grammar)
+                          (gentlewind.register_ts_grammar "http"))))
+
+               ;; 兜底：确保当前 buffer 启用 Tree-sitter 高亮。
+               ;; 现状：能拿到 parser（lang=kulala_http），但未自动启动 highlighter。
+               ;; 这里不显式传 lang，让 Neovim 用 filetype 自行映射到 kulala_http。
+               (vim.schedule
+                 (fn []
+                   (pcall vim.treesitter.start bufnr)))
+               (local k
+                 (fn [f]
+                   (ensure-plugin "kulala.nvim")
+                   (let [packed [(pcall require :kulala)]
+                         ok (. packed 1)
+                         kulala (. packed 2)]
+                     (when ok
+                       (pcall (fn [] (f kulala)))))))
+
+               ;; 与 hurl minor-mode 保持一致的 localleader 入口
+               (vim.keymap.set "n" ",h" (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_http_hydra)))
+                             {:buffer bufnr :silent true :noremap true :desc "HTTP: Hydra"})
+               (vim.keymap.set "n" ",r" (fn [] (k (fn [m] ((. m :run)))))
+                             {:buffer bufnr :silent true :noremap true :desc "HTTP: Run"})
+               (vim.keymap.set "n" ",a" (fn [] (k (fn [m] ((. m :run_all)))))
+                             {:buffer bufnr :silent true :noremap true :desc "HTTP: Run all"})
+               (vim.keymap.set "n" ",e" (fn [] (k (fn [m] ((. m :search)))))
+                             {:buffer bufnr :silent true :noremap true :desc "HTTP: Pick request"})
+               (vim.keymap.set "n" ",o" (fn [] (k (fn [m] ((. m :open)))))
+                             {:buffer bufnr :silent true :noremap true :desc "HTTP: Open UI"})
+               (vim.keymap.set "n" ",b" (fn [] (k (fn [m] ((. m :scratchpad)))))
+                             {:buffer bufnr :silent true :noremap true :desc "HTTP: Scratchpad"})
+               (vim.keymap.set "n" ",c" (fn [] (k (fn [m] ((. m :copy)))))
+                             {:buffer bufnr :silent true :noremap true :desc "HTTP: Copy as cURL"})
+               (vim.keymap.set "n" ",v" (fn [] (k (fn [m] ((. m :toggle_view)))))
+                             {:buffer bufnr :silent true :noremap true :desc "HTTP: Toggle view"})
+               (vim.keymap.set "n" ",E" (fn [] (k (fn [m] ((. m :set_selected_env)))))
+                             {:buffer bufnr :silent true :noremap true :desc "HTTP: Select env"})
+
+               ;; History（方案 A）：打开 kulala 的 jsonl 历史文件
+               (vim.keymap.set "n" ",H" (fn []
+                                           ((. (require :gentlewind.modules.config.dev_tools) :kulala_open_history)))
+                             {:buffer bufnr :silent true :noremap true :desc "HTTP: History"})
+
+               ;; 验证项（先占位）：Kulala 响应 buffer 的 filetype 应能被识别为 json/html/xml 等，触发 treesitter 高亮。
+               ;; TODO: 接入后如果发现响应窗口 ft 不正确，再在这里加 BufEnter/BufWinEnter 针对 kulala 响应窗的兜底。
+               )})
+
+;; Kulala 响应窗口：强制 markdown（解决 ft=scratch 导致无高亮的问题）
+;; - 仅针对 kulala 的 UI buffer（kulala://ui）
+;; - 仅在 filetype= scratch 时兜底，避免覆盖 kulala 自己的 *.kulala_ui filetype
+(vim.api.nvim_create_autocmd ["BufEnter" "BufWinEnter"]
+  {:callback (fn []
+               (let [name (vim.api.nvim_buf_get_name 0)
+                     ft vim.bo.filetype]
+                 (when (and (= name "kulala://ui") (= ft "scratch"))
+                   (pcall vim.cmd "setlocal filetype=markdown"))))})
+
+(vim.api.nvim_create_autocmd "FileType"
+  {:pattern "hurl"
+   :callback (fn [args]
+               (local bufnr args.buf)
+               (local cmd
+                 (fn [ex]
+                   (ensure-plugin "hurl.nvim")
+                   (pcall vim.cmd ex)))
+
+               (local scratch
+                 (fn []
+                   (vim.cmd "enew")
+                   (set vim.bo.filetype "hurl")
+                   (pcall vim.api.nvim_buf_set_lines 0 0 -1 false ["GET http://localhost:8080" "" "# @name example" ""])) )
+
+               (vim.keymap.set "n" ",h" (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_http_hydra)))
+                             {:buffer bufnr :silent true :noremap true :desc "Hurl: Hydra"})
+               (vim.keymap.set "n" ",r" (fn [] (cmd "HurlRunner"))
+                             {:buffer bufnr :silent true :noremap true :desc "Hurl: Run"})
+               (vim.keymap.set "v" ",r" (fn [] (cmd "'<,'>HurlRunner"))
+                             {:buffer bufnr :silent true :noremap true :desc "Hurl: Run selection"})
+               (vim.keymap.set "n" ",e" (fn [] (cmd "HurlRunnerToEntry"))
+                             {:buffer bufnr :silent true :noremap true :desc "Hurl: Run entry"})
+               (vim.keymap.set "n" ",m" (fn [] (cmd "HurlToggleMode"))
+                             {:buffer bufnr :silent true :noremap true :desc "Hurl: Toggle mode"})
+               (vim.keymap.set "n" ",v" (fn [] (cmd "HurlVerbose"))
+                             {:buffer bufnr :silent true :noremap true :desc "Hurl: Verbose"})
+               (vim.keymap.set "n" ",b" scratch
+                             {:buffer bufnr :silent true :noremap true :desc "Hurl: Scratch"})
+               )})
+
+;; SQL/DB minor-mode（localleader=","，buffer-local）
+(vim.api.nvim_create_autocmd "FileType"
+  {:pattern ["sql" "mysql" "plsql"]
+   :callback (fn [args]
+               (local bufnr args.buf)
+               (vim.keymap.set "n" ",o" (fn []
+                                           (ensure-plugin "vim-dadbod-ui")
+                                           (pcall vim.cmd "DBUIToggle"))
+                             {:buffer bufnr :silent true :noremap true :desc "DB: Toggle UI"})
+               (vim.keymap.set "n" ",a" (fn []
+                                           (ensure-plugin "vim-dadbod-ui")
+                                           (pcall vim.cmd "DBUIAddConnection"))
+                             {:buffer bufnr :silent true :noremap true :desc "DB: Add connection"})
+               (vim.keymap.set "n" ",f" (fn []
+                                           (ensure-plugin "vim-dadbod-ui")
+                                           (pcall vim.cmd "DBUIFindBuffer"))
+                             {:buffer bufnr :silent true :noremap true :desc "DB: Find buffer"})
+
+               ;; 执行：当前行 / 选区（dadbod 的 :DB 支持范围）
+               (vim.keymap.set "n" ",r" (fn []
+                                           (ensure-plugin "vim-dadbod")
+                                           (pcall vim.cmd ".DB"))
+                             {:buffer bufnr :silent true :noremap true :desc "DB: Run line"})
+               (vim.keymap.set "v" ",r" (fn []
+                                           (ensure-plugin "vim-dadbod")
+                                           (pcall vim.cmd "'<,'>DB"))
+                             {:buffer bufnr :silent true :noremap true :desc "DB: Run selection"})
+
+               ;; dadbod completion：如果你用 nvim-cmp，这里只兜底 omnifunc
+               (pcall (fn [] (set vim.bo.omnifunc "vim_dadbod_completion#omni")))
+               )})
+
+;; CSV/TSV minor-mode（localleader=","，buffer-local）
+(vim.api.nvim_create_autocmd "FileType"
+  {:pattern ["csv" "tsv"]
+   :callback (fn [args]
+               (local bufnr args.buf)
+               (vim.keymap.set "n" ",v" (fn []
+                                           (ensure-plugin "csvview.nvim")
+                                           (pcall vim.cmd "CsvViewToggle"))
+                             {:buffer bufnr :silent true :noremap true :desc "CSV: Toggle view"})
+               (vim.keymap.set "n" ",i" (fn []
+                                           (ensure-plugin "csvview.nvim")
+                                           (pcall vim.cmd "CsvViewInfo"))
+                             {:buffer bufnr :silent true :noremap true :desc "CSV: Info"})
+               )})
+
+;; JSON/YAML minor-mode（localleader=","，buffer-local）
+(vim.api.nvim_create_autocmd "FileType"
+  {:pattern ["json" "jsonc" "yaml" "yml"]
+   :callback (fn [args]
+               (local bufnr args.buf)
+               (vim.keymap.set "n" ",j" (fn []
+                                           (ensure-plugin "jq-playground.nvim")
+                                           (pcall vim.cmd "JqPlayground"))
+                             {:buffer bufnr :silent true :noremap true :desc "JQ: Playground"})
+               )})
+
+(vim.api.nvim_create_autocmd "FileType"
   {:pattern "markdown"
    :callback (fn [args]
                (local bufnr args.buf)
@@ -365,6 +518,12 @@
                (local root (project-root ["pyproject.toml" "setup.py" "requirements.txt" ".git"]))
                (vim.keymap.set "n" ",t" (fn [] (run-in-term "pytest -q" root))
                              {:buffer bufnr :silent true :noremap true :desc "Python: Test (pytest)"})
+               (vim.keymap.set "n" ",T" (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_neotest_hydra)))
+                             {:buffer bufnr :silent true :noremap true :desc "Test: Neotest Hydra"})
+               (vim.keymap.set "n" ",v" (fn []
+                                           (ensure-plugin "venv-selector.nvim")
+                                           (pcall vim.cmd "VenvSelect"))
+                             {:buffer bufnr :silent true :noremap true :desc "Python: Select venv"})
                (vim.keymap.set "n" ",r"
                              (fn []
                                (local file (vim.fn.shellescape (vim.fn.expand "%:p")))
@@ -379,6 +538,16 @@
                (local root (project-root ["go.mod" ".git"]))
                (vim.keymap.set "n" ",t" (fn [] (run-in-term "go test ./..." root))
                              {:buffer bufnr :silent true :noremap true :desc "Go: Test ./..."})
+               (vim.keymap.set "n" ",T" (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_neotest_hydra)))
+                             {:buffer bufnr :silent true :noremap true :desc "Test: Neotest Hydra"})
+               (vim.keymap.set "n" ",a" (fn []
+                                           (ensure-plugin "go.nvim")
+                                           (pcall vim.cmd "GoAltV"))
+                             {:buffer bufnr :silent true :noremap true :desc "Go: Alt (vsplit)"})
+               (vim.keymap.set "n" ",i" (fn []
+                                           (ensure-plugin "go.nvim")
+                                           (pcall vim.cmd "GoInstallBinaries"))
+                             {:buffer bufnr :silent true :noremap true :desc "Go: Install tools"})
                (vim.keymap.set "n" ",r"
                              (fn []
                                (local file (vim.fn.shellescape (vim.fn.expand "%:p")))
@@ -434,26 +603,53 @@
 ;; Spacemacs 风格：Git / Debug / Tools(Hurl) 入口
 (gentlewind.use_keybind
   {:<leader>g {:name "+git"
-               :g {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_git_hydra)))
+               :g {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_git_hydra)))
                    :desc "Git 菜单"}
                :c {:name "+conflict"
-                   :c {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_conflict_hydra)))
+                   :c {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_conflict_hydra)))
                        :desc "Conflict 菜单"}
-                   :q {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :conflict_quickfix)))
+                   :q {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :conflict_quickfix)))
                        :desc "冲突列表"}
-                   :n {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :conflict_next)))
+                   :n {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :conflict_next)))
                        :desc "下一个冲突"}
-                   :p {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :conflict_prev)))
+                   :p {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :conflict_prev)))
                        :desc "上一个冲突"}
-                   :v {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :toggle_conflict_view)))
+                   :v {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :toggle_conflict_view)))
                        :desc "切换视图"}}}
-   :<leader>d {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :toggle_debug_hydra)))
+   :<leader>d {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :toggle_debug_hydra)))
                :desc "Debug 菜单"}
-   :<leader>a {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_agentic_hydra)))
+   :<leader>a {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_agentic_hydra)))
                :desc "AI 菜单"}
-   :<leader>t {:name "+tools"
-               :h {:cmd (fn [] ((. (require :user.modules.config.dev_tools) :activate_hurl_hydra)))
-                   :desc "Hurl 菜单"}}})
+  :<leader>o {:name "+open"
+               :d {:cmd (fn []
+                         (ensure-plugin "vim-dadbod-ui")
+                         (pcall vim.cmd "DBUIToggle"))
+                   :desc "DB: Toggle UI"}
+               :D {:cmd (fn []
+                         (ensure-plugin "vim-dadbod-ui")
+                         (pcall vim.cmd "DBUI"))
+                   :desc "DB: Open UI"}
+               :a {:cmd (fn []
+                         (ensure-plugin "vim-dadbod-ui")
+                         (pcall vim.cmd "DBUIAddConnection"))
+                   :desc "DB: Add connection"}
+               :f {:cmd (fn []
+                         (ensure-plugin "vim-dadbod-ui")
+                         (pcall vim.cmd "DBUIFindBuffer"))
+                   :desc "DB: Find buffer"}
+               :v {:cmd (fn []
+                         (ensure-plugin "venv-selector.nvim")
+                         (pcall vim.cmd "VenvSelect"))
+                   :desc "Python: Select venv"}
+               :j {:cmd (fn []
+                         (ensure-plugin "jq-playground.nvim")
+                         (pcall vim.cmd "JqPlayground"))
+                   :desc "JQ: Playground"}}
+  :<leader>t {:name "+tools"
+              :t {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_neotest_hydra)))
+                  :desc "Test 菜单"}
+              :h {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_http_hydra)))
+                  :desc "HTTP/Hurl 菜单"}}})
 
 ;; Add custom autocommands
 (gentlewind.use_autocmd
@@ -486,6 +682,38 @@
 (set vim.opt.relativenumber true)
 (set vim.opt.wrap false)
 
+;; 将 Mason 的 bin 加入 PATH，便于 jq-playground / venv-selector 等插件直接调用 Mason 安装的工具
+(let [mason-bin (.. (vim.fn.stdpath :data) "/mason/bin")
+      path (or vim.env.PATH "")]
+  (when (and (not= mason-bin "")
+             (not (string.find path mason-bin 1 true)))
+    (set vim.env.PATH (.. mason-bin ":" path))))
+
+;; kulala_http treesitter 高亮补强：把自定义 capture 映射到更“gruvbox”的颜色层次
+;; NOTE: 只 link 未定义的 group，不覆盖主题本身。
+(let [link-default
+      (fn [from to]
+        (pcall vim.api.nvim_set_hl 0 from {:link to :default true}))
+      apply
+      (fn []
+        ;; query params / form params
+        (link-default "@query_param.name.kulala_http" "Identifier")
+        (link-default "@query_param.value.kulala_http" "String")
+        (link-default "@form_param_name.kulala_http" "Identifier")
+        (link-default "@form_param_value.kulala_http" "String")
+        ;; paths / redirects
+        (link-default "@external_body_path.kulala_http" "Directory")
+        (link-default "@redirect_path.kulala_http" "String")
+        ;; status
+        (link-default "@status_code.kulala_http" "Number")
+        (link-default "@status_text.kulala_http" "String")
+        ;; scripts
+        (link-default "@number.special.path.kulala_http" "Special")
+        ;; punctuation
+        (link-default "@punctuation.special.kulala_http" "Delimiter"))]
+  (vim.api.nvim_create_autocmd "ColorScheme" {:callback apply})
+  (apply))
+
 ;; 加载用户配置模块
 (fn try_setup [module-name]
   (let [packed [(pcall require module-name)]
@@ -495,34 +723,37 @@
         (when (. mod :setup)
           ((. mod :setup))))))
 
-(try_setup :user.modules.config.editor)
-(try_setup :user.modules.config.ui)
-(try_setup :user.modules.config.dev_tools)
-(try_setup :user.modules.config.lsp)
-(try_setup :user.modules.config.search)
+(try_setup :gentlewind.modules.config.editor)
+(try_setup :gentlewind.modules.config.ui)
+(try_setup :gentlewind.modules.config.dev_tools)
+(try_setup :gentlewind.modules.config.lsp)
+(try_setup :gentlewind.modules.config.search)
 
 ;; 加载 Fennel LSP 增强配置
 (vim.api.nvim_create_autocmd "FileType"
   {:pattern "fennel"
    :once true
    :callback (fn []
-              (try_setup :user.modules.config.fennel-lsp)
-              (try_setup :user.modules.config.fennel-neodev)
-              (try_setup :user.modules.config.fennel-fix)
-              (try_setup :user.modules.config.fennel-direct))})
+              (try_setup :gentlewind.modules.config.fennel-lsp)
+              (try_setup :gentlewind.modules.config.fennel-neodev)
+              (try_setup :gentlewind.modules.config.fennel-fix)
+              (try_setup :gentlewind.modules.config.fennel-direct))})
 
 (vim.api.nvim_create_autocmd "User"
   {:pattern "VeryLazy"
    :once true
    :callback (fn []
-               (try_setup :user.modules.config.whichkey-fix))})
+               (try_setup :gentlewind.modules.config.whichkey-fix))})
 
 ;; 加载 treesitter 重复安装修复配置
 (vim.api.nvim_create_autocmd "BufReadPre"
   {:pattern "*"
    :once true
    :callback (fn []
-               (try_setup :user.modules.config.treesitter-fix))})
+               (try_setup :gentlewind.modules.config.treesitter-fix))})
 
 (gentlewind.use_package {:repo "Olical/nfnl" :ft "fennel"})
 (gentlewind.use_package "Olical/aniseed")
+
+;; 加载额外配置（如：nvim.sh 自动写入的插件列表）
+(pcall require :user.extra)

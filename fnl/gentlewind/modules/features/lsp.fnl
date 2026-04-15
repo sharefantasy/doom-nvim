@@ -31,13 +31,17 @@
                           :config (fn []
                                     ((. (require :mason-tool-installer) :setup)
                                      {:ensure_installed [
-                                                         ;; LSP servers
-                                                         "pyright"
-                                                         "gopls"
+                                                          ;; LSP servers
+                                                          "pyright"
+                                                          "gopls"
+                                                          "sqls"
 
                                                          ;; formatters (used by conform.nvim)
                                                          "stylua"
                                                          "goimports"
+                                                         ;; json/yaml tools (for jq-playground.nvim)
+                                                         "jq"
+                                                         "yq"
                                                          "prettierd"
                                                          {1 "ruff" :version "0.15.7"}]
                                       :auto_update false
@@ -61,9 +65,11 @@
                          (local servers ((. (require :mason-lspconfig) :get_installed_servers)))
 
                          ;; stylua 不是标准 LSP server（格式化交给 conform.nvim），跳过。
+                         ;; sqlls(=sql-language-server) 在 Node.js 25 下会崩溃，跳过（使用 sqls）。
                          (local enabled [])
                          (each [_ server (ipairs servers)]
-                           (when (not= server "stylua")
+                           (when (and (not= server "stylua")
+                                      (not= server "sqlls"))
                              (table.insert enabled server)))
 
                          ;; lua_ls：固定 cache/log 路径 + 收缩 workspace 扫描范围

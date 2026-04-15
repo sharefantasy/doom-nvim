@@ -7,7 +7,8 @@
   {:disable_treesitter false
    :treesitter_grammars "sql"
    :disable_lsp false
-   :lsp_name "sqlls"
+   ;; NOTE: sqlls(=sql-language-server) 在 Node.js 25 下会崩溃；改用 sqls（Go 实现，更稳定）。
+   :lsp_name "sqls"
    :disable_formatting false
    :formatting_package "sqlfmt"
    :formatting_provider "builtins.formatting.sqlfmt"

@@ -103,8 +103,46 @@
                                 :goimports {:command (bin "goimports")}
                                 :prettierd {:command (bin "prettierd")}
                                 :ruff_format {:command (bin "ruff")}}
-                   :format_on_save {:timeout_ms 500
-                                    :lsp_fallback false}})))})
+                   ;; headless 下关闭 format_on_save，避免退出时 conform 的 VimLeavePre hack 干扰 Mason 安装。
+                   :format_on_save (if (> (# (vim.api.nvim_list_uis)) 0)
+                                      {:timeout_ms 500
+                                       :lsp_fallback false}
+                                      nil)})))})
+
+  ;; UI: noice.nvim + nvim-notify + dressing.nvim
+  ;; - noice: 更好的 cmdline / messages / LSP 弹窗
+  ;; - notify: 统一 vim.notify
+  ;; - dressing: 统一 vim.ui.select/input
+  (gentlewind.use_package
+    {:repo "rcarriga/nvim-notify"
+     :event "VeryLazy"
+     :opts {:stages "fade_in_slide_out"
+            :timeout 2500
+            :render "wrapped-compact"}
+     :config (fn []
+               (pcall
+                 (fn []
+                   (local notify (require :notify))
+                   (set vim.notify notify))))})
+
+  (gentlewind.use_package
+    {:repo "stevearc/dressing.nvim"
+     :event "VeryLazy"
+     :opts {:input {:insert_only false}
+            :select {:backend ["telescope" "builtin"]}}})
+
+  (gentlewind.use_package
+    {:repo "folke/noice.nvim"
+     :event "VeryLazy"
+     :dependencies ["MunifTanjim/nui.nvim" "rcarriga/nvim-notify"]
+     :opts {:lsp {:override {"vim.lsp.util.convert_input_to_markdown_lines" true
+                             "vim.lsp.util.stylize_markdown" true
+                             "cmp.entry.get_documentation" true}}
+            :presets {:bottom_search true
+                      :command_palette true
+                      :long_message_to_split true
+                      :inc_rename false
+                      :lsp_doc_border true}}})
 
   )
 

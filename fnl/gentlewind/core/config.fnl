@@ -57,11 +57,10 @@
   ;; Iterate over each module and save it to the gentlewind global object
   (each [section_name section_modules (pairs enabled_modules)]
     (each [_ module_name (ipairs section_modules)]
-      ;; If the section is `user` resolves from `lua/user/modules`
+      ;; 模块统一从 gentlewind.modules.* 加载（user/modules 已合并进来）
       (local profiler_message (.. "modules|import `" section_name "." module_name "`"))
       (profiler.start profiler_message)
-      (local search_paths [(.. "user.modules." section_name "." module_name)
-                           (.. "gentlewind.modules." section_name "." module_name)])
+      (local search_paths [(.. "gentlewind.modules." section_name "." module_name)])
 
       (local log (. (require :gentlewind.utils) :logging))
       (var ok nil)

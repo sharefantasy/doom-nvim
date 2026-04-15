@@ -2,7 +2,7 @@
 local ok = pcall(require, "user.config")
 if not ok then
   gentlewind.colorscheme = "gruvbox"
-  if pcall(require, "user.modules.config.ui") then
-    require("user.modules.config.ui").setup()
+  if pcall(require, "gentlewind.modules.config.ui") then
+    require("gentlewind.modules.config.ui").setup()
   end
 end

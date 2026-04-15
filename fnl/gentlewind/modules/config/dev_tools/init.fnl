@@ -8,6 +8,9 @@
 (var _git_hydra nil)
 (var _debug_hydra nil)
 (var _hurl_hydra nil)
+(var _kulala_hydra nil)
+(var _neotest_hydra nil)
+(var _kulala_history_path nil)
 (var _conflict_hydra nil)
 (var _agentic_hydra nil)
 (fn notify-missing [what]
@@ -18,6 +21,51 @@
         ok (. packed 1)
         res (. packed 2)]
     (if ok res nil)))
+
+(fn ensure-plugin [name]
+  (let [packed [(pcall require :lazy)]
+        ok (. packed 1)
+        lazy (. packed 2)]
+    (when ok
+      (pcall (fn [] ((. lazy :load) {:plugins [name]}))))))
+
+(fn kulala-history-path []
+  (when (not _kulala_history_path)
+    (local dir (vim.fs.joinpath (vim.fn.stdpath "state") "kulala"))
+    (pcall vim.fn.mkdir dir "p")
+    (set _kulala_history_path (vim.fs.joinpath dir "history.jsonl")))
+  _kulala_history_path)
+
+(fn append-jsonl! [path tbl]
+  (let [line (vim.json.encode tbl)]
+    (pcall vim.fn.writefile [line] path "a")))
+
+(fn kulala-log-last! [action]
+  ;; 方案 A：最小可用的“访问历史”——先记录执行时间/来源 file/ft/光标位置；
+  ;; 后续再迭代：解析请求块（method/url/headers/body/env）。
+  (let [file (vim.api.nvim_buf_get_name 0)
+        ft vim.bo.filetype
+        pos (vim.api.nvim_win_get_cursor 0)
+        row (. pos 1)
+        col (. pos 2)]
+    (append-jsonl!
+      (kulala-history-path)
+      {:ts (os.time)
+       :action action
+       :file file
+       :ft ft
+       :row row
+       :col col})))
+
+(fn kulala-open-history []
+  ;; 简易查看：优先用 Telescope 打开 history.jsonl（后续可升级为 picker + replay）
+  (let [p (kulala-history-path)
+        packed [(pcall require :telescope.builtin)]
+        ok (. packed 1)
+        tb (. packed 2)]
+    (if ok
+        ((. tb :find_files) {:search_file p :cwd (vim.fs.dirname p) :hidden true})
+        (pcall vim.cmd (.. "edit " (vim.fn.fnameescape p))))))
 
 ;; conflict view: "conflux" | "diffview"
 (fn get-conflict-view []
@@ -306,7 +354,10 @@
     (local Hydra (safe-require :hydra))
     (if (not Hydra)
         (notify-missing "anuvyklack/hydra.nvim")
-        (let [hint (table.concat
+        (let [cmd (fn [ex]
+                    (ensure-plugin "hurl.nvim")
+                    (pcall vim.cmd ex))
+              hint (table.concat
                      [" Hurl"
                       ""
                       " _e_: run entry"
@@ -324,16 +375,102 @@
                            :invoke_on_body true
                            :hint {:border "rounded" :position "middle"}}
                   :heads
-                  [["e" (fn [] (pcall vim.cmd "HurlRunnerToEntry")) {:desc "Run entry"}]
+                  [["e" (fn [] (cmd "HurlRunnerToEntry")) {:desc "Run entry"}]
                    ["r" (fn []
                           ;; 先尝试用最近一次 visual 选区（'<,'>），失败再 fallback 到普通 HurlRunner。
-                          (if (not (pcall vim.cmd "'<,'>HurlRunner"))
-                              (pcall vim.cmd "HurlRunner")))
+                          (if (not (cmd "'<,'>HurlRunner"))
+                              (cmd "HurlRunner")))
                     {:desc "Run"}]
-                   ["m" (fn [] (pcall vim.cmd "HurlToggleMode")) {:desc "Toggle mode"}]
-                   ["v" (fn [] (pcall vim.cmd "HurlVerbose")) {:desc "Verbose"}]
+                   ["m" (fn [] (cmd "HurlToggleMode")) {:desc "Toggle mode"}]
+                   ["v" (fn [] (cmd "HurlVerbose")) {:desc "Verbose"}]
                    ["q" nil {:exit true :nowait true :desc "Quit"}]]})))))
   _hurl_hydra)
+
+(fn ensure-kulala-hydra []
+  (when (not _kulala_hydra)
+    (local Hydra (safe-require :hydra))
+    (if (not Hydra)
+        (notify-missing "anuvyklack/hydra.nvim")
+        (let [hint (table.concat
+                     [" HTTP (Kulala)"
+                      ""
+                      " _r_: run    _a_: run all    _e_: pick request"
+                      " _o_: open UI   _b_: scratch   _c_: copy as curl"
+                      " _v_: toggle view   _E_: env"
+                      ""
+                      " _q_: quit"]
+                     "\n")
+              with-kulala
+              (fn [f]
+                (ensure-plugin "kulala.nvim")
+                (let [packed [(pcall require :kulala)]
+                      ok (. packed 1)
+                      kulala (. packed 2)]
+                  (if ok
+                      (pcall (fn [] (f kulala)))
+                      (notify-missing "mistweaverco/kulala.nvim"))))]
+          (set _kulala_hydra
+               (Hydra
+                 {:name "Kulala"
+                  :mode ["n" "x"]
+                  :hint hint
+                  :config {:color "teal"
+                           :invoke_on_body true
+                           :hint {:border "rounded" :position "middle"}}
+                  :heads
+                  [["r" (fn [] (kulala-log-last! "run") (with-kulala (fn [m] ((. m :run))))) {:desc "Run"}]
+                   ["a" (fn [] (kulala-log-last! "run_all") (with-kulala (fn [m] ((. m :run_all))))) {:desc "Run all"}]
+                   ["e" (fn [] (with-kulala (fn [m] ((. m :search))))) {:desc "Pick request"}]
+                   ["o" (fn [] (kulala-log-last! "open") (with-kulala (fn [m] ((. m :open))))) {:desc "Open UI"}]
+                   ["b" (fn [] (with-kulala (fn [m] ((. m :scratchpad))))) {:desc "Scratch"}]
+                   ["c" (fn [] (with-kulala (fn [m] ((. m :copy))))) {:desc "Copy as cURL"}]
+                   ["v" (fn [] (with-kulala (fn [m] ((. m :toggle_view))))) {:desc "Toggle view"}]
+                   ["E" (fn [] (with-kulala (fn [m] ((. m :set_selected_env))))) {:desc "Select env"}]
+                   ["h" (fn [] (kulala-open-history)) {:desc "History"}]
+                   ["q" nil {:exit true :nowait true :desc "Quit"}]]})))))
+  _kulala_hydra)
+
+(fn ensure-neotest-hydra []
+  (when (not _neotest_hydra)
+    (local Hydra (safe-require :hydra))
+    (if (not Hydra)
+        (notify-missing "anuvyklack/hydra.nvim")
+        (let [hint (table.concat
+                     [" Tests (Neotest)"
+                      ""
+                      " _r_: run nearest   _f_: run file   _p_: run project"
+                      " _d_: debug nearest _s_: summary    _o_: output"
+                      " _x_: stop"
+                      ""
+                      " _q_: quit"]
+                     "\n")
+              with-neotest
+              (fn [f]
+                (ensure-plugin "neotest")
+                (let [packed [(pcall require :neotest)]
+                      ok (. packed 1)
+                      nt (. packed 2)]
+                  (if ok
+                      (pcall (fn [] (f nt)))
+                      (notify-missing "nvim-neotest/neotest"))))]
+          (set _neotest_hydra
+               (Hydra
+                 {:name "Neotest"
+                  :mode ["n" "x"]
+                  :hint hint
+                  :config {:color "teal"
+                           :invoke_on_body true
+                           :hint {:border "rounded" :position "middle"}}
+                  :heads
+                  [["r" (fn [] (with-neotest (fn [nt] ((. (. nt :run) :run))))) {:desc "Run nearest"}]
+                   ["f" (fn [] (with-neotest (fn [nt] ((. (. nt :run) :run) (vim.fn.expand "%"))))) {:desc "Run file"}]
+                   ["p" (fn [] (with-neotest (fn [nt] ((. (. nt :run) :run) {:suite true})))) {:desc "Run project"}]
+                   ["d" (fn [] (with-neotest (fn [nt] ((. (. nt :run) :run) {:strategy "dap"})))) {:desc "Debug nearest"}]
+                   ["s" (fn [] (with-neotest (fn [nt] ((. (. nt :summary) :toggle))))) {:desc "Summary"}]
+                   ["o" (fn [] (with-neotest (fn [nt] ((. (. nt :output) :open) {:enter true :auto_close true})))) {:desc "Output"}]
+                   ["x" (fn [] (with-neotest (fn [nt] ((. (. nt :run) :stop))))) {:desc "Stop"}]
+                   ["q" nil {:exit true :nowait true :desc "Quit"}]]})))))
+  _neotest_hydra)
 
 ;; Agentic.nvim（ACP / coco）
 (fn ensure-agentic-hydra []
@@ -435,6 +572,28 @@
     (when h
       (: h :activate))))
 
+(fn M.activate_kulala_hydra []
+  (let [h (ensure-kulala-hydra)]
+    (when h
+      (: h :activate))))
+
+(fn M.activate_neotest_hydra []
+  (let [h (ensure-neotest-hydra)]
+    (when h
+      ;; headless 不弹出 Hydra
+      (when (> (# (vim.api.nvim_list_uis)) 0)
+        (: h :activate)))))
+
+;; 同一入口键位：根据当前 filetype 自动选择 Hurl / Kulala
+(fn M.activate_http_hydra []
+  (let [ft vim.bo.filetype]
+    (if (= ft "hurl")
+        (M.activate_hurl_hydra)
+        (M.activate_kulala_hydra))))
+
+(fn M.kulala_open_history []
+  (kulala-open-history))
+
 (fn M.activate_conflict_hydra []
   (let [h (ensure-conflict-hydra)]
     (when h
@@ -524,7 +683,39 @@
      :config (fn []
                (local projector_dbee (require :projector_dbee))
                ((. (require :projector) :setup)
-                 {:outputs [(:new projector_dbee.OutputBuilder)]}))})
+                {:outputs [(:new projector_dbee.OutputBuilder)]}))})
+
+  ;; neotest - 测试框架（Go/Python）
+  (gentlewind.use_package
+    {:repo "nvim-neotest/neotest"
+     :cmd ["Neotest"]
+     :ft ["go" "python"]
+     :dependencies ["nvim-neotest/nvim-nio"
+                    "nvim-lua/plenary.nvim"
+                    "nvim-treesitter/nvim-treesitter"
+                    "nvim-neotest/neotest-go"
+                    "nvim-neotest/neotest-python"]
+     :config (fn []
+               ((. (require :neotest) :setup)
+                {:adapters [((require :neotest-go)
+                             {:experimental {:test_table true}
+                              :args ["-count=1" "-timeout=60s"]
+                              :recursive_run true})
+                           ((require :neotest-python)
+                             {:runner "pytest"
+                              :dap {:justMyCode false}})]}))})
+
+  ;; Go: ray-x/go.nvim
+  ;; NOTE: 本配置已在 features/lsp 内独立管理 gopls，因此这里关闭 go.nvim 的内置 lsp_cfg，避免重复配置。
+  (gentlewind.use_package
+    {:repo "ray-x/go.nvim"
+     :ft ["go"]
+     :dependencies ["ray-x/guihua.lua" "neovim/nvim-lspconfig" "nvim-treesitter/nvim-treesitter"]
+     :build ":lua require('go.install').update_all_sync()"
+     :config (fn []
+               (pcall (fn []
+                        ((. (require :go) :setup)
+                         {:lsp_cfg false}))))})
 
   ;; nvim-dap-virtual-text - DAP虚拟文本
   (gentlewind.use_package
@@ -693,11 +884,57 @@
      :cmd ["Spectre"]
      :config (fn [] ((. (require :spectre) :setup)))})
 
+  ;; DB: vim-dadbod + UI + completion
+  (gentlewind.use_package
+    {:repo "tpope/vim-dadbod"
+     :cmd ["DB"]})
+
+  (gentlewind.use_package
+    {:repo "kristijanhusak/vim-dadbod-ui"
+     :cmd ["DBUI" "DBUIToggle" "DBUIAddConnection" "DBUIFindBuffer"]
+     :dependencies ["tpope/vim-dadbod"]
+     ;; minimal defaults; further behavior configured via keymaps / env / g:dbs
+     :init (fn []
+             ;; use nerd font icons only if user already enabled them globally
+             (when vim.g.gentlewind_use_nerd_font
+               (set vim.g.db_ui_use_nerd_fonts 1)))})
+
+  (gentlewind.use_package
+    {:repo "kristijanhusak/vim-dadbod-completion"
+     :ft ["sql" "mysql" "plsql"]
+     :dependencies ["tpope/vim-dadbod"]})
+
+  ;; CSV/TSV: buffer 内表格化查看（无外部 TUI）
+  (gentlewind.use_package
+    {:repo "hat0uma/csvview.nvim"
+     :cmd ["CsvViewEnable" "CsvViewDisable" "CsvViewToggle" "CsvViewInfo"]
+     :ft ["csv" "tsv"]
+     :opts {:view {:display_mode "border"
+                   :header_lnum 1
+                   :sticky_header {:enabled true}}}})
+
+  ;; jq-playground.nvim - 在 Neovim 内交互式跑 jq
+  ;; NOTE: 依赖系统 jq；YAML 输入会用 yq。
+  (gentlewind.use_package
+    {:repo "yochem/jq-playground.nvim"
+     :cmd ["JqPlayground"]})
+
+  ;; Python: venv selector（支持 Poetry / uv(PEP-723) 等）
+  (gentlewind.use_package
+    {:repo "linux-cultist/venv-selector.nvim"
+     :cmd ["VenvSelect" "VenvSelectLog" "VenvSelectCache"]
+     :ft ["python"]
+     :dependencies ["nvim-lua/plenary.nvim"]
+     :config (fn []
+               ;; 显式 setup，确保 Poetry/uv/PEP-723 能力可用。
+               ;; 后续如需指定 picker/backend/search 规则，再在这里补 opts。
+               (pcall (fn [] ((. (require :venv-selector) :setup) {}))))})
+
   ;; hurl.nvim - HTTP客户端
   (gentlewind.use_package
     {:repo "jellydn/hurl.nvim"
      :dependencies ["MunifTanjim/nui.nvim" "nvim-lua/plenary.nvim" "nvim-treesitter/nvim-treesitter"]
-     :ft ["hurl" "http"]
+     :ft ["hurl"]
      :opts {:debug false
             :show_notification true
             :mode "split"
@@ -707,9 +944,15 @@
             :mappings {:close "q"
                        :next_panel "<C-n>"
                        :prev_panel "<C-p>"}}
-     ;; 只保留入口键：<leader>t h（normal/visual 统一进入 Hurl 子模态）
-     :keys [["<leader>th" (fn [] (M.activate_hurl_hydra)) :desc "Hurl 菜单"]
-            ["<leader>th" (fn [] (M.activate_hurl_hydra)) :desc "Hurl 菜单" :mode "v"]]})
+     })
+
+  ;; kulala.nvim - IntelliJ HTTP Client 兼容（.http）
+  ;; NOTE: 关闭插件自带全局 keymaps，由我们统一维护入口键位与 minor-mode。
+  (gentlewind.use_package
+    {:repo "mistweaverco/kulala.nvim"
+     :ft ["http" "rest"]
+     :opts {:global_keymaps false
+            :kulala_keymaps_prefix ""}})
 
   ;; guihua.lua - UI library (required by multiple plugins)
   (gentlewind.use_package
