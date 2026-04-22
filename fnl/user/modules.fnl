@@ -7,6 +7,17 @@
  :lsp
   :picker
   :whichkey
+
+  ;; Extra features
+  :editor_extra
+  :fileops
+  :git_extra
+  :jj
+  :dev_tools_extra
+  :db_extra
+  :notes
+  :remote
+  :lsp_ui
   
   ;; Optional features (uncomment to enable)
   ;; :explorer

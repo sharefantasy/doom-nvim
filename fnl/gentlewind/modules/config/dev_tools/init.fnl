@@ -13,6 +13,7 @@
 (var _kulala_history_path nil)
 (var _conflict_hydra nil)
 (var _agentic_hydra nil)
+(var _jj_hydra nil)
 (fn notify-missing [what]
   (vim.notify (.. "未启用/未安装：" what) vim.log.levels.WARN))
 
@@ -397,9 +398,24 @@
                       " _r_: run    _a_: run all    _e_: pick request"
                       " _o_: open UI   _b_: scratch   _c_: copy as curl"
                       " _v_: toggle view   _E_: env"
+                      " _f_: focus response   _j_: cookie jar   _W_: toggle write_cookies"
                       ""
                       " _q_: quit"]
                      "\n")
+
+              kulala-focus-ui
+              (fn []
+                (ensure-plugin "kulala.nvim")
+                (let [Globals (safe-require :kulala.globals)
+                      ui-id (if Globals (. Globals :UI_ID) "kulala://ui")
+                      buf (vim.fn.bufnr ui-id)]
+                  (if (<= buf 0)
+                      (vim.notify "Kulala UI 尚未打开（先运行/打开 UI）" vim.log.levels.WARN)
+                      (let [win (. (vim.fn.win_findbuf buf) 1)]
+                        (if (and win (> win 0))
+                            (pcall (fn [] (vim.api.nvim_set_current_win win)))
+                            (vim.notify "找不到 Kulala UI 窗口" vim.log.levels.WARN))))))
+
               with-kulala
               (fn [f]
                 (ensure-plugin "kulala.nvim")
@@ -407,8 +423,37 @@
                       ok (. packed 1)
                       kulala (. packed 2)]
                   (if ok
-                      (pcall (fn [] (f kulala)))
-                      (notify-missing "mistweaverco/kulala.nvim"))))]
+                      (do
+                        ;; 关键：
+                        ;; 1) 强制 split 模式，避免误触 `|` 切到 float（float 默认不可聚焦）
+                        ;; 2) 默认总是读取 cookie jar（curl --cookie），支持粘贴链接也带 cookie
+                        ;; 3) 默认不写 cookie jar（避免一次无 Set-Cookie 的响应把 jar 清空）
+                        (let [Globals (safe-require :kulala.globals)
+                              jar (and Globals (. Globals :COOKIES_JAR_FILE))]
+                          (pcall
+                            (fn []
+                              ((. kulala :setup)
+                               {:write_cookies false
+                                :additional_curl_options (if jar ["--cookie" jar] [])
+                                :ui {:display_mode "split"
+                                     :split_direction "vertical"
+                                     :win_opts {:wo {:wrap true :spell false}}}
+                                ;; 禁用切换 split/float（避免再次进入不可聚焦状态）
+                                :kulala_keymaps {"Toggle split/float" false}}))))
+                        (pcall (fn [] (f kulala))))
+                      (notify-missing "mistweaverco/kulala.nvim"))))
+
+              kulala-toggle-write-cookies
+              (fn []
+                (ensure-plugin "kulala.nvim")
+                (let [Config (safe-require :kulala.config)]
+                  (if (not Config)
+                      (notify-missing "mistweaverco/kulala.nvim")
+                      (let [curr (. (. Config :options) :write_cookies)
+                            nextv (not curr)]
+                        ((. Config :set) {:write_cookies nextv})
+                        (vim.notify (.. "Kulala write_cookies: " (if nextv "ON" "OFF")) vim.log.levels.INFO)))))]
+
           (set _kulala_hydra
                (Hydra
                  {:name "Kulala"
@@ -418,14 +463,17 @@
                            :invoke_on_body true
                            :hint {:border "rounded" :position "middle"}}
                   :heads
-                  [["r" (fn [] (kulala-log-last! "run") (with-kulala (fn [m] ((. m :run))))) {:desc "Run"}]
-                   ["a" (fn [] (kulala-log-last! "run_all") (with-kulala (fn [m] ((. m :run_all))))) {:desc "Run all"}]
+                  [["r" (fn [] (kulala-log-last! "run") (with-kulala (fn [m] ((. m :run)) (kulala-focus-ui)))) {:desc "Run"}]
+                   ["a" (fn [] (kulala-log-last! "run_all") (with-kulala (fn [m] ((. m :run_all)) (kulala-focus-ui)))) {:desc "Run all"}]
                    ["e" (fn [] (with-kulala (fn [m] ((. m :search))))) {:desc "Pick request"}]
-                   ["o" (fn [] (kulala-log-last! "open") (with-kulala (fn [m] ((. m :open))))) {:desc "Open UI"}]
+                   ["o" (fn [] (kulala-log-last! "open") (with-kulala (fn [m] ((. m :open)) (kulala-focus-ui)))) {:desc "Open UI"}]
                    ["b" (fn [] (with-kulala (fn [m] ((. m :scratchpad))))) {:desc "Scratch"}]
                    ["c" (fn [] (with-kulala (fn [m] ((. m :copy))))) {:desc "Copy as cURL"}]
                    ["v" (fn [] (with-kulala (fn [m] ((. m :toggle_view))))) {:desc "Toggle view"}]
                    ["E" (fn [] (with-kulala (fn [m] ((. m :set_selected_env))))) {:desc "Select env"}]
+                   ["f" (fn [] (kulala-focus-ui)) {:desc "Focus response"}]
+                   ["j" (fn [] (with-kulala (fn [m] ((. m :open_cookies_jar)) (kulala-focus-ui)))) {:desc "Cookie jar"}]
+                   ["W" (fn [] (kulala-toggle-write-cookies)) {:desc "Toggle write_cookies"}]
                    ["h" (fn [] (kulala-open-history)) {:desc "History"}]
                    ["q" nil {:exit true :nowait true :desc "Quit"}]]})))))
   _kulala_hydra)
@@ -547,6 +595,129 @@
 
                          ["q" nil {:exit true :nowait true :desc "Quit"}]]})))))))
   _agentic_hydra)
+
+;; =============================
+;; JJ (Jujutsu) Hydra
+;; =============================
+
+(fn ensure-jj-hydra []
+  (when (not _jj_hydra)
+    ;; 前置检查：jj CLI 是否可用
+    (when (= 0 (vim.fn.executable "jj"))
+      (local Hydra (safe-require :hydra))
+      (if (not Hydra)
+          (notify-missing "anuvyklack/hydra.nvim")
+          (let [hint (table.concat
+                       [" JJ (Jujutsu)"
+                        ""
+                        " _l_: log          _s_: status       _d_: describe      _: commit"
+                        " _n_: new          _e_: edit"
+                        " _S_: squash       _r_: rebase       _a_: abandon"
+                        " _u_: undo         _U_: redo"
+                        " _f_: fetch        _p_: push         _P_: open PR"
+                        " _b_: bookmark     _t_: tag"
+                        " _v_: vdiff        _V_: hdiff"
+                        " _o_: annot(file)  _O_: annot(line)"
+                        " _ps_: pick(stat)  _ph_: pick(hist)"
+                        ""
+                        " _q_: quit"]
+                       "\n")
+                ;; 安全调用 jj 模块的包装器
+                jj-cmd
+                (fn [f]
+                  (let [packed [(pcall require :jj.cmd)]
+                        ok (. packed 1)
+                        cmd (. packed 2)]
+                    (if ok
+                        (do (f cmd) "")
+                        (do (notify-missing "NicolasGB/jj.nvim") ""))))
+
+                jj-diff
+                (fn [f]
+                  (let [packed [(pcall require :jj.diff)]
+                        ok (. packed 1)
+                        diff (. packed 2)]
+                    (if ok
+                        (do (f diff) "")
+                        (do (notify-missing "NicolasGB/jj.nvim") ""))))
+
+                jj-annotate
+                (fn [f]
+                  (let [packed [(pcall require :jj.annotate)]
+                        ok (. packed 1)
+                        annotate (. packed 2)]
+                    (if ok
+                        (do (f annotate) "")
+                        (do (notify-missing "NicolasGB/jj.nvim") ""))))
+
+                jj-picker
+                (fn [f]
+                  (let [packed [(pcall require :jj.picker)]
+                        ok (. packed 1)
+                        picker (. packed 2)]
+                    (if ok
+                        (do (f picker) "")
+                        (do (notify-missing "NicolasGB/jj.nvim") ""))))]
+            (set _jj_hydra
+                 (Hydra
+                   {:name "JJ"
+                    :mode ["n" "x"]
+                    :hint hint
+                    :config {:color "teal"
+                             :invoke_on_body true
+                             :hint {:border "rounded" :position "middle"}}
+                    :heads
+                    [["l" (fn [] (jj-cmd (fn [c] ((. c :log))))) {:exit true :desc "Log"}]
+
+                     ["s" (fn [] (jj-cmd (fn [c] ((. c :status))))) {:exit true :desc "Status"}]
+
+                     ["d" (fn [] (jj-cmd (fn [c] ((. c :describe))))) {:exit true :desc "Describe"}]
+
+                     [" " (fn [] (jj-cmd (fn [c] ((. c :commit))))) {:exit true :desc "Commit"}]
+
+                     ["n" (fn [] (jj-cmd (fn [c] ((. c :new))))) {:desc "New"}]
+
+                     ["e" (fn [] (jj-cmd (fn [c] ((. c :edit))))) {:desc "Edit"}]
+
+                     ["S" (fn [] (jj-cmd (fn [c] ((. c :squash))))) {:desc "Squash"}]
+
+                     ["r" (fn [] (jj-cmd (fn [c] ((. c :rebase))))) {:desc "Rebase"}]
+
+                     ["a" (fn [] (jj-cmd (fn [c] ((. c :abandon))))) {:desc "Abandon"}]
+
+                     ["u" (fn [] (jj-cmd (fn [c] ((. c :undo))))) {:desc "Undo"}]
+
+                     ["U" (fn [] (jj-cmd (fn [c] ((. c :redo))))) {:desc "Redo"}]
+
+                     ["f" (fn [] (jj-cmd (fn [c] ((. c :fetch))))) {:desc "Fetch"}]
+
+                     ["p" (fn [] (jj-cmd (fn [c] ((. c :push))))) {:desc "Push"}]
+
+                     ["P" (fn [] (jj-cmd (fn [c] ((. c :open_pr))))) {:exit true :desc "Open PR"}]
+
+                     ["b" (fn [] (jj-cmd (fn [c] ((. c :bookmark_create))))) {:desc "Bookmark create"}]
+
+                     ["t" (fn [] (jj-cmd (fn [c] ((. c :tag_set))))) {:desc "Tag set"}]
+
+                     ["v" (fn [] (jj-diff (fn [d] (d.open_vdiff)))) {:exit true :desc "VDiff"}]
+
+                     ["V" (fn [] (jj-diff (fn [d] (d.open_hdiff)))) {:exit true :desc "HDiff"}]
+
+                     ["o" (fn [] (jj-annotate (fn [a] (a.file)))) {:exit true :desc "Annotate file"}]
+
+                     ["O" (fn [] (jj-annotate (fn [a] (a.line)))) {:exit true :desc "Annotate line"}]
+
+                     ["ps" (fn [] (jj-picker (fn [p] (p.status)))) {:exit true :desc "Picker status"}]
+
+                     ["ph" (fn [] (jj-picker (fn [p] (p.file_history)))) {:exit true :desc "Picker history"}]
+
+                     ["q" nil {:exit true :nowait true :desc "Quit"}]]}))))))
+    _jj_hydra)
+
+(fn M.activate_jj_hydra []
+  (let [h (ensure-jj-hydra)]
+    (when h
+      (: h :activate))))
 
 (fn M.activate_git_hydra []
   (let [h (ensure-git-hydra)]

@@ -269,6 +269,9 @@
         ok (. packed 1)
         lazy (. packed 2)]
     (when ok
+      ;; 先安装缺失插件（避免第一次触发 keymap 时无反应）
+      (pcall (fn [] ((. lazy :install) {:plugins [name] :wait true :show false})))
+      ;; 再 load 让插件立刻可用
       (pcall (fn [] ((. lazy :load) {:plugins [name]}))))))
 
 (fn project-root [markers]
@@ -276,6 +279,61 @@
         ok (. packed 1)
         root (. packed 2)]
     (if (and ok root (not= root "")) root (vim.fn.getcwd))))
+
+;; =============================
+;; Obsidian (方案A + nfnl 项目专用 vault)
+;; =============================
+;; 规则：
+;; 1) 若用户已手动设置 `vim.g.obsidian_workspaces`，不覆盖
+;; 2) 若项目根存在 `.nfnl.fnl`/`.nfnl.lua` 且包含 `obsidian_vault`，则使用该 vault
+;; 3) 否则若设置了 `vim.g.obsidian_default_vault`，则作为默认 vault
+
+(fn _read-all [path]
+  (let [packed [(pcall vim.fn.readfile path)]
+        ok (. packed 1)
+        lines (. packed 2)]
+    (if ok (table.concat lines "\n") "")))
+
+(fn _extract-vault [content]
+  (when (and content (not= content ""))
+    ;; 支持：
+    ;; - Fennel: :obsidian_vault "/path" 或 :obsidian-vault "/path"
+    ;; - Lua: obsidian_vault = "/path" 或 obsidian-vault = "/path"（容错）
+    (or
+      (string.match content ":obsidian[_%-]vault%s+\"([^\"]+)\"")
+      (string.match content ":obsidian[_%-]vault%s+'([^']+)'")
+      (string.match content "obsidian[_%-]vault%s*=%s*\"([^\"]+)\"")
+      (string.match content "obsidian[_%-]vault%s*=%s*'([^']+)'")
+      (string.match content "OBSIDIAN[_%-]VAULT%s*=%s*\"([^\"]+)\"")
+      (string.match content "OBSIDIAN[_%-]VAULT%s*=%s*'([^']+)'")
+      nil)))
+
+(fn obsidian-project-vault []
+  (let [root (project-root [".nfnl.fnl" ".nfnl.lua" ".git"])
+        cfg1 (vim.fs.joinpath root ".nfnl.fnl")
+        cfg2 (vim.fs.joinpath root ".nfnl.lua")
+        has1 (= (vim.fn.filereadable cfg1) 1)
+        has2 (= (vim.fn.filereadable cfg2) 1)
+        content (if has1 (_read-all cfg1) (if has2 (_read-all cfg2) ""))
+        vault (_extract-vault content)]
+    (if (and vault (not= vault ""))
+        {:root root :vault (vim.fn.expand vault)}
+        nil)))
+
+(fn ensure-obsidian-workspaces! []
+  (let [ws vim.g.obsidian_workspaces]
+    (when (or (not ws) (and (= (type ws) :table) (= (# ws) 0)))
+      (let [proj (obsidian-project-vault)
+            default (or vim.g.obsidian_default_vault "")]
+        (set vim.g.obsidian_workspaces
+             (if proj
+                 [{:name (vim.fn.fnamemodify (. proj :root) ":t")
+                   :path (. proj :vault)}]
+                 (if (and (= (type default) :string) (not= default ""))
+                     [{:name "notes" :path (vim.fn.expand default)}]
+                     [])))))))
+
+(ensure-obsidian-workspaces!)
 
 (fn run-in-term [cmd cwd]
   (let [prev (vim.fn.getcwd)]
@@ -605,6 +663,22 @@
   {:<leader>g {:name "+git"
                :g {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_git_hydra)))
                    :desc "Git 菜单"}
+               :b {:cmd (fn []
+                         (ensure-plugin "git-blame.nvim")
+                         (pcall vim.cmd "GitBlameToggle"))
+                   :desc "Blame: Toggle"}
+               :s {:cmd (fn []
+                         (ensure-plugin "advanced-git-search.nvim")
+                         (pcall vim.cmd "AdvancedGitSearch"))
+                   :desc "Search: Advanced"}
+               :i {:cmd (fn []
+                         (ensure-plugin "inlinediff-nvim")
+                         (pcall vim.cmd "InlineDiff toggle"))
+                   :desc "InlineDiff: Toggle"}
+               :u {:cmd (fn []
+                         (ensure-plugin "lazyUrlUpdate.nvim")
+                         (pcall vim.cmd "LazyUrlUpdate"))
+                   :desc "LazyUrl: Update plugin under cursor"}
                :c {:name "+conflict"
                    :c {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_conflict_hydra)))
                        :desc "Conflict 菜单"}
@@ -616,10 +690,31 @@
                        :desc "上一个冲突"}
                    :v {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :toggle_conflict_view)))
                        :desc "切换视图"}}}
-   :<leader>d {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :toggle_debug_hydra)))
+  :<leader>j {:name "+jujutsu"
+               :j {:cmd (fn []
+                           (let [packed [(pcall require :gentlewind.modules.config.dev_tools)]
+                                 ok (. packed 1)
+                                 dev-tools (. packed 2)]
+                             (when ok
+                               ((. dev-tools :activate_jj_hydra)))))
+                   :desc "JJ: Hydra"}}
+  :<leader>d {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :toggle_debug_hydra)))
                :desc "Debug 菜单"}
-   :<leader>a {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_agentic_hydra)))
+  :<leader>a {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_agentic_hydra)))
                :desc "AI 菜单"}
+  :<leader>r {:name "+remote"
+              :i {:cmd (fn [] (ensure-plugin "distant.nvim") (pcall vim.cmd "DistantInstall"))
+                  :desc "Distant: Install"}
+              :c {:cmd (fn [] (ensure-plugin "distant.nvim") (pcall vim.cmd "DistantConnect"))
+                  :desc "Distant: Connect"}
+              :s {:cmd (fn [] (ensure-plugin "nvim-dev-container") (pcall vim.cmd "DevcontainerStart"))
+                  :desc "Devcontainer: Start"}
+              :a {:cmd (fn [] (ensure-plugin "nvim-dev-container") (pcall vim.cmd "DevcontainerAttach"))
+                  :desc "Devcontainer: Attach"}
+              :e {:cmd (fn [] (ensure-plugin "nvim-dev-container") (pcall vim.cmd "DevcontainerExec"))
+                  :desc "Devcontainer: Exec"}
+              :l {:cmd (fn [] (ensure-plugin "nvim-dev-container") (pcall vim.cmd "DevcontainerLogs"))
+                  :desc "Devcontainer: Logs"}}
   :<leader>o {:name "+open"
                :d {:cmd (fn []
                          (ensure-plugin "vim-dadbod-ui")
@@ -649,7 +744,48 @@
               :t {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_neotest_hydra)))
                   :desc "Test 菜单"}
               :h {:cmd (fn [] ((. (require :gentlewind.modules.config.dev_tools) :activate_http_hydra)))
-                  :desc "HTTP/Hurl 菜单"}}})
+                  :desc "HTTP/Hurl 菜单"}
+              :c {:cmd (fn [] (ensure-plugin "nvim-coverage") (pcall vim.cmd "CoverageToggle"))
+                  :desc "Coverage: Toggle"}
+              :m {:cmd (fn [] (ensure-plugin "time-machine.nvim") (pcall vim.cmd "TimeMachineToggle"))
+                  :desc "TimeMachine: Toggle"}}})
+
+;; Files / Notes / Jump
+(gentlewind.use_keybind
+  {:<leader>f {:name "+files"
+               :o {:cmd (fn [] (ensure-plugin "oil.nvim") (pcall vim.cmd "Oil"))
+                   :desc "Oil: Open"}
+               :O {:cmd (fn [] (ensure-plugin "oil.nvim") (pcall vim.cmd "Oil --float"))
+                   :desc "Oil: Float"}
+               :r {:cmd (fn [] (ensure-plugin "nvim-genghis") (pcall vim.cmd "Genghis renameFile"))
+                   :desc "Rename file"}
+               :m {:cmd (fn [] (ensure-plugin "nvim-genghis") (pcall vim.cmd "Genghis moveAndRenameFile"))
+                   :desc "Move/Rename file"}
+               :d {:cmd (fn [] (ensure-plugin "nvim-genghis") (pcall vim.cmd "Genghis trashFile"))
+                   :desc "Trash file"}
+               :y {:cmd (fn [] (ensure-plugin "nvim-genghis") (pcall vim.cmd "Genghis copyFilepath"))
+                   :desc "Copy filepath"}}
+
+   :<leader>n {:name "+notes"
+               :o {:cmd (fn [] (ensure-plugin "obsidian.nvim") (pcall vim.cmd "Obsidian"))
+                   :desc "Obsidian: Menu"}
+               :t {:cmd (fn [] (ensure-plugin "obsidian.nvim") (pcall vim.cmd "Obsidian today"))
+                   :desc "Obsidian: Today"}
+               :s {:cmd (fn [] (ensure-plugin "obsidian.nvim") (pcall vim.cmd "Obsidian search"))
+                   :desc "Obsidian: Search"}
+               :q {:cmd (fn [] (ensure-plugin "obsidian.nvim") (pcall vim.cmd "Obsidian quick_switch"))
+                   :desc "Obsidian: Quick switch"}
+               :b {:cmd (fn [] (ensure-plugin "obsidian.nvim") (pcall vim.cmd "Obsidian backlinks"))
+                   :desc "Obsidian: Backlinks"}}
+
+   :<leader>w {:name "+warp"
+               :w {:cmd (fn [] (ensure-plugin "warp.nvim") (pcall vim.cmd "Warp"))
+                   :desc "Warp: Jump to path/url"}
+               :h {:cmd (fn []
+                         ;; hodur 自带可配置热键（默认 <C-g>）。这里保留一个显式入口给 which-key。
+                         (ensure-plugin "hodur.nvim")
+                         (vim.notify "Hodur 默认热键 <C-g>：打开 file(:line[:col]) 或复制 URL" vim.log.levels.INFO))
+                   :desc "Hodur: Hint"}}})
 
 ;; Add custom autocommands
 (gentlewind.use_autocmd

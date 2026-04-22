@@ -211,6 +211,94 @@
               (vim.notify (.. "已安装并加载：" name) vim.log.levels.INFO)
               (vim.notify (.. "已安装但加载失败：" name "（可重启或 :Lazy load " name "）") vim.log.levels.WARN)))))))
 
+(fn nvimsh-url [tag? q2]
+  (if tag?
+      (if (= q2 "")
+          "https://nvim.sh/t?format=json"
+          (.. "https://nvim.sh/t/" (vim.uri_encode q2) "?format=json"))
+      (.. "https://nvim.sh/s/" (vim.uri_encode q2) "?format=json")))
+
+(fn decode-json-safe [s]
+  (let [packed [(pcall vim.json.decode (or s "{}"))]
+        ok (. packed 1)
+        decoded (. packed 2)]
+    (if ok decoded {})))
+
+(fn make-plugin-item [p]
+  (let [user (or (. p :username) "")
+        repo (or (. p :repo) "")
+        full (if (and (not= user "") (not= repo "")) (.. user "/" repo) (or (. p :id) ""))
+        stars (or (. p :stars) 0)
+        updated (or (. p :updatedAt) "")
+        desc (or (. p :description) "")
+        link (or (. p :link) "")
+        tags (or (. p :tags) [])]
+    (if (= full "")
+        nil
+        {:text full
+         :repo_full full
+         :url link
+         :stars stars
+         :updated updated
+         :desc desc
+         :preview {:text (.. "# " full "\n\n" desc "\n\n" "- url: " link "\n" "- tags: " (table.concat tags ", "))
+                   :ft "markdown"}})))
+
+(fn emit-nvimsh-items! [decoded tag? q2 cb]
+  (if tag?
+      (if (= q2 "")
+          (each [_ t (ipairs (or (. decoded :tags) []))]
+            (cb {:text (.. "#" t)
+                 :repo_full (.. "#" t)
+                 :desc "tag"
+                 :stars ""
+                 :updated ""
+                 :preview {:text (.. "tag: #" t) :ft "markdown"}}))
+          (each [_ r (ipairs (or (. decoded :results) []))]
+            (let [p (. r :plugin)
+                  item (make-plugin-item p)]
+              (when item (cb item)))))
+      (each [_ r (ipairs (or (. decoded :results) []))]
+        (let [p (. r :plugin)
+              item (make-plugin-item p)]
+          (when item (cb item))))))
+
+(fn nvimsh-finder [opts ctx]
+  ;; `opts.search` 是输入框内容；支持：
+  ;; - 关键词：直接搜 /s/<kw>
+  ;; - 标签：以 # 开头：#git => /t/git
+  (let [q (trim (or (. opts :search) ""))
+        tag? (= (string.sub q 1 1) "#")
+        q2 (if tag? (trim (string.sub q 2)) q)
+        ;; 空输入不打 API，避免 /s 全量太大
+        should-fetch (or tag? (>= (# q2) 2))]
+    (if (not should-fetch)
+        []
+        (let [url (nvimsh-url tag? q2)]
+          ;; 兼容 nvim < 0.10：没有 vim.system 时，直接同步返回 items
+          (if (not vim.system)
+              (let [packed [(pcall (fn [] (vim.fn.system ["curl" "-fsSL" url])))]
+                    ok (. packed 1)
+                    stdout (. packed 2)]
+                (if (or (not ok) (not= vim.v.shell_error 0))
+                    []
+                    (let [decoded (decode-json-safe stdout)
+                          items []]
+                      (emit-nvimsh-items! decoded tag? q2 (fn [it] (table.insert items it)))
+                      items)))
+              ;; nvim >= 0.10：用 vim.system async
+              (fn [cb]
+                (let [async (. ctx :async)]
+                  (var result nil)
+                  (vim.system ["curl" "-fsSL" url] {:text true}
+                              (fn [res]
+                                (set result res)
+                                (pcall (fn [] ((. async :resume))))))
+                  ((. async :suspend))
+                  (when (and result (= (. result :code) 0))
+                    (let [decoded (decode-json-safe (. result :stdout))]
+                      (emit-nvimsh-items! decoded tag? q2 cb))))))))))
+
 (fn nvimsh-picker []
   (let [Snacks (Snacks)]
     ((. (. Snacks :picker) :pick)
@@ -231,89 +319,31 @@
                   [{1 line 2 "Identifier"}
                    {1 (if (= desc "") "" (.. "\n" desc)) 2 "Comment"}]))
       :confirm (fn [picker item]
-                 (pcall (fn [] ((. picker :close))))
-                 (when item
-                   (let [repo (. item :repo_full)]
-                     (when (and repo (not= (trim repo) "") (not= (string.sub repo 1 1) "#"))
-                       (lazy-install-and-load! repo)))))
-      :finder (fn [opts ctx]
-                ;; `opts.search` 是输入框内容；支持：
-                ;; - 关键词：直接搜 /s/<kw>
-                ;; - 标签：以 # 开头：#git => /t/git
-                (let [q (trim (or (. opts :search) ""))
-                      tag? (= (string.sub q 1 1) "#")
-                      q2 (if tag? (trim (string.sub q 2)) q)
-                      ;; 空输入不打 API，避免 /s 全量太大
-                      should-fetch (or tag? (>= (# q2) 2))]
-                  (if (not should-fetch)
-                      []
-                      (fn [cb]
-                        (let [async (. ctx :async)
-                              url (if tag?
-                                      (if (= q2 "")
-                                          "https://nvim.sh/t?format=json"
-                                          (.. "https://nvim.sh/t/" (vim.uri_encode q2) "?format=json"))
-                                      (.. "https://nvim.sh/s/" (vim.uri_encode q2) "?format=json"))
-                              ]
-                          (var result nil)
-                          (vim.system ["curl" "-fsSL" url] {:text true}
-                                      (fn [res]
-                                        (set result res)
-                                        (pcall (fn [] ((. async :resume))))))
-                          ;; 等待请求完成（避免在非 async 上下文调用 cb）
-                          ((. async :suspend))
-                          (when (and result (= (. result :code) 0))
-                            (let [decoded (vim.json.decode (or (. result :stdout) "{}"))]
-                              (if tag?
-                                  (if (= q2 "")
-                                      ;; tag list
-                                      (each [_ t (ipairs (or (. decoded :tags) []))]
-                                        (cb {:text (.. "#" t)
-                                             :repo_full (.. "#" t)
-                                             :desc "tag"
-                                             :stars ""
-                                             :updated ""
-                                             :preview {:text (.. "tag: #" t) :ft "markdown"}}))
-                                      ;; tag search results
-                                      (each [_ r (ipairs (or (. decoded :results) []))]
-                                        (let [p (. r :plugin)
-                                              user (or (. p :username) "")
-                                              repo (or (. p :repo) "")
-                                              full (if (and (not= user "") (not= repo "")) (.. user "/" repo) (or (. p :id) ""))
-                                              stars (or (. p :stars) 0)
-                                              updated (or (. p :updatedAt) "")
-                                              desc (or (. p :description) "")
-                                              link (or (. p :link) "")
-                                              tags (or (. p :tags) [])]
-                                          (when (not= full "")
-                                            (cb {:text full
-                                                 :repo_full full
-                                                 :url link
-                                                 :stars stars
-                                                 :updated updated
-                                                 :desc desc
-                                                 :preview {:text (.. "# " full "\n\n" desc "\n\n" "- url: " link "\n" "- tags: " (table.concat tags ", "))
-                                                           :ft "markdown"}})))))
-                                  ;; keyword search results
-                                  (each [_ r (ipairs (or (. decoded :results) []))]
-                                    (let [p (. r :plugin)
-                                          user (or (. p :username) "")
-                                          repo (or (. p :repo) "")
-                                          full (if (and (not= user "") (not= repo "")) (.. user "/" repo) (or (. p :id) ""))
-                                          stars (or (. p :stars) 0)
-                                          updated (or (. p :updatedAt) "")
-                                          desc (or (. p :description) "")
-                                          link (or (. p :link) "")
-                                          tags (or (. p :tags) [])]
-                                      (when (not= full "")
-                                        (cb {:text full
-                                             :repo_full full
-                                             :url link
-                                             :stars stars
-                                             :updated updated
-                                             :desc desc
-                                             :preview {:text (.. "# " full "\n\n" desc "\n\n" "- url: " link "\n" "- tags: " (table.concat tags ", "))
-                                                      :ft "markdown"}}))))))))))))})))
+                 ;; 注意：Snacks 的 action 不会自动 `stopinsert`，这里统一用 picker:norm
+                 ((. picker :norm)
+                  (fn []
+                    (var repo nil)
+                    (when item
+                      (set repo (. item :repo_full)))
+
+                    ;; 没有选中条目时：尝试把输入内容当作 repo 直接安装
+                    (when (or (not repo) (= (trim repo) ""))
+                      (pcall (fn [] (set repo (. (. picker :input) :filter :search)))))
+
+                    (set repo (trim (or repo "")))
+                    (when (= repo "")
+                      (vim.notify "没有可确认的条目（请输入关键词或选择列表项）" vim.log.levels.WARN)
+                      (return))
+
+                    ;; tag 仅用于筛选，不支持直接安装
+                    (when (= (string.sub repo 1 1) "#")
+                      (vim.notify (.. "tag 只用于筛选：" repo "（请输入关键词或选择具体插件）") vim.log.levels.INFO)
+                      (return))
+
+                    ;; 关闭 picker，避免安装提示被遮挡
+                    (pcall (fn [] ((. picker :close))))
+                    (lazy-install-and-load! repo))))
+      :finder nvimsh-finder})))
 
 (set M.binds
   {:<leader>p {:name "+picker"

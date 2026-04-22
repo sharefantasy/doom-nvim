@@ -141,6 +141,8 @@
                                                     (logger.error "Gentlewind-nvim has been installed.  Please restart gentlewind-nvim."))})))
 
 (fn modules.handle_lazynvim []
-  ((. (require :lazy) :setup) gentlewind.packages))
+  ;; 关闭 lazy.nvim 的 package-spec 功能（插件仓库内 `lazy.lua` / `pkg.json`）。
+  ;; 说明：部分插件的 `lazy.lua` 不包含 repo 字段，会导致 lazy.nvim 报 `Invalid plugin spec { cmd = ... }`。
+  ((. (require :lazy) :setup) gentlewind.packages {:pkg {:enabled false}}))
 
 modules

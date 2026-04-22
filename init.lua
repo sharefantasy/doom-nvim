@@ -60,7 +60,7 @@ do
     end
     local trimmed = cmd:gsub("^%s+", ""):gsub("%s+$", "")
     local lower = trimmed:lower()
-    if lower:match("^augroup") then
+    if lower:match("^augroup") or lower:match("^aug%f[%s]") then
       local tokens = {}
       for t in trimmed:gmatch("%S+") do
         table.insert(tokens, t)
@@ -110,7 +110,9 @@ do
   vim.cmd = setmetatable({}, {
     __call = function(_, cmd)
       if type(cmd) == "string" then
-        return orig_nvim_command(sanitize_cmd(cmd))
+        -- 必须走原生 vim.cmd 的实现（内部会用 nvim_exec2/nvim_exec），
+        -- 否则多行 Ex（例如 bqf 的 `cmd([[...\naug ...\nau!\naug END]])`）会被 nvim_command 当成单行执行，触发 E216。
+        return orig_cmd(sanitize_cmd(cmd))
       end
       return orig_cmd(cmd)
     end,
