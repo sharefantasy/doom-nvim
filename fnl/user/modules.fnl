@@ -80,6 +80,8 @@
   :haskell
   :clojure
   :ocaml
+  :lean
+  :tlaplus
   
   ;; Game development
   :gdscript

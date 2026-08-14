@@ -13,6 +13,7 @@ tags
 tools/doom-nvim-contrib
 tools/local-share-nvim
 tools/workspace
+.tla-cache/
 
 # User modules
 user/modules/*

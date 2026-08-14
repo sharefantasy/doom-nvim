@@ -520,7 +520,7 @@
                    ["q" nil {:exit true :nowait true :desc "Quit"}]]})))))
   _neotest_hydra)
 
-;; Agentic.nvim（ACP / coco）
+;; Agentic.nvim（ACP / TraeX）
 (fn ensure-agentic-hydra []
   (when (not _agentic_hydra)
     (local Hydra (safe-require :hydra))
@@ -531,7 +531,7 @@
           (if (or (not Agentic) (not SessionRegistry))
               (notify-missing "carlos-algms/agentic.nvim")
               (let [hint (table.concat
-                           [" Agentic (coco)"
+                           [" Agentic (TRAE CLI)"
                             ""
                             " _o_: toggle chat     _n_: new session    _r_: restore session"
                             " _x_: stop generation"
@@ -543,7 +543,7 @@
                             ""
                             " _q_: quit"
                             ""
-                            "（提示：provider 已固定为 coco；如需切换 provider 请先在配置里放开 switch_provider）"]
+                            "（提示：provider 已固定为 traex；Skills/MCP 统一从 ~/.trae/traecli.toml 加载）"]
                            "\n")
                     with-session
                     (fn [f]
@@ -809,7 +809,7 @@
   ;; refactoring.nvim - 代码重构工具
   (gentlewind.use_package
     {:repo "ThePrimeagen/refactoring.nvim"
-     :dependencies ["nvim-lua/plenary.nvim" "nvim-treesitter/nvim-treesitter"]
+     :dependencies ["lewis6991/async.nvim" "nvim-lua/plenary.nvim" "nvim-treesitter/nvim-treesitter"]
      :cmd ["Refactor"]
      :config (fn []
                ((. (require :refactoring) :setup)

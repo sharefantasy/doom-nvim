@@ -236,6 +236,19 @@ return my_feature
 4. **性能监控**: 使用内置的性能分析工具监控启动时间
 5. **文档完善**: 为自定义模块添加详细文档和配置说明
 
+### Agent 与专业工具知识库
+
+涉及 TraeX、ACP、MCP、Skills、Lean 或科学计算环境的设计与排障时，先读取：
+
+- `docs/agent-tools/README.md`
+- `docs/agent-tools/traex.md`
+- `docs/agent-tools/lean.md`
+- `docs/agent-tools/tlaplus.md`
+- `docs/agent-tools/scientific-computing.md`
+
+这些文档记录当前工具边界和已验证入口；若与运行态不一致，先核对实际版本和 `--help`，
+再同步更新 Fennel 配置与文档。
+
 ### Fennel 开发建议
 1. **🔄 编译流程**: 修改 Fennel 代码后**必须立即**运行 `./tools/compile-fennel.sh` 编译到 Lua
 2. **语法检查**: 使用 `fennel --compile` 检查语法错误

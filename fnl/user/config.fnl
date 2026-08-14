@@ -58,35 +58,44 @@
 
 
 
-;; 修复 sidekick.nvim 对 copilot 的依赖
+;; Sidekick 统一使用 TraeX CLI，避免与旧版 Coco 双轨运行
 (gentlewind.use_package
   {:repo "folke/sidekick.nvim"
    :event "VeryLazy"
-   :dependencies ["nvim-lua/plenary.nvim"] ; 移除 copilot.lua
+   :dependencies ["nvim-lua/plenary.nvim"]
    :config (fn []
              ((. (require :sidekick) :setup)
-              {:cli {:tools {:coco {:cmd ["coco"]}}}}))})
+              {:cli {:tools {:traex {:cmd ["traex"]}}}}))})
 
 ;; 接入 agentic.nvim
 (gentlewind.use_package
   {:repo "carlos-algms/agentic.nvim"
    :dependencies ["hakonharnes/img-clip.nvim"]
-   ;; 仅使用本地 `coco/trae-cli` 作为 ACP provider（不会去启动/探测其它 provider 的进程）
-   ;; coco 的 ACP server 启动方式：`coco acp serve`
-   :opts {:provider "coco"
-          :acp_providers {:coco {:name "Coco ACP"
-                                :command "coco"
-                                :args ["acp" "serve"]
-                                :env {}}}
+   ;; 仅使用新版 TraeX 作为 ACP provider；它会读取 ~/.trae/traecli.toml 中的 Skills/MCP 配置。
+   :opts {:provider "traex"
+          :acp_providers {:traex {:name "TRAE CLI"
+                                  :command "traex"
+                                  :args ["acp" "serve"]
+                                  :env {}}}
 
           ;; 让 Agentic 的 UI 更“像聊天”：
+          ;; - 默认放在底部，给右侧 Lean Infoview / 其他侧栏留空间
           ;; - 分隔线更明显：WinSeparator -> AgenticWinSeparator
           ;; - 输入框更有区分度：Normal -> AgenticInputNormal
-          :windows {:chat {:win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
-                    :code {:win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
-                    :files {:win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
-                    :diagnostics {:win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
-                    :todos {:win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
+          :windows {:position "bottom"
+                    :width "42%"
+                    :height "32%"
+                    :stack_width_ratio 0.35
+                    :chat {:win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
+                    :code {:max_height 6
+                           :win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
+                    :files {:max_height 5
+                            :win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
+                    :diagnostics {:max_height 6
+                                  :win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
+                    :todos {:display false
+                            :max_height 6
+                            :win_opts {:winhighlight "WinSeparator:AgenticWinSeparator"}}
                     :input {:height 8
                             :win_opts {:wrap true
                                        :linebreak true
@@ -818,12 +827,40 @@
 (set vim.opt.relativenumber true)
 (set vim.opt.wrap false)
 
-;; 将 Mason 的 bin 加入 PATH，便于 jq-playground / venv-selector 等插件直接调用 Mason 安装的工具
-(let [mason-bin (.. (vim.fn.stdpath :data) "/mason/bin")
-      path (or vim.env.PATH "")]
-  (when (and (not= mason-bin "")
-             (not (string.find path mason-bin 1 true)))
-    (set vim.env.PATH (.. mason-bin ":" path))))
+;; 规范 Mason 运行环境：工具走 Mason bin，Go 包安装强制走 Homebrew Go，避免继承 GVM 的旧 GOROOT/GOPATH。
+(let [prepend-path
+      (fn [dir]
+        (when (and dir (not= dir "") (= (vim.fn.isdirectory dir) 1))
+          (let [items (vim.split (or vim.env.PATH "") ":" {:plain true})
+                filtered []]
+            (each [_ item (ipairs items)]
+              (when (and (not= item "") (not= item dir))
+                (table.insert filtered item)))
+            (table.insert filtered 1 dir)
+            (set vim.env.PATH (table.concat filtered ":")))))
+      gvm-path? (fn [value] (and value (string.find value "/.gvm/" 1 true)))
+      local-bin (vim.fn.expand "~/.local/bin")
+      elan-bin (vim.fn.expand "~/.elan/bin")
+      mason-bin (.. (vim.fn.stdpath :data) "/mason/bin")
+      brew-go-bins ["/opt/homebrew/opt/go/bin"
+                    "/opt/homebrew/bin"
+                    "/usr/local/opt/go/bin"
+                    "/usr/local/bin"]]
+  ;; GUI / Zellij 启动 Neovim 时也能找到 traex、uvx、elan、lean 与 lake。
+  (prepend-path local-bin)
+  (prepend-path elan-bin)
+  (prepend-path mason-bin)
+  (var brew-go-bin nil)
+  (each [_ dir (ipairs brew-go-bins)]
+    (when (and (not brew-go-bin)
+               (= (vim.fn.executable (.. dir "/go")) 1))
+      (set brew-go-bin dir)))
+  (when brew-go-bin
+    (prepend-path brew-go-bin)
+    (when (gvm-path? vim.env.GOROOT)
+      (set vim.env.GOROOT nil))
+    (when (gvm-path? vim.env.GOPATH)
+      (set vim.env.GOPATH nil))))
 
 ;; kulala_http treesitter 高亮补强：把自定义 capture 映射到更“gruvbox”的颜色层次
 ;; NOTE: 只 link 未定义的 group，不覆盖主题本身。

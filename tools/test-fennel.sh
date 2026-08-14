@@ -56,11 +56,10 @@ if command -v nvim &> /dev/null; then
 {:message test}
 EOF
     
-    if nvim --headless --clean -c "
-        set rtp+=~/.local/share/nvim/lazy/aniseed
-        lua require('aniseed.compile').compile('/tmp/test.fnl', '/tmp/test.lua')
-        quit
-    " 2>/dev/null; then
+    if nvim --headless --clean \
+        -c "set rtp+=$HOME/.local/share/nvim/lazy/aniseed" \
+        -c "lua require('aniseed.compile').file('/tmp/test.fnl', '/tmp/test.lua')" \
+        -c "qa!" 2>/dev/null; then
         if [[ -f "/tmp/test.lua" ]]; then
             echo "  ✅ Compilation successful"
             rm -f /tmp/test.fnl /tmp/test.lua

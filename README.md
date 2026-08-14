@@ -58,6 +58,7 @@ curl -s https://raw.githubusercontent.com/gentlewind-neovim/gentlewind-nvim/main
 ---
 
 - [Configuring](#configuring)
+- [Agent and tool documentation](./docs/agent-tools/README.md)
 - [Enabling features: `modules.lua`](#enabling-features-moduleslua)
   - [What is a module?](#what-is-a-module)
   - [Enabling/disabling modules](#enablingdisabling-modules)
