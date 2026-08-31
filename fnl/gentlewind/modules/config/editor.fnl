@@ -40,12 +40,6 @@
   ;; 重复操作增强
   (gentlewind.use_package "tpope/vim-repeat")
 
-  ;; Markdown 预览
-  (gentlewind.use_package
-    {:repo "iamcco/markdown-preview.nvim"
-     :ft ["markdown"]
-     :cmd ["MarkdownPreview" "MarkdownPreviewStop" "MarkdownPreviewToggle"]})
-
   ;; 包围操作
   (gentlewind.use_package
     {:repo "ur4ltz/surround.nvim"

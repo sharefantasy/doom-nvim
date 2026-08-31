@@ -111,8 +111,9 @@
                    :prompt {:submit [{1 "<S-CR>" :mode ["i" "n" "v"]}
                                      {1 "<C-s>" :mode ["i" "n" "v"]}]}}}})
 
-;; 让 AgenticChat 的 markdown 更“可读”（富渲染）
-;; NOTE: 只对 AgenticChat 启用，避免影响你日常编辑 markdown 文件。
+;; 让 Markdown / AgenticChat 的 markdown 更“可读”（富渲染）
+;; 普通 markdown 与 AgenticChat 都启用 render-markdown；
+;; AgenticChat 仍保留下面的特殊 attach 兜底，避免其 filetype 写入时序导致首次不渲染。
 (gentlewind.use_package
   {:repo "MeanderingProgrammer/render-markdown.nvim"
    ;; 不用 ft 懒加载：render-markdown.nvim 在 lazy(ft) 下会默认跳过“当前 buffer” attach，
@@ -352,6 +353,268 @@
     (pcall vim.api.nvim_set_current_dir prev)
     (pcall vim.cmd "startinsert")))
 
+(fn shellescape [s]
+  (vim.fn.shellescape s))
+
+(fn markdown-current-file []
+  (local file (vim.api.nvim_buf_get_name 0))
+  (if (and file (not= file ""))
+      file
+      nil))
+
+(fn markdown-export-mermaid []
+  (local file (markdown-current-file))
+  (if (not file)
+      (vim.notify "当前 buffer 还没有文件路径，无法导出 mermaid" vim.log.levels.WARN)
+      (if (= (vim.fn.executable "mmdc") 0)
+          (vim.notify "未找到 mmdc（mermaid-cli）" vim.log.levels.WARN)
+          (let [root (project-root [".git" "README.md" "docs"])
+                out (.. file ".mermaid.svg")
+                cmd (.. "mmdc -q -i " (shellescape file)
+                        " -o " (shellescape out)
+                        " -e svg -t dark")]
+            (run-in-term cmd root)))))
+
+(fn markdown-export-plantuml []
+  (local file (markdown-current-file))
+  (if (not file)
+      (vim.notify "当前 buffer 还没有文件路径，无法导出 plantuml" vim.log.levels.WARN)
+      (if (= (vim.fn.executable "plantuml") 0)
+          (vim.notify "未找到 plantuml CLI" vim.log.levels.WARN)
+          (let [root (project-root [".git" "README.md" "docs"])
+                cmd (.. "plantuml -tsvg " (shellescape file))]
+            (run-in-term cmd root)))))
+
+(fn markdown-semver-gte? [version major minor patch]
+  (let [major0 (tonumber (or (string.match version "^(%d+)") "0"))
+        minor0 (tonumber (or (string.match version "^%d+%.(%d+)") "0"))
+        patch0 (tonumber (or (string.match version "^%d+%.%d+%.(%d+)") "0"))]
+    (or (> major0 major)
+        (and (= major0 major) (> minor0 minor))
+        (and (= major0 major) (= minor0 minor) (>= patch0 patch)))))
+
+(fn markdown-env-truthy? [value]
+  (and value
+       (not= value "")
+       (not= value "0")
+       (not= value "false")
+       (not= value "False")
+       (not= value "FALSE")
+       (not= value "no")
+       (not= value "No")
+       (not= value "NO")))
+
+(fn markdown-herdr-env? []
+  (or (markdown-env-truthy? vim.env.HERDR_ENV)
+      (markdown-env-truthy? vim.env.HERDR_SOCKET_PATH)
+      (markdown-env-truthy? vim.env.HERDR_PANE_ID)))
+
+(fn markdown-herdr-preview-env? []
+  (and (markdown-env-truthy? vim.env.HERDR_ENV)
+       (markdown-env-truthy? vim.env.HERDR_SOCKET_PATH)
+       (markdown-env-truthy? vim.env.HERDR_PANE_ID)))
+
+(fn markdown-mdview-preview []
+  (local file (markdown-current-file))
+  (if (not file)
+      (vim.notify "当前 buffer 还没有文件路径，无法用 mdview 预览" vim.log.levels.WARN)
+      (let [root (project-root [".git" "README.md" "docs"])
+            controller (or vim.g.markdown_herdr_preview_controller
+                           (vim.fn.expand "~/.trae/skills/herdr-markdown-preview/scripts/herdr_markdown_preview.py"))]
+        (if (markdown-herdr-preview-env?)
+            (if (or (= (vim.fn.executable "python3") 0)
+                    (not= (vim.fn.filereadable controller) 1))
+                (vim.notify "Herdr Markdown preview controller 不可用" vim.log.levels.WARN)
+                (vim.system ["python3" controller "start" file "--client" "neovim"]
+                            {:cwd root :text true}
+                            (fn [result]
+                              (vim.schedule
+                                (fn []
+                                  (if (= result.code 0)
+                                      (vim.notify "已在相邻 Herdr pane 打开 mdview")
+                                      (let [detail (vim.trim (or result.stderr result.stdout ""))]
+                                        (vim.notify
+                                          (.. "mdview 启动失败："
+                                              (if (= detail "")
+                                                  (.. "exit " (tostring result.code))
+                                                  detail))
+                                          vim.log.levels.WARN))))))))
+            (if (= (vim.fn.executable "mdview") 0)
+                (vim.notify "未找到 mdview；请先安装到 PATH" vim.log.levels.WARN)
+                (run-in-term (.. "mdview --backend=text " (shellescape file)) root))))))
+
+(fn markdown-zellij-env? []
+  (or (markdown-env-truthy? vim.env.ZELLIJ)
+      (markdown-env-truthy? vim.env.ZELLIJ_PANE_ID)))
+
+(fn markdown-herdr-has-pixel-geometry? []
+  (if (not (markdown-herdr-env?))
+      false
+      (let [log-path (vim.fn.expand "~/.config/herdr/herdr-server.log")]
+        (if (not= (vim.fn.filereadable log-path) 1)
+            false
+            (let [geometry
+                  (if (= (vim.fn.executable "rg") 1)
+                      (vim.fn.system
+                        ["rg" "-m" "1"
+                         "cell_width_px=[1-9][0-9]*.*cell_height_px=[1-9][0-9]*"
+                         log-path])
+                      "")]
+              (and geometry
+                   (not= geometry "")))))))
+
+(fn markdown-herdr-outer-terminal-program []
+  (or vim.g.markdown_mdrender_herdr_term_program
+      vim.env.HERDR_TERM_PROGRAM
+      (when (markdown-herdr-has-pixel-geometry?) "ghostty")))
+
+(fn markdown-zellij-graphics-enabled? []
+  (and (markdown-zellij-env?)
+       (= (vim.fn.executable "zellij") 1)
+       (let [version-output (vim.fn.system ["zellij" "--version"])
+             version (or (string.match version-output "(%d+%.%d+%.%d+)") "0.0.0")
+             cfg-path (vim.fs.joinpath (vim.fn.expand "~/.config/zellij") "config.kdl")
+             cfg-text (if (= (vim.fn.filereadable cfg-path) 1) (_read-all cfg-path) "")]
+         (and (markdown-semver-gte? version 0 45 0)
+              (not (string.find cfg-text "support_kitty_graphics_protocol false" 1 true))))))
+
+(fn markdown-terminal-program []
+  (or vim.g.markdown_mdrender_term_program
+      vim.env.MDRENDER_TERM_PROGRAM
+      vim.env.TERM_PROGRAM
+      (when vim.env.KITTY_WINDOW_ID "kitty")
+      (when vim.env.GHOSTTY_RESOURCES_DIR "ghostty")
+      (when vim.env.WEZTERM_EXECUTABLE "WezTerm")
+      (markdown-herdr-outer-terminal-program)
+      ;; On zellij 0.45+, kitty graphics passthrough is supported.
+      ;; Herdr/zellij may drop TERM_PROGRAM, so use zellij capability as a fallback.
+      (when (markdown-zellij-graphics-enabled?) "kitty")))
+
+(fn markdown-terminal-supports-graphics? []
+  (let [term (markdown-terminal-program)]
+    (or (= term "ghostty")
+        (= term "kitty")
+        (= term "WezTerm"))))
+
+(fn markdown-prepare-mdrender-env! []
+  (let [term (markdown-terminal-program)]
+    (when (and term (not vim.env.TERM_PROGRAM))
+      (set vim.env.TERM_PROGRAM term))
+    (when (and (markdown-herdr-env?) (not vim.env.HERDR_TERM_PROGRAM) term)
+      (set vim.env.HERDR_TERM_PROGRAM term))
+    (when (= term "kitty")
+      (set vim.env.KITTY_WINDOW_ID (or vim.env.KITTY_WINDOW_ID "1")))
+    (when (= term "ghostty")
+      (set vim.env.GHOSTTY_RESOURCES_DIR (or vim.env.GHOSTTY_RESOURCES_DIR "1")))
+    (when (= term "WezTerm")
+      (set vim.env.WEZTERM_EXECUTABLE (or vim.env.WEZTERM_EXECUTABLE "1")))
+    (pcall
+      (fn []
+        ((. (require :md-render.image) :reset_cache))))
+    term))
+
+(fn markdown-mdrender-pane-width [subcmd]
+  (local win-width (vim.api.nvim_win_get_width 0))
+  (local win-info (. (vim.fn.getwininfo (vim.api.nvim_get_current_win)) 1))
+  (local textoff (or (and win-info (. win-info :textoff)) 0))
+  (local usable (math.max 20 (- win-width textoff)))
+  (if (= subcmd "tab")
+      usable
+      (math.max 20 (- usable 2))))
+
+(fn markdown-debug-upvalue-index [f wanted idx]
+  (let [n (or idx 1)
+        packed [(debug.getupvalue f n)]
+        name (. packed 1)]
+    (if (not name)
+        nil
+        (if (= name wanted)
+            n
+            (markdown-debug-upvalue-index f wanted (+ n 1))))))
+
+(fn markdown-debug-upvalue-value [f wanted idx]
+  (let [n (or idx 1)
+        packed [(debug.getupvalue f n)]
+        name (. packed 1)
+        value (. packed 2)]
+    (if (not name)
+        nil
+        (if (= name wanted)
+            value
+            (markdown-debug-upvalue-value f wanted (+ n 1))))))
+
+(fn markdown-debug-set-upvalue! [f wanted value]
+  (let [idx (markdown-debug-upvalue-index f wanted 1)]
+    (when idx
+      (debug.setupvalue f idx value)
+      true)))
+
+(fn markdown-mdrender-apply-pane-width-patch! []
+  (let [packed [(pcall require :md-render.preview)]
+        ok (. packed 1)
+        preview (. packed 2)]
+    (when ok
+      (when (not vim.g.markdown_mdrender_pane_width_patch_applied)
+        (local default-max-width 4096)
+        (local session (markdown-debug-upvalue-value (. preview :show) "Session" 1))
+        (local get-or-create-session (markdown-debug-upvalue-value (. preview :toggle) "get_or_create_toggle_session" 1))
+        (local install-win-resize-handler
+          (and get-or-create-session
+               (markdown-debug-upvalue-value get-or-create-session "install_win_resize_handler" 1)))
+        (markdown-debug-set-upvalue! (. preview :build_content) "DEFAULT_MAX_WIDTH" default-max-width)
+        (when session
+          (markdown-debug-set-upvalue! (. session :bind_window) "DEFAULT_MAX_WIDTH" default-max-width))
+        (when install-win-resize-handler
+          (markdown-debug-set-upvalue! install-win-resize-handler "DEFAULT_MAX_WIDTH" default-max-width))
+        (set vim.g.markdown_mdrender_pane_width_patch_applied true))
+      true)))
+
+(fn markdown-mdrender-open [subcmd]
+  (ensure-plugin "md-render.nvim")
+  (if (not (= vim.bo.filetype "markdown"))
+      (vim.notify "当前 buffer 不是 markdown，无法打开内嵌浏览态" vim.log.levels.WARN)
+      (let [term (markdown-prepare-mdrender-env!)
+            _ (markdown-mdrender-apply-pane-width-patch!)
+            preview-packed [(pcall require :md-render.preview)]
+            preview-ok (. preview-packed 1)
+            preview (. preview-packed 2)
+            packed [(pcall
+                      (fn []
+                        (if (not preview-ok)
+                            (error "md-render.preview 未加载成功")
+                            (if (= subcmd "toggle")
+                                ((. preview :toggle))
+                                (if (= subcmd "split")
+                                    ((. preview :split))
+                                    (if (= subcmd "tab")
+                                        ((. preview :show_tab))
+                                        (if (= subcmd "auto on")
+                                            ((. preview :auto_on))
+                                            ((. preview :show)))))))))]
+            ok (. packed 1)
+            err (. packed 2)]
+        (when (not ok)
+          (vim.notify (.. "MdRender 打开失败：" (tostring err)) vim.log.levels.WARN))
+        (when (and ok (not (markdown-terminal-supports-graphics?)))
+          (vim.notify "当前 pane 没识别到 Ghostty/Kitty/WezTerm；md-render 可用，但图片类图形渲染可能退化" vim.log.levels.INFO))
+        (when (and ok term)
+          (vim.notify (.. "MdRender 终端探测：" term) vim.log.levels.DEBUG)))))
+
+(fn markdown-mdrender-float []
+  (markdown-mdrender-open nil))
+
+(fn markdown-mdrender-toggle []
+  (markdown-mdrender-open "toggle"))
+
+(fn markdown-mdrender-split []
+  (markdown-mdrender-open "split"))
+
+(fn markdown-mdrender-tab []
+  (markdown-mdrender-open "tab"))
+
+(fn markdown-mdrender-auto []
+  (markdown-mdrender-open "auto on"))
+
 ;; 统一 pane/tab 导航键位：<C-h/j/k/l>
 ;; - 在 Neovim 内先走 window 移动
 ;; - 到达边缘时由 zellij-nav.nvim 切换 Zellij pane/tab
@@ -575,8 +838,29 @@
   {:pattern "markdown"
    :callback (fn [args]
                (local bufnr args.buf)
+               (ensure-plugin "md-render.nvim")
+               (markdown-prepare-mdrender-env!)
+               (markdown-mdrender-apply-pane-width-patch!)
                (vim.keymap.set "n" ",p" (fn [] (pcall vim.cmd "MarkdownPreviewToggle"))
-                             {:buffer bufnr :silent true :noremap true :desc "Markdown: Preview"}))})
+                             {:buffer bufnr :silent true :noremap true :desc "Markdown: Preview"})
+               (vim.keymap.set "n" ",r" (fn [] (pcall vim.cmd "RenderMarkdown buf_toggle"))
+                             {:buffer bufnr :silent true :noremap true :desc "Markdown: Render toggle"})
+               (vim.keymap.set "n" ",v" markdown-mdrender-float
+                             {:buffer bufnr :silent true :noremap true :desc "Markdown: Embedded preview"})
+               (vim.keymap.set "n" ",b" markdown-mdrender-toggle
+                             {:buffer bufnr :silent true :noremap true :desc "Markdown: Browse mode"})
+               (vim.keymap.set "n" ",s" markdown-mdrender-split
+                             {:buffer bufnr :silent true :noremap true :desc "Markdown: Source/render split"})
+               (vim.keymap.set "n" ",t" markdown-mdrender-tab
+                             {:buffer bufnr :silent true :noremap true :desc "Markdown: Preview in tab"})
+               (vim.keymap.set "n" ",a" markdown-mdrender-auto
+                             {:buffer bufnr :silent true :noremap true :desc "Markdown: Auto browse mode"})
+               (vim.keymap.set "n" ",g" markdown-mdview-preview
+                             {:buffer bufnr :silent true :noremap true :desc "Markdown: mdview live preview"})
+               (vim.keymap.set "n" ",m" markdown-export-mermaid
+                             {:buffer bufnr :silent true :noremap true :desc "Markdown: Export Mermaid"})
+               (vim.keymap.set "n" ",u" markdown-export-plantuml
+                             {:buffer bufnr :silent true :noremap true :desc "Markdown: Export PlantUML"}))})
 
 (vim.api.nvim_create_autocmd "FileType"
   {:pattern "python"
